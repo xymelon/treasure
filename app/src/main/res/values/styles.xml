@@ -1,20 +1,96 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/G97</item>
+        <item name="android:colorBackground">@color/G97</item>
+        <item name="android:listDivider">@color/G92</item>
+        <item name="android:alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="android:spinnerItemStyle">@style/SpinnerItemStyle</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemStyle</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme.StatusBar" parent="AppTheme" />
+
+    <style name="AppTheme.PrimaryDarkBlack" parent="AppTheme">
+        <item name="colorPrimaryDark">@color/G1</item>
+    </style>
+
+    <style name="OverFlowStyle" parent="@style/Widget.AppCompat.Light.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_settings_white_24dp</item>
+    </style>
+
+    <style name="AppTheme.OverFlowStyle" parent="AppTheme">
+        <item name="actionOverflowButtonStyle">@style/OverFlowStyle</item>
+        <item name="android:actionOverflowButtonStyle">@style/OverFlowStyle</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:theme">@style/AppTheme.AppBarOverlay</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- button text color -->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- message text color -->
+        <item name="android:textColorPrimary">@color/G60</item>
+        <!-- title text color -->
+        <item name="android:windowTitleStyle">@style/DialogTitle</item>
+    </style>
+
+    <style name="DialogTitle">
+        <item name="android:textColor">@color/G3</item>
+    </style>
+
+    <style name="DialogAnimation" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
+    <style name="Dialog.NoTitle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Dialog.NoTitleAndTransparent" parent="Dialog.NoTitle">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Dialog.NoTitleAndTransparent.Sheet" parent="Dialog.NoTitleAndTransparent">
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="windowMinWidthMinor">100%</item>
+    </style>
+
+    <style name="SpinnerItemStyle" parent="@android:style/Widget.TextView.SpinnerItem">
+        <item name="android:textAppearance">@style/SpinnerItemAppearance</item>
+    </style>
+
+    <style name="SpinnerItemAppearance" parent="@android:style/TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:textColor">@color/G60</item>
+    </style>
+
+    <style name="SpinnerDropDownItemStyle" parent="@android:style/Widget.DropDownItem">
+        <item name="android:textAppearance">@style/SpinnerDropDownItemAppearance</item>
+    </style>
+
+    <style name="SpinnerDropDownItemAppearance" parent="@android:style/TextAppearance.Widget.DropDownItem">
+        <item name="android:textColor">@color/G60</item>
+    </style>
 
 </resources>

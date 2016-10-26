@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">@color/T1</color>
+    <color name="colorPrimaryDark">#007A6E</color>
+    <color name="colorAccent">@color/T1</color>
+    <color name="semi_transparent_light_gray">#9f393A3E</color>
+    <!-- 20% black -->
+    <color name="black20">#33000000</color>
+
+    <color name="W1">#FFFFFFFF</color>
+    <drawable name="W1">#FFFFFFFF</drawable>
+    <!-- 60% W1-->
+    <color name="W2">#99FFFFFF</color>
+    <!-- 72% W1-->
+    <color name="W3">#B8FFFFFF</color>
+    <!-- 8% W1-->
+    <color name="W4">#14FFFFFF</color>
+    <!-- 24% W1-->
+    <color name="W5">#3DFFFFFF</color>
+    <!-- 12% W1-->
+    <color name="W6">#1FFFFFFF</color>
+    <!-- 40% W1-->
+    <color name="W7">#66FFFFFF</color>
+
+    <color name="T1">#FF00998A</color>
+    <color name="T2">#FF5ED692</color>
+
+    <color name="G1">#FF000000</color>
+    <color name="G20">#FF333333</color>
+    <color name="G2087">#DE333333</color>
+    <color name="G30">#FFF5FFFE</color>
+    <color name="G40">#FF666666</color>
+    <color name="G60">#FF999999</color>
+    <color name="G72">#FFB8B8B8</color>
+    <color name="G88">#FFDFDFDF</color>
+    <color name="G92">#FFEBEBEB</color>
+    <color name="G97">#FFF7F7F7</color>
+    <color name="G98">#FFF2F7F7</color>
+
+    <color name="B2">#6600998A</color>
+
+    <!-- ui 统一版颜色 -->
+    <color name="B1">#4988b8</color>
+    <color name="G3">#4d4d4d</color>
+    <!-- ui 统一版 -->
+
+    <color name="button_press">#EAEAEA</color>
+    <color name="red_transparency">#fdebec</color>
+
 </resources>

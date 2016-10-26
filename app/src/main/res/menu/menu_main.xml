@@ -3,8 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.xycoding.treasure.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_mode"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/action_mode"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:title="mode1" />
+                <item android:title="mode2" />
+            </group>
+        </menu>
+
+
+    </item>
 </menu>
