@@ -50,9 +50,14 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/W1"
-                android:hint="输入东西试试"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp" />
+                android:hint="输入东西试试" />
+
+            <Button
+                android:id="@+id/btn_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="拖动排序" />
 
         </LinearLayout>
 
