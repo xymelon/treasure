@@ -46,7 +46,13 @@ public class MainActivity extends BaseBindingActivity {
         subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewDialog).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-
+                startActivity(new Intent(MainActivity.this, DialogActivity.class));
+            }
+        }));
+        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewCustom).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                startActivity(new Intent(MainActivity.this, ViewActivity.class));
             }
         }));
     }

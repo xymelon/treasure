@@ -4,4 +4,19 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="divider_height">0.5dp</dimen>
+
+    <dimen name="S2">2sp</dimen>
+    <dimen name="S10">10sp</dimen>
+    <dimen name="S11">11sp</dimen>
+    <dimen name="S12">12sp</dimen>
+    <dimen name="S13">13sp</dimen>
+    <dimen name="S14">14sp</dimen>
+    <dimen name="S15">15sp</dimen>
+    <dimen name="S16">16sp</dimen>
+    <dimen name="S18">18sp</dimen>
+    <dimen name="S20">20sp</dimen>
+    <dimen name="S22">22sp</dimen>
+    <dimen name="S30">30sp</dimen>
+    <dimen name="S35">35sp</dimen>
+    <dimen name="S40">40sp</dimen>
 </resources>

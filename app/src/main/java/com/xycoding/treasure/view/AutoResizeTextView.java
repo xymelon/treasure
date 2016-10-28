@@ -206,6 +206,7 @@ public class AutoResizeTextView extends CheckedTextView {
             super.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
             mMaxTextSize = mTextSize;
         }
+        resizeText();
     }
 
     /**
