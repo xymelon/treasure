@@ -35,6 +35,11 @@
             android:label="@string/activity_view"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.RecyclerViewActivity"
+            android:label="@string/activity_recycler_view"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

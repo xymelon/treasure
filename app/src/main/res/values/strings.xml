@@ -6,6 +6,7 @@
     <string name="activity_collapsing_toolbar">CollapsingToolbar</string>
     <string name="activity_dialog">Dialog</string>
     <string name="activity_view">View</string>
+    <string name="activity_recycler_view">RecyclerView</string>
 
     <string name="label_holder">We challenged ourselves to create a visual language for our users that synthesizes the classic principles of good design with the innovation and possibility of technology and science. This is material design. This spec is a living document that will be updated as we continue to develop the tenets and specifics of material design.</string>
 </resources>

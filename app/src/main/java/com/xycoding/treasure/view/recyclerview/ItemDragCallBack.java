@@ -1,5 +1,6 @@
 package com.xycoding.treasure.view.recyclerview;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
@@ -11,19 +12,19 @@ public class ItemDragCallBack extends ItemTouchHelper.SimpleCallback {
     public static final float ALPHA_FULL = 1.0f;
     private OnItemTouchListener mListener;
 
-    public ItemDragCallBack(OnItemTouchListener listener) {
-        super(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+    public ItemDragCallBack(@NonNull OnItemTouchListener listener) {
+        super(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT);
         mListener = listener;
     }
 
     @Override
     public boolean isItemViewSwipeEnabled() {
-        return false;
+        return true;
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
+        mListener.onItemRemoved(viewHolder.getAdapterPosition());
     }
 
     @Override

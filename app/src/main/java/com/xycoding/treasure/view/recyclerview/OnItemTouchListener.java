@@ -58,4 +58,11 @@ public interface OnItemTouchListener {
      */
     boolean onItemMove(int fromPosition, int toPosition);
 
+    /**
+     * Called when an item has been swiped to dismiss.
+     *
+     * @param position The position of the removed item.
+     */
+    void onItemRemoved(int position);
+
 }

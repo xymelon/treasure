@@ -56,7 +56,7 @@ public class FooterRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_FOOTER) {
-            ViewHolder holder = new ViewHolder(mFooterView);
+            FooterViewHolder holder = new FooterViewHolder(mFooterView);
             if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
                 StaggeredGridLayoutManager.LayoutParams layoutParams = new StaggeredGridLayoutManager.LayoutParams
                         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -110,8 +110,8 @@ public class FooterRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
         mFooterView = view;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ViewHolder(View itemView) {
+    public static class FooterViewHolder extends RecyclerView.ViewHolder {
+        public FooterViewHolder(View itemView) {
             super(itemView);
         }
     }

@@ -1,18 +1,19 @@
 package com.xycoding.treasure.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityViewBinding;
+import com.xycoding.treasure.rx.RxViewWrapper;
 
 import rx.functions.Action1;
 
 /**
  * Created by xuyang on 2016/10/28.
  */
-
 public class ViewActivity extends BaseBindingActivity {
 
     private ActivityViewBinding mBinding;
@@ -31,8 +32,14 @@ public class ViewActivity extends BaseBindingActivity {
     protected void setListeners() {
         subscriptions.add(RxTextView.afterTextChangeEvents(mBinding.clearEditText).subscribe(new Action1<TextViewAfterTextChangeEvent>() {
             @Override
-            public void call(TextViewAfterTextChangeEvent textViewAfterTextChangeEvent) {
-                mBinding.resizeTextView.setText(textViewAfterTextChangeEvent.editable());
+            public void call(TextViewAfterTextChangeEvent event) {
+                mBinding.resizeTextView.setText(event.editable());
+            }
+        }));
+        subscriptions.add(RxViewWrapper.clicks(mBinding.btnRecyclerView).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                startActivity(new Intent(ViewActivity.this, RecyclerViewActivity.class));
             }
         }));
     }

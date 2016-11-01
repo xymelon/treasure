@@ -53,11 +53,11 @@
                 android:hint="输入东西试试" />
 
             <Button
-                android:id="@+id/btn_order"
+                android:id="@+id/btn_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="拖动排序" />
+                android:text="RecyclerView" />
 
         </LinearLayout>
 

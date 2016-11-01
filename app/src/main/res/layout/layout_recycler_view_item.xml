@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/W1"
+            android:foreground="?attr/selectableItemBackground"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:id="@+id/iv_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right|center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_reorder" />
+
+            <TextView
+                android:id="@+id/tv_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="56dp"
+                android:paddingLeft="16dp"
+                android:textColor="@color/G20"
+                android:textSize="@dimen/S16"
+                tools:text="MustardMustardMus" />
+
+        </android.support.v7.widget.CardView>
+
+    </FrameLayout>
+
+</layout>

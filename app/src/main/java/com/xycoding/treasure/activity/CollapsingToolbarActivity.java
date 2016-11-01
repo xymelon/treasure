@@ -7,7 +7,6 @@ import com.xycoding.treasure.R;
 /**
  * Created by xuyang on 2016/10/27.
  */
-
 public class CollapsingToolbarActivity extends BaseBindingActivity {
 
     @Override
