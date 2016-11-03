@@ -4,6 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.NinePatchDrawable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private List<String> mData;
     private OnStartDragListener mDragListener;
+    private OnItemRemoveListener mRemoveListener;
 
     public RecyclerViewAdapter(@NonNull List<String> data) {
         mData = data;
@@ -76,8 +78,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onItemRemoved(int position) {
-        mData.remove(position);
+        String string = mData.remove(position);
         notifyItemRemoved(position);
+        if (mRemoveListener != null) {
+            mRemoveListener.onItemRemove(position, string);
+        }
+    }
+
+    public void setRemoveListener(OnItemRemoveListener removeListener) {
+        mRemoveListener = removeListener;
     }
 
     public void setDragListener(OnStartDragListener dragListener) {
@@ -106,6 +115,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
          */
         void onStartDrag(RecyclerView.ViewHolder viewHolder);
 
+    }
+
+    public interface OnItemRemoveListener {
+        void onItemRemove(int position, String string);
     }
 
 }

@@ -40,6 +40,12 @@
             android:label="@string/activity_recycler_view"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.ActionModeActivity"
+            android:label="@string/activity_action_mode"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ActionMode" />
+
     </application>
 
 </manifest>

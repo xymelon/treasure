@@ -1,9 +1,11 @@
 package com.xycoding.treasure.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.View;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.adapter.RecyclerViewAdapter;
@@ -46,7 +48,7 @@ public class RecyclerViewActivity extends BaseBindingActivity {
     }
 
     private void initViews() {
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(mData);
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(mData);
         mBinding.recyclerView.setAdapter(adapter);
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         //drag sort
@@ -55,6 +57,20 @@ public class RecyclerViewActivity extends BaseBindingActivity {
             @Override
             public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
                 itemTouchHelper.startDrag(viewHolder);
+            }
+        });
+        adapter.setRemoveListener(new RecyclerViewAdapter.OnItemRemoveListener() {
+            @Override
+            public void onItemRemove(final int position, final String string) {
+                Snackbar.make(mBinding.recyclerView, "删除 " + string, Snackbar.LENGTH_LONG)
+                        .setAction("撤销", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mData.add(position, string);
+                                adapter.notifyItemInserted(position);
+                                mBinding.recyclerView.getLayoutManager().scrollToPosition(position);
+                            }
+                        }).show();
             }
         });
         itemTouchHelper.attachToRecyclerView(mBinding.recyclerView);
