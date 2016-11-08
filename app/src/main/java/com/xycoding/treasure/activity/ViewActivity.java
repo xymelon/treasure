@@ -26,6 +26,7 @@ public class ViewActivity extends BaseBindingActivity {
     @Override
     protected void initControls(Bundle savedInstanceState) {
         mBinding = (ActivityViewBinding) binding;
+        initViews();
     }
 
     @Override
@@ -47,5 +48,8 @@ public class ViewActivity extends BaseBindingActivity {
     @Override
     protected void initData(Bundle savedInstanceState) {
         mBinding.clearEditText.setText("字体会自动变化的，继续输入试试");
+    }
+
+    private void initViews() {
     }
 }
