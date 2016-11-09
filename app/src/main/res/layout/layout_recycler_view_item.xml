@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.CardView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@color/W1"
-            android:foreground="?attr/selectableItemBackground"
-            app:cardCornerRadius="2dp"
-            app:cardElevation="0dp">
+            android:foreground="?attr/selectableItemBackground">
 
             <ImageView
                 android:id="@+id/iv_sort"
@@ -36,7 +33,7 @@
                 android:textSize="@dimen/S16"
                 tools:text="MustardMustardMus" />
 
-        </android.support.v7.widget.CardView>
+        </FrameLayout>
 
     </FrameLayout>
 

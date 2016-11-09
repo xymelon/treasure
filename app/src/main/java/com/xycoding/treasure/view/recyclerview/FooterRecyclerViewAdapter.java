@@ -50,6 +50,17 @@ public class FooterRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
                         notifyItemRangeRemoved(positionStart, itemCount);
                     }
 
+                    @Override
+                    public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+                        super.onItemRangeChanged(positionStart, itemCount, payload);
+                        notifyItemRangeChanged(positionStart, itemCount, payload);
+                    }
+
+                    @Override
+                    public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                        super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                        notifyItemMoved(fromPosition, toPosition);
+                    }
                 });
     }
 
