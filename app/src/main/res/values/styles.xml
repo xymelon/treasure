@@ -94,6 +94,13 @@
         <item name="windowMinWidthMinor">100%</item>
     </style>
 
+    <style name="Dialog.NoTitleAndTransparent.NotFullScreen" parent="Dialog.NoTitleAndTransparent">
+        <item name="android:windowMinWidthMajor">85%</item>
+        <item name="windowMinWidthMajor">85%</item>
+        <item name="android:windowMinWidthMinor">85%</item>
+        <item name="windowMinWidthMinor">85%</item>
+    </style>
+
     <style name="SpinnerItemStyle" parent="@android:style/Widget.TextView.SpinnerItem">
         <item name="android:textAppearance">@style/SpinnerItemAppearance</item>
     </style>
