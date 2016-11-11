@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="minTextSize" format="reference|dimension" />
+
     <declare-styleable name="AutoResizeTextView">
         <attr name="minLinesDecrease" format="integer" />
-        <attr name="minTextSize" format="reference" />
+        <attr name="minTextSize" />
         <attr name="gapTextSize" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="AutoFitSizeTextView">
+        <attr name="fitLine" format="integer" />
+        <attr name="addEllipsis" format="boolean" />
+        <attr name="minTextSize" />
     </declare-styleable>
 
     <declare-styleable name="ImageEndTextView">

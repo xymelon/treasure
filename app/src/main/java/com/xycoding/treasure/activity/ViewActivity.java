@@ -35,6 +35,7 @@ public class ViewActivity extends BaseBindingActivity {
             @Override
             public void call(TextViewAfterTextChangeEvent event) {
                 mBinding.resizeTextView.setText(event.editable());
+                mBinding.fitTextView.setText(event.editable());
             }
         }));
         subscriptions.add(RxViewWrapper.clicks(mBinding.btnRecyclerView).subscribe(new Action1<Void>() {

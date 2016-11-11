@@ -42,7 +42,21 @@
                 android:padding="10dp"
                 android:textColor="@color/W1"
                 android:textSize="30sp"
-                app:minTextSize="@dimen/S12" />
+                app:minTextSize="@dimen/S20" />
+
+            <com.xycoding.treasure.view.AutoFitSizeTextView
+                android:id="@+id/fit_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:textColor="@color/W1"
+                android:textSize="30sp"
+                app:addEllipsis="false"
+                app:fitLine="2"
+                app:minTextSize="@dimen/S20" />
 
             <com.xycoding.treasure.view.ClearEditText
                 android:id="@+id/clear_edit_text"
