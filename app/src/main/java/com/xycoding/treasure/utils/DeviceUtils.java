@@ -13,6 +13,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by xuyang on 2016/6/15.
  */
@@ -93,12 +95,29 @@ public class DeviceUtils {
         window.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
-    public static float dp2px(Context context, float dp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+    public static int getScreenHeight(@NonNull Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
-    public static float sp2px(Context context, float sp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics());
+    public static int getStatusBarHeight(@NonNull Context context) {
+        try {
+            Class<?> clazz = Class.forName("com.android.internal.R$dimen");
+            Object object = clazz.newInstance();
+            Field field = clazz.getField("status_bar_height");
+            int x = (Integer) field.get(object);
+            return context.getResources().getDimensionPixelSize(x);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dp2px(context, 24);
+    }
+
+    public static int dp2px(Context context, float dp) {
+        return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()) + 0.5f);
+    }
+
+    public static int sp2px(Context context, float sp) {
+        return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics()) + 0.5f);
     }
 
 }
