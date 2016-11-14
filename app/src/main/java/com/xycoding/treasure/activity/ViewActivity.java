@@ -34,7 +34,6 @@ public class ViewActivity extends BaseBindingActivity {
         subscriptions.add(RxTextView.afterTextChangeEvents(mBinding.clearEditText).subscribe(new Action1<TextViewAfterTextChangeEvent>() {
             @Override
             public void call(TextViewAfterTextChangeEvent event) {
-                mBinding.resizeTextView.setText(event.editable());
                 mBinding.fitTextView.setText(event.editable());
             }
         }));
@@ -48,7 +47,8 @@ public class ViewActivity extends BaseBindingActivity {
 
     @Override
     protected void initData(Bundle savedInstanceState) {
-        mBinding.clearEditText.setText("字体会自动变化的，继续输入试试");
+        mBinding.clearEditText.setText("输入：TextView自适应");
+        mBinding.autoEditText.setText("输入：EditText自适应");
     }
 
     private void initViews() {

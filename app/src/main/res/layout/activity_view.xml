@@ -28,34 +28,21 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="自动改变字体大小"
+                android:text="TextView自动改变字体大小"
                 android:textColor="@color/G40"
                 android:textSize="12sp" />
-
-            <com.xycoding.treasure.view.AutoResizeTextView
-                android:id="@+id/resize_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/colorPrimary"
-                android:gravity="center_vertical"
-                android:padding="10dp"
-                android:textColor="@color/W1"
-                android:textSize="30sp"
-                app:minTextSize="@dimen/S20" />
 
             <com.xycoding.treasure.view.AutoFitSizeTextView
                 android:id="@+id/fit_text_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/colorPrimary"
                 android:gravity="center_vertical"
-                android:padding="10dp"
+                android:maxLines="1"
                 android:textColor="@color/W1"
-                android:textSize="30sp"
-                app:addEllipsis="false"
-                app:fitLine="2"
+                android:textSize="@dimen/S30"
+                app:fitLine="1"
                 app:minTextSize="@dimen/S20" />
 
             <com.xycoding.treasure.view.ClearEditText
@@ -64,7 +51,27 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/W1"
-                android:hint="输入东西试试" />
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="EditText自动调整字体大小"
+                android:textColor="@color/G40"
+                android:textSize="12sp" />
+
+            <com.xycoding.treasure.view.AutoFitSizeEditText
+                android:id="@+id/auto_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/W1"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:singleLine="true"
+                android:textSize="@dimen/S40"
+                app:minTextSize="@dimen/S20" />
 
             <TextView
                 android:layout_width="wrap_content"

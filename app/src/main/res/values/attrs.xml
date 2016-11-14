@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <attr name="fitLine" format="integer" />
     <attr name="minTextSize" format="reference|dimension" />
 
-    <declare-styleable name="AutoResizeTextView">
-        <attr name="minLinesDecrease" format="integer" />
+    <declare-styleable name="AutoFitSizeEditText">
         <attr name="minTextSize" />
-        <attr name="gapTextSize" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="AutoFitSizeTextView">
-        <attr name="fitLine" format="integer" />
+        <attr name="fitLine" />
         <attr name="addEllipsis" format="boolean" />
         <attr name="minTextSize" />
     </declare-styleable>

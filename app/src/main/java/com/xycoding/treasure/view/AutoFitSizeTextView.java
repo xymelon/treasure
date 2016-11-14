@@ -2,9 +2,12 @@ package com.xycoding.treasure.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.method.SingleLineTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -24,8 +27,11 @@ public class AutoFitSizeTextView extends TextView {
 
     // Interface for resize notifications
     public interface OnTextResizeListener {
-        public void onTextResize(TextView textView, float oldSize, float newSize);
+        void onTextResize(TextView textView, float oldSize, float newSize);
     }
+
+    // No limit (Integer.MAX_VALUE means no limit)
+    private static final int NO_LIMIT_LINES = Integer.MAX_VALUE;
 
     // Our ellipse string
     private static final String mEllipsis = "...";
@@ -39,8 +45,8 @@ public class AutoFitSizeTextView extends TextView {
     // Text size that is set from code. This acts as a starting point for resizing
     private float mTextSize;
 
-    // Text Line indicates that start fit size (default Integer.MAX_VALUE, means it will fit TextView's height).
-    private int mFitSizeLine = Integer.MAX_VALUE;
+    // Text Line indicates that start fit size.
+    private int mFitSizeLine;
 
     // Temporary upper bounds on the starting text size
     private float mMaxTextSize = 0;
@@ -75,10 +81,23 @@ public class AutoFitSizeTextView extends TextView {
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AutoFitSizeTextView);
             mMinTextSize = typedArray.getDimension(R.styleable.AutoFitSizeTextView_minTextSize, mTextSize);
-            mFitSizeLine = typedArray.getInteger(R.styleable.AutoFitSizeTextView_fitLine, Integer.MAX_VALUE);
+            mFitSizeLine = typedArray.getInteger(R.styleable.AutoFitSizeTextView_fitLine, NO_LIMIT_LINES);
             mAddEllipsis = typedArray.getBoolean(R.styleable.AutoFitSizeTextView_addEllipsis, true);
             typedArray.recycle();
         }
+    }
+
+    /**
+     * Resize text after measuring
+     */
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        if (changed || mNeedsResize) {
+            int widthLimit = (right - left) - getCompoundPaddingLeft() - getCompoundPaddingRight();
+            int heightLimit = (bottom - top) - getCompoundPaddingBottom() - getCompoundPaddingTop();
+            resizeText(widthLimit, heightLimit);
+        }
+        super.onLayout(changed, left, top, right, bottom);
     }
 
     /**
@@ -99,15 +118,6 @@ public class AutoFitSizeTextView extends TextView {
         if (w != oldw || h != oldh) {
             mNeedsResize = true;
         }
-    }
-
-    /**
-     * Register listener to receive resize notifications
-     *
-     * @param listener
-     */
-    public void setOnResizeListener(OnTextResizeListener listener) {
-        mTextResizeListener = listener;
     }
 
     /**
@@ -136,6 +146,15 @@ public class AutoFitSizeTextView extends TextView {
         super.setLineSpacing(add, mult);
         mSpacingMult = mult;
         mSpacingAdd = add;
+    }
+
+    /**
+     * Register listener to receive resize notifications
+     *
+     * @param listener
+     */
+    public void setOnResizeListener(OnTextResizeListener listener) {
+        mTextResizeListener = listener;
     }
 
     /**
@@ -208,19 +227,6 @@ public class AutoFitSizeTextView extends TextView {
     }
 
     /**
-     * Resize text after measuring
-     */
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        if (changed || mNeedsResize) {
-            int widthLimit = (right - left) - getCompoundPaddingLeft() - getCompoundPaddingRight();
-            int heightLimit = (bottom - top) - getCompoundPaddingBottom() - getCompoundPaddingTop();
-            resizeText(widthLimit, heightLimit);
-        }
-        super.onLayout(changed, left, top, right, bottom);
-    }
-
-    /**
      * Resize the text size with default width and height
      */
     public void resizeText() {
@@ -257,7 +263,9 @@ public class AutoFitSizeTextView extends TextView {
         // Get the required text height
         int textHeight = getTextHeight(text, textPaint, width, targetTextSize);
         // fit with line, or fit with TextView's height
-        if (mFitSizeLine != Integer.MAX_VALUE) {
+        int maxLines = getMaxLines(this);
+        mFitSizeLine = mFitSizeLine < maxLines ? mFitSizeLine : maxLines;
+        if (mFitSizeLine != NO_LIMIT_LINES) {
             int lineCount = getTextLines(text, textPaint, width, targetTextSize);
             // Until we either fit our lines or we had reached our min text size, incrementally try smaller sizes
             while (lineCount > mFitSizeLine && targetTextSize > mMinTextSize) {
@@ -337,6 +345,18 @@ public class AutoFitSizeTextView extends TextView {
         paintCopy.setTextSize(textSize);
         StaticLayout layout = new StaticLayout(source, paintCopy, width, Alignment.ALIGN_NORMAL, mSpacingMult, mSpacingAdd, true);
         return layout.getLineCount();
+    }
+
+    private static int getMaxLines(TextView view) {
+        int maxLines = NO_LIMIT_LINES;
+        TransformationMethod method = view.getTransformationMethod();
+        if (method != null && method instanceof SingleLineTransformationMethod) {
+            maxLines = 1;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            // setMaxLines() and getMaxLines() are only available on android-16+
+            maxLines = view.getMaxLines();
+        }
+        return maxLines;
     }
 
 }
