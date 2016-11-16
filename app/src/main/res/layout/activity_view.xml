@@ -18,106 +18,172 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView自动改变字体大小"
-                android:textColor="@color/G40"
-                android:textSize="12sp" />
-
-            <com.xycoding.treasure.view.AutoFitSizeTextView
-                android:id="@+id/fit_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/colorPrimary"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/W1"
-                android:textSize="@dimen/S30"
-                app:fitLine="1"
-                app:minTextSize="@dimen/S20" />
-
-            <com.xycoding.treasure.view.ClearEditText
-                android:id="@+id/clear_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/W1"
-                android:singleLine="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="EditText自动调整字体大小"
-                android:textColor="@color/G40"
-                android:textSize="12sp" />
-
-            <com.xycoding.treasure.view.AutoFitSizeEditText
-                android:id="@+id/auto_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/W1"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:singleLine="true"
-                android:textSize="@dimen/S30"
-                app:minTextSize="@dimen/S14" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="背景颜色Tint"
-                android:textColor="@color/G40"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btn_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="RecyclerView"
-                android:textColor="@color/W1"
-                app:backgroundTint="?attr/colorPrimary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="系统ProgressBar和自定义ProgressBar"
-                android:textColor="@color/G40"
-                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/activity_horizontal_margin">
 
-                <ProgressBar
-                    style="?android:attr/progressBarStyle"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:theme="@style/AppTheme.RedAccent" />
+                    android:text="TextView自动改变字体大小"
+                    android:textColor="@color/G40"
+                    android:textSize="12sp" />
 
-                <com.xycoding.treasure.view.MaterialCircularProgressBar
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:progressColor="@color/G88"
-                    app:progressWidth="3dp" />
+                <com.xycoding.treasure.view.AutoFitSizeTextView
+                    android:id="@+id/fit_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/colorPrimary"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:textColor="@color/W1"
+                    android:textSize="@dimen/S30"
+                    app:fitLine="1"
+                    app:minTextSize="@dimen/S20" />
+
+                <com.xycoding.treasure.view.ClearEditText
+                    android:id="@+id/clear_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/W1"
+                    android:singleLine="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="EditText自动调整字体大小"
+                    android:textColor="@color/G40"
+                    android:textSize="12sp" />
+
+                <com.xycoding.treasure.view.AutoFitSizeEditText
+                    android:id="@+id/auto_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/W1"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/S30"
+                    app:minTextSize="@dimen/S14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="背景颜色Tint"
+                    android:textColor="@color/G40"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/btn_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="RecyclerView"
+                    android:textColor="@color/W1"
+                    app:backgroundTint="?attr/colorPrimary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="系统ProgressBar和自定义ProgressBar"
+                    android:textColor="@color/G40"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/AppTheme.RedAccent" />
+
+                    <com.xycoding.treasure.view.MaterialCircularProgressBar
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:progressColor="@color/G88"
+                        app:progressWidth="3dp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="自动换行layout"
+                    android:textColor="@color/G40"
+                    android:textSize="12sp" />
+
+                <com.xycoding.treasure.view.AutoLineLayout
+                    android:id="@+id/btn_auto_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:horizontalSpacing="24dp"
+                    app:verticalSpacing="8dp">
+
+                    <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/shape_red_corner"
+                        android:gravity="center"
+                        android:text="item1" />
+
+                    <TextView
+                        android:layout_width="90dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/shape_red_corner"
+                        android:gravity="center"
+                        android:text="item2" />
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/shape_red_corner"
+                        android:gravity="center"
+                        android:text="item3" />
+
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/shape_red_corner"
+                        android:gravity="center"
+                        android:text="item4" />
+
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/shape_red_corner"
+                        android:gravity="center"
+                        android:text="item5" />
+
+                    <TextView
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/shape_red_corner"
+                        android:gravity="center"
+                        android:text="item6" />
+
+
+                </com.xycoding.treasure.view.AutoLineLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
 
     </android.support.design.widget.CoordinatorLayout>
 

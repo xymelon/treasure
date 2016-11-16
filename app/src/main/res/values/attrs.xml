@@ -30,4 +30,9 @@
         <attr name="progressWidth" format="dimension|reference" />
     </declare-styleable>
 
+    <declare-styleable name="AutoLineLayout">
+        <attr name="verticalSpacing" format="reference|dimension" />
+        <attr name="horizontalSpacing" format="reference|dimension" />
+    </declare-styleable>
+
 </resources>
