@@ -131,20 +131,20 @@
 
                 <com.xycoding.treasure.view.AutoLineLayout
                     android:id="@+id/btn_auto_line"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:horizontalSpacing="24dp"
                     app:verticalSpacing="8dp">
 
                     <TextView
-                        android:layout_width="80dp"
+                        android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:background="@drawable/shape_red_corner"
                         android:gravity="center"
                         android:text="item1" />
 
                     <TextView
-                        android:layout_width="90dp"
+                        android:layout_width="150dp"
                         android:layout_height="40dp"
                         android:background="@drawable/shape_red_corner"
                         android:gravity="center"

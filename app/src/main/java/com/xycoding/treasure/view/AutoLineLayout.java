@@ -45,6 +45,7 @@ public class AutoLineLayout extends ViewGroup {
         final int maxInternalHeight = MeasureSpec.getSize(heightMeasureSpec) - getVerticalPadding();
 
         mChildRowHeight.clear();
+        mChildRowWidth.clear();
         int currentRowWidth = 0, currentRowHeight = 0, rowIndex = 0;
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
@@ -62,7 +63,7 @@ public class AutoLineLayout extends ViewGroup {
                 currentRowHeight = 0;
                 rowIndex++;
             }
-            currentRowWidth += currentRowWidth == 0 ? childWidth : currentRowWidth + mHorizontalSpacing + childWidth;
+            currentRowWidth = currentRowWidth == 0 ? childWidth : currentRowWidth + mHorizontalSpacing + childWidth;
             currentRowHeight = Math.max(currentRowHeight, childHeight);
             mChildRowWidth.put(rowIndex, currentRowWidth);
             mChildRowHeight.put(rowIndex, currentRowHeight);
@@ -78,11 +79,6 @@ public class AutoLineLayout extends ViewGroup {
         setMeasuredDimension(
                 widthMode == MeasureSpec.EXACTLY ? MeasureSpec.getSize(widthMeasureSpec) : longestRowWidth + getHorizontalPadding(),
                 heightMode == MeasureSpec.EXACTLY ? MeasureSpec.getSize(heightMeasureSpec) : totalRowHeight + getVerticalPadding());
-    }
-
-    private boolean wouldExceedParentWidth(int widthMode, int maxInternalWidth, int currentRowWidth, int childWidth) {
-        currentRowWidth = currentRowWidth == 0 ? childWidth : currentRowWidth + mHorizontalSpacing + childWidth;
-        return widthMode != MeasureSpec.UNSPECIFIED && currentRowWidth > maxInternalWidth;
     }
 
     @Override
@@ -108,6 +104,11 @@ public class AutoLineLayout extends ViewGroup {
             child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
             childLeft += childWidth + mHorizontalSpacing;
         }
+    }
+
+    private boolean wouldExceedParentWidth(int widthMode, int maxInternalWidth, int currentRowWidth, int childWidth) {
+        currentRowWidth = currentRowWidth == 0 ? childWidth : currentRowWidth + mHorizontalSpacing + childWidth;
+        return widthMode != MeasureSpec.UNSPECIFIED && currentRowWidth > maxInternalWidth;
     }
 
     private int createChildMeasureSpec(int childLayoutParam, int max, int parentMode) {
