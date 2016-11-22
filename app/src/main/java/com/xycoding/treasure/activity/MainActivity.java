@@ -1,9 +1,15 @@
 package com.xycoding.treasure.activity;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.NotificationCompat;
 import android.view.Menu;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityMainBinding;
@@ -12,6 +18,8 @@ import com.xycoding.treasure.rx.RxViewWrapper;
 import rx.functions.Action1;
 
 public class MainActivity extends BaseBindingActivity {
+
+    private final static String TAG = MainActivity.class.getSimpleName();
 
     private ActivityMainBinding mBinding;
 
@@ -26,6 +34,7 @@ public class MainActivity extends BaseBindingActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+        showNotify();
     }
 
     @Override
@@ -65,13 +74,34 @@ public class MainActivity extends BaseBindingActivity {
 
     @Override
     protected void initData(Bundle savedInstanceState) {
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Toast.makeText(this, "我没打开新页面哦", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showNotify() {
+        //MainActivity需设置singleTask
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.layout_notification);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.ic_search_white_24dp)
+                .setContent(contentView);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
     }
 
 }
