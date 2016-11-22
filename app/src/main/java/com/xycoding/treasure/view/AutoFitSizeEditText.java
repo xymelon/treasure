@@ -3,9 +3,11 @@ package com.xycoding.treasure.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.text.Editable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.TextWatcher;
 import android.text.method.SingleLineTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
@@ -25,14 +27,11 @@ public class AutoFitSizeEditText extends EditText {
     // No limit (Integer.MAX_VALUE means no limit)
     private static final int NO_LIMIT_LINES = Integer.MAX_VALUE;
 
-    // Registered resize listener
-    private AutoFitSizeTextView.OnTextResizeListener mTextResizeListener;
-
     // Flag for text and/or size changes to force a resize
     private boolean mNeedsResize = false;
 
-    // Text size that is set from code. This acts as a starting point for resizing
-    private float mTextSize;
+    // Text size for hint.
+    private float mHintTextSize;
 
     // Temporary upper bounds on the starting text size
     private float mMaxTextSize;
@@ -96,22 +95,16 @@ public class AutoFitSizeEditText extends EditText {
         }
     }
 
-    /**
-     * Override the set text size to update our internal reference values
-     */
     @Override
     public void setTextSize(float size) {
-        super.setTextSize(size);
-        mTextSize = getTextSize();
+        throw new RuntimeException("Don't call setTextSize for AutoFitSizeEditText. "
+                + "You probably want setMaxTextSize instead.");
     }
 
-    /**
-     * Override the set text size to update our internal reference values
-     */
     @Override
     public void setTextSize(int unit, float size) {
-        super.setTextSize(unit, size);
-        mTextSize = getTextSize();
+        throw new RuntimeException("Don't call setTextSize for AutoFitSizeEditText. "
+                + "You probably want setMaxTextSize instead.");
     }
 
     /**
@@ -125,54 +118,67 @@ public class AutoFitSizeEditText extends EditText {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        mTextSize = getTextSize();
-        mMaxTextSize = mTextSize;
-        mMinTextSize = mTextSize;
+        float textSize = getTextSize();
+        mHintTextSize = textSize;
+        mMaxTextSize = textSize;
+        mMinTextSize = textSize;
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AutoFitSizeEditText);
-            mMinTextSize = typedArray.getDimension(R.styleable.AutoFitSizeEditText_minTextSize, mTextSize);
+            mHintTextSize = typedArray.getDimension(R.styleable.AutoFitSizeEditText_hintTextSize, textSize);
+            mMinTextSize = typedArray.getDimension(R.styleable.AutoFitSizeEditText_minTextSize, textSize);
             typedArray.recycle();
         }
+        addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                float preTextSize = getTextSize();
+                if (s.length() == 0) {
+                    AutoFitSizeEditText.super.setTextSize(TypedValue.COMPLEX_UNIT_PX, mHintTextSize);
+                } else {
+                    AutoFitSizeEditText.super.setTextSize(TypedValue.COMPLEX_UNIT_PX, preTextSize);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     /**
-     * Set the upper text size limit and invalidate the view
+     * Set the hint text size.
      *
-     * @param maxTextSize
+     * @param hintTextSize px
      */
-    public void setMaxTextSize(float maxTextSize) {
-        mMaxTextSize = maxTextSize;
+    public void setHintTextSize(float hintTextSize) {
+        mHintTextSize = hintTextSize;
         requestLayout();
         invalidate();
     }
 
     /**
-     * Return upper text size limit
+     * Set the text size.
      *
-     * @return
+     * @param maxTextSize sp
      */
-    public float getMaxTextSize() {
-        return mMaxTextSize;
+    public void setMaxTextSize(float maxTextSize) {
+        super.setTextSize(maxTextSize);
+        mMaxTextSize = getTextSize();
     }
 
     /**
      * Set the lower text size limit and invalidate the view
      *
-     * @param minTextSize
+     * @param minTextSize px
      */
     public void setMinTextSize(float minTextSize) {
         mMinTextSize = minTextSize;
         requestLayout();
         invalidate();
-    }
-
-    /**
-     * Return lower text size limit
-     *
-     * @return
-     */
-    public float getMinTextSize() {
-        return mMinTextSize;
     }
 
     /**
@@ -193,7 +199,7 @@ public class AutoFitSizeEditText extends EditText {
     public void resizeText(int width, int height) {
         CharSequence text = getText();
         // Do not resize if the view does not have dimensions or there is no text, or min text size equals max text size.
-        if (text == null || text.length() == 0 || height <= 0 || width <= 0 || mTextSize == 0 || mMaxTextSize == mMinTextSize) {
+        if (text == null || text.length() == 0 || height <= 0 || width <= 0 || getTextSize() == 0 || mMaxTextSize == mMinTextSize) {
             return;
         }
         int fitLine = getMaxLines(this);
@@ -208,7 +214,7 @@ public class AutoFitSizeEditText extends EditText {
         // Get the text view's paint object
         TextPaint textPaint = getPaint();
 
-        float targetTextSize = mTextSize;
+        float targetTextSize = getTextSize();
         // fit with max line, or fit with TextView's height
         boolean hasFitted = false;
         int lineCount = getTextLines(text, textPaint, width, targetTextSize);
@@ -226,10 +232,11 @@ public class AutoFitSizeEditText extends EditText {
                 targetTextSize = tempSize;
             }
         }
+        targetTextSize = targetTextSize > mMaxTextSize ? mMaxTextSize : targetTextSize;
 
         // Some devices try to auto adjust line spacing, so force default line spacing
         // and invalidate the layout as a side effect
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
+        super.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
         setLineSpacing(mSpacingAdd, mSpacingMult);
         // Reset force resize flag
         mNeedsResize = false;

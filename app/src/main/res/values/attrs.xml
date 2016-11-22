@@ -5,6 +5,7 @@
     <attr name="minTextSize" format="reference|dimension" />
 
     <declare-styleable name="AutoFitSizeEditText">
+        <attr name="hintTextSize" format="reference|dimension" />
         <attr name="minTextSize" />
     </declare-styleable>
 
