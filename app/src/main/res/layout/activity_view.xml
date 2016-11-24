@@ -32,6 +32,28 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="EditText自动调整字体大小"
+                    android:textColor="@color/G40"
+                    android:textSize="12sp" />
+
+                <com.xycoding.treasure.view.AutoFitSizeEditText
+                    android:id="@+id/auto_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/W1"
+                    android:hint="Hint字体大小"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:singleLine="true"
+                    android:textSize="@dimen/S30"
+                    app:hintTextSize="@dimen/S10"
+                    app:minTextSize="@dimen/S14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:text="TextView自动改变字体大小"
                     android:textColor="@color/G40"
                     android:textSize="12sp" />
@@ -56,28 +78,6 @@
                     android:layout_marginTop="8dp"
                     android:background="@color/W1"
                     android:singleLine="true" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="EditText自动调整字体大小"
-                    android:textColor="@color/G40"
-                    android:textSize="12sp" />
-
-                <com.xycoding.treasure.view.AutoFitSizeEditText
-                    android:id="@+id/auto_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/W1"
-                    android:hint="Hint字体大小"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:singleLine="true"
-                    android:textSize="@dimen/S30"
-                    app:hintTextSize="@dimen/S10"
-                    app:minTextSize="@dimen/S14" />
 
                 <TextView
                     android:layout_width="wrap_content"

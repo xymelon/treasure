@@ -8,6 +8,7 @@ import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityViewBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
+import com.xycoding.treasure.utils.KeyboardUtils;
 
 import rx.functions.Action1;
 
@@ -49,6 +50,18 @@ public class ViewActivity extends BaseBindingActivity {
     protected void initData(Bundle savedInstanceState) {
         mBinding.clearEditText.setText("输入：TextView自适应");
         mBinding.autoEditText.setText("输入：EditText自适应");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        mBinding.autoEditText.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                mBinding.autoEditText.requestFocus();
+//                KeyboardUtils.showSoftKeyBoard(ViewActivity.this, mBinding.autoEditText);
+//            }
+//        }, 500);
     }
 
     private void initViews() {
