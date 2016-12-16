@@ -70,6 +70,12 @@ public class MainActivity extends BaseBindingActivity {
                 startActivity(new Intent(MainActivity.this, ActionModeActivity.class));
             }
         }));
+        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewHandwriting).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                startActivity(new Intent(MainActivity.this, HandwritingActivity.class));
+            }
+        }));
     }
 
     @Override

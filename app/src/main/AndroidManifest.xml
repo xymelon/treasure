@@ -47,6 +47,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ActionMode" />
 
+        <activity
+            android:name=".activity.HandwritingActivity"
+            android:label="@string/activity_handwriting"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

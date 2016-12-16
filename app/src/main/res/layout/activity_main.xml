@@ -100,12 +100,35 @@
 
                 </android.support.v7.widget.CardView>
 
+                <android.support.v7.widget.CardView
+                    android:id="@+id/card_view_handwriting"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    app:cardElevation="0dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:text="Handwriting"
+                        android:textSize="16sp" />
+
+                </android.support.v7.widget.CardView>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/shape_gray_dash"
                     android:layerType="software" />
+
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/layer_list_top_background"
+                    android:text="测试" />
 
             </LinearLayout>
 

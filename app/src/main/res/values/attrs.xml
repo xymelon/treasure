@@ -36,4 +36,9 @@
         <attr name="horizontalSpacing" format="reference|dimension" />
     </declare-styleable>
 
+    <declare-styleable name="HandwritingView">
+        <attr name="penWidth" format="dimension" />
+        <attr name="penColor" format="color" />
+    </declare-styleable>
+
 </resources>
