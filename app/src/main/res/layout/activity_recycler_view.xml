@@ -13,13 +13,28 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
-                style="@style/Toolbar"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                style="@style/Toolbar">
+
+                <Button
+                    android:id="@+id/btn_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="切换" />
+
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.AppBarLayout>
 
         <com.xycoding.treasure.view.recyclerview.LoadMoreRecyclerView
             android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="16dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="16dp"

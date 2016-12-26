@@ -32,8 +32,7 @@
                     android:id="@+id/toolbar"
                     style="@style/Toolbar"
                     android:background="@android:color/transparent"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+                    app:layout_collapseMode="pin" />
 
             </android.support.design.widget.CollapsingToolbarLayout>
 

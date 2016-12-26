@@ -2,6 +2,8 @@ package com.xycoding.treasure.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -10,7 +12,9 @@ import android.view.View;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.adapter.RecyclerViewAdapter;
 import com.xycoding.treasure.databinding.ActivityRecyclerViewBinding;
+import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.view.LoadMoreView;
+import com.xycoding.treasure.view.recyclerview.GridDividerItemDecoration;
 import com.xycoding.treasure.view.recyclerview.ItemDragCallBack;
 import com.xycoding.treasure.view.recyclerview.LoadMoreRecyclerView;
 
@@ -21,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func0;
 
 /**
@@ -40,7 +45,9 @@ public class RecyclerViewActivity extends BaseBindingActivity {
     @Override
     protected void initControls(Bundle savedInstanceState) {
         mBinding = (ActivityRecyclerViewBinding) binding;
-        initViews();
+        initLinearRecyclerView();
+        initGridRecyclerView();
+        switchRecyclerView();
     }
 
     @Override
@@ -57,6 +64,12 @@ public class RecyclerViewActivity extends BaseBindingActivity {
                 loadMoreItems();
             }
         });
+        subscriptions.add(RxViewWrapper.clicks(mBinding.btnSwitch).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                switchRecyclerView();
+            }
+        }));
     }
 
     @Override
@@ -64,7 +77,7 @@ public class RecyclerViewActivity extends BaseBindingActivity {
         addDummyItems();
     }
 
-    private void initViews() {
+    private void initLinearRecyclerView() {
         final RecyclerViewAdapter adapter = new RecyclerViewAdapter(mData);
         mBinding.recyclerView.setAdapter(adapter);
         mLoadMoreView = new LoadMoreView(this);
@@ -92,6 +105,24 @@ public class RecyclerViewActivity extends BaseBindingActivity {
             }
         });
         itemTouchHelper.attachToRecyclerView(mBinding.recyclerView);
+    }
+
+    private void initGridRecyclerView() {
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(mData);
+        mBinding.recyclerViewGrid.setAdapter(adapter);
+        int columns = 4;
+        mBinding.recyclerViewGrid.setLayoutManager(new GridLayoutManager(this, columns));
+        mBinding.recyclerViewGrid.addItemDecoration(new GridDividerItemDecoration(ContextCompat.getDrawable(this, R.drawable.shape_grid_divider), columns));
+    }
+
+    private void switchRecyclerView() {
+        if (mBinding.recyclerView.getVisibility() != View.VISIBLE) {
+            mBinding.recyclerView.setVisibility(View.VISIBLE);
+            mBinding.recyclerViewGrid.setVisibility(View.INVISIBLE);
+        } else {
+            mBinding.recyclerView.setVisibility(View.INVISIBLE);
+            mBinding.recyclerViewGrid.setVisibility(View.VISIBLE);
+        }
     }
 
     private void addDummyItems() {
