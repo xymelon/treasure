@@ -108,11 +108,14 @@ public class RecyclerViewActivity extends BaseBindingActivity {
     }
 
     private void initGridRecyclerView() {
-        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(mData);
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(loadMoreDummyItems(20));
         mBinding.recyclerViewGrid.setAdapter(adapter);
-        int columns = 4;
+        int columns = 3;
         mBinding.recyclerViewGrid.setLayoutManager(new GridLayoutManager(this, columns));
-        mBinding.recyclerViewGrid.addItemDecoration(new GridDividerItemDecoration(ContextCompat.getDrawable(this, R.drawable.shape_grid_divider), columns));
+        mBinding.recyclerViewGrid.addItemDecoration(
+                new GridDividerItemDecoration(
+                        ContextCompat.getDrawable(this, R.drawable.shape_grid_divider),
+                        columns));
     }
 
     private void switchRecyclerView() {
@@ -132,9 +135,9 @@ public class RecyclerViewActivity extends BaseBindingActivity {
         mBinding.recyclerView.getAdapter().notifyDataSetChanged();
     }
 
-    private List<String> loadMoreDummyItems() {
+    private List<String> loadMoreDummyItems(int num) {
         List<String> items = new ArrayList<>();
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= num; i++) {
             items.add("Item " + (mData.size() + i));
         }
         return items;
@@ -145,7 +148,7 @@ public class RecyclerViewActivity extends BaseBindingActivity {
                 .defer(new Func0<Observable<List<String>>>() {
                     @Override
                     public Observable<List<String>> call() {
-                        return Observable.just(loadMoreDummyItems());
+                        return Observable.just(loadMoreDummyItems(20));
                     }
                 })
                 .delay(3000, TimeUnit.MILLISECONDS)

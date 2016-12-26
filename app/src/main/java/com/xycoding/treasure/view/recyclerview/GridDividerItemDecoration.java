@@ -92,7 +92,7 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
         int rowCount = childCount / mNumColumns;
         int lastRowChildCount = childCount % mNumColumns;
 
-        for (int i = 1; i < mNumColumns; i++) {
+        for (int i = 1; i < mNumColumns && i < childCount; i++) {
             int lastRowChildIndex;
             if (i < lastRowChildCount) {
                 lastRowChildIndex = i + (rowCount * mNumColumns);
@@ -124,7 +124,7 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
         int childCount = parent.getChildCount();
         int rowCount = childCount / mNumColumns;
         int rightmostChildIndex;
-        for (int i = 1; i <= rowCount; i++) {
+        for (int i = 1; i <= rowCount && i < childCount; i++) {
             if (i == rowCount) {
                 rightmostChildIndex = parent.getChildCount() - 1;
             } else {
@@ -133,9 +133,6 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
 
             View leftmostChild = parent.getChildAt(i * mNumColumns);
             View rightmostChild = parent.getChildAt(rightmostChildIndex);
-            if (leftmostChild == null || rightmostChild == null) {
-                continue;
-            }
 
             int dividerLeft = leftmostChild.getLeft();
             int dividerBottom = leftmostChild.getTop();
@@ -147,3 +144,4 @@ public class GridDividerItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 }
+
