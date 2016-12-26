@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,10 +38,13 @@ public class HandwritingView extends View {
     //Default attribute values
     private final int DEFAULT_ATTR_PEN_WIDTH_DP = 3;
     private final int DEFAULT_ATTR_PEN_COLOR = Color.BLACK;
+    private static final int INVALID_POINTER = -1;
 
     private Paint mPaint = new Paint();
     private Bitmap mHandwritingBitmap = null;
     private Canvas mSignatureBitmapCanvas = null;
+    private int mHandwritingPointerId = INVALID_POINTER;
+    private boolean mHandwritingFinished = false;
 
     public HandwritingView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -113,20 +117,39 @@ public class HandwritingView extends View {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 getParent().requestDisallowInterceptTouchEvent(true);
+                mHandwritingFinished = false;
+                //Record handwriting pointer id.
+                mHandwritingPointerId = event.getPointerId(0);
                 mPoints.clear();
                 mLastTouchX = eventX;
                 mLastTouchY = eventY;
                 addPoint(getNewPoint(eventX, eventY));
+                if (mOnHandwritingListener != null) {
+                    mOnHandwritingListener.onStart();
+                    mOnHandwritingListener.onHandwriting((int) eventX, (int) eventY);
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
-                resetDirtyRect(eventX, eventY);
-                addPoint(getNewPoint(eventX, eventY));
+                //Only care about handwriting pointer id.
+                if (isHandwritingPointerId(event)) {
+                    resetDirtyRect(eventX, eventY);
+                    addPoint(getNewPoint(eventX, eventY));
+                    if (mOnHandwritingListener != null) {
+                        mOnHandwritingListener.onHandwriting((int) eventX, (int) eventY);
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                //If handwriting pointer id ACTION_POINTER_UP, then finish.
+                if (isHandwritingPointerId(event)) {
+                    mHandwritingFinished = true;
+                    onHandwritingPointerUp(eventX, eventY);
+                }
                 break;
             case MotionEvent.ACTION_UP:
-                resetDirtyRect(eventX, eventY);
-                addPoint(getNewPoint(eventX, eventY));
-                getParent().requestDisallowInterceptTouchEvent(true);
-                setIsEmpty(false);
+                if (!mHandwritingFinished) {
+                    onHandwritingPointerUp(eventX, eventY);
+                }
                 break;
             default:
                 return false;
@@ -136,9 +159,6 @@ public class HandwritingView extends View {
                 (int) (mDirtyRect.top - mPenWidth),
                 (int) (mDirtyRect.right + mPenWidth),
                 (int) (mDirtyRect.bottom + mPenWidth));
-        if (mOnHandwritingListener != null) {
-            mOnHandwritingListener.onTouchEvent(event);
-        }
         return true;
     }
 
@@ -146,6 +166,21 @@ public class HandwritingView extends View {
     protected void onDraw(Canvas canvas) {
         if (mHandwritingBitmap != null) {
             canvas.drawBitmap(mHandwritingBitmap, 0, 0, mPaint);
+        }
+    }
+
+    private boolean isHandwritingPointerId(MotionEvent ev) {
+        return mHandwritingPointerId == ev.getPointerId(MotionEventCompat.getActionIndex(ev));
+    }
+
+    private void onHandwritingPointerUp(float eventX, float eventY) {
+        resetDirtyRect(eventX, eventY);
+        addPoint(getNewPoint(eventX, eventY));
+        getParent().requestDisallowInterceptTouchEvent(true);
+        setIsEmpty(false);
+        if (mOnHandwritingListener != null) {
+            mOnHandwritingListener.onHandwriting((int)eventX, (int)eventY);
+            mOnHandwritingListener.onFinished();
         }
     }
 
@@ -413,11 +448,6 @@ public class HandwritingView extends View {
 
     private void setIsEmpty(boolean newValue) {
         mIsEmpty = newValue;
-        if (mOnHandwritingListener != null) {
-            if (mIsEmpty) {
-                mOnHandwritingListener.onClear();
-            }
-        }
     }
 
     private void ensureSignatureBitmap() {
@@ -435,8 +465,8 @@ public class HandwritingView extends View {
     public interface OnHandwritingListener {
         void onStart();
 
-        void onTouchEvent(MotionEvent event);
+        void onHandwriting(int eventX, int eventY);
 
-        void onClear();
+        void onFinished();
     }
 }
