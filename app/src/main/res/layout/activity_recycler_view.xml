@@ -37,7 +37,7 @@
             android:id="@+id/recycler_view_grid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="16dp"
+            android:padding="16dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </android.support.design.widget.CoordinatorLayout>

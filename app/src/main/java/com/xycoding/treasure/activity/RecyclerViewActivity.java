@@ -14,7 +14,7 @@ import com.xycoding.treasure.adapter.RecyclerViewAdapter;
 import com.xycoding.treasure.databinding.ActivityRecyclerViewBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.view.LoadMoreView;
-import com.xycoding.treasure.view.recyclerview.GridDividerItemDecoration;
+import com.xycoding.treasure.view.recyclerview.GridBottomDividerItemDecoration;
 import com.xycoding.treasure.view.recyclerview.ItemDragCallBack;
 import com.xycoding.treasure.view.recyclerview.LoadMoreRecyclerView;
 
@@ -108,12 +108,12 @@ public class RecyclerViewActivity extends BaseBindingActivity {
     }
 
     private void initGridRecyclerView() {
-        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(loadMoreDummyItems(20));
+        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(loadMoreDummyItems(5));
         mBinding.recyclerViewGrid.setAdapter(adapter);
         int columns = 3;
         mBinding.recyclerViewGrid.setLayoutManager(new GridLayoutManager(this, columns));
         mBinding.recyclerViewGrid.addItemDecoration(
-                new GridDividerItemDecoration(
+                new GridBottomDividerItemDecoration(
                         ContextCompat.getDrawable(this, R.drawable.shape_grid_divider),
                         columns));
     }
