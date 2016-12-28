@@ -72,7 +72,7 @@
         <item name="android:textColor">@color/G3</item>
     </style>
 
-    <style name="DialogAnimation" parent="@android:style/Animation.Dialog">
+    <style name="DialogSlideAnimation" parent="@android:style/Animation.Dialog">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
@@ -88,7 +88,7 @@
     </style>
 
     <style name="Dialog.NoTitleAndTransparent.Sheet" parent="Dialog.NoTitleAndTransparent">
-        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="android:windowAnimationStyle">@style/DialogSlideAnimation</item>
         <item name="android:windowMinWidthMajor">100%</item>
         <item name="windowMinWidthMajor">100%</item>
         <item name="android:windowMinWidthMinor">100%</item>
@@ -100,6 +100,11 @@
         <item name="windowMinWidthMajor">85%</item>
         <item name="android:windowMinWidthMinor">85%</item>
         <item name="windowMinWidthMinor">85%</item>
+    </style>
+
+    <style name="Dialog.NoTitleAndTransparent.Sheet.NotFloating" parent="Dialog.NoTitleAndTransparent.Sheet">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="SpinnerItemStyle" parent="@android:style/Widget.TextView.SpinnerItem">

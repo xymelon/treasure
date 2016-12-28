@@ -23,8 +23,9 @@ import android.widget.LinearLayout;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityDialogBinding;
-import com.xycoding.treasure.databinding.LayoutQuickActionDialogBinding;
-import com.xycoding.treasure.databinding.LayoutSheetDialogBinding;
+import com.xycoding.treasure.databinding.DialogEventBinding;
+import com.xycoding.treasure.databinding.DialogQuickActionBinding;
+import com.xycoding.treasure.databinding.DialogSheetBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.utils.ViewUtils;
 
@@ -38,6 +39,7 @@ import rx.functions.Action1;
 public class DialogActivity extends BaseBindingActivity {
 
     private ActivityDialogBinding mBinding;
+    private Dialog mEventDialog;
 
     @Override
     protected int getLayoutId() {
@@ -60,37 +62,19 @@ public class DialogActivity extends BaseBindingActivity {
         subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewCustomSheet).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-                showCustomDialog();
+                showCustomBottomSheetDialog();
             }
         }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewQuickAction1).subscribe(new Action1<Void>() {
+        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewQuickAction).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-                showQuickActionDialog(mBinding.cardViewQuickAction1);
+                showQuickActionDialog(mBinding.cardViewQuickAction);
             }
         }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewQuickAction2).subscribe(new Action1<Void>() {
+        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewEventDialog).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
-                showQuickActionDialog(mBinding.cardViewQuickAction2);
-            }
-        }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewQuickAction3).subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void aVoid) {
-                showQuickActionDialog(mBinding.cardViewQuickAction3);
-            }
-        }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewQuickAction4).subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void aVoid) {
-                showQuickActionDialog(mBinding.cardViewQuickAction4);
-            }
-        }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewQuickAction5).subscribe(new Action1<Void>() {
-            @Override
-            public void call(Void aVoid) {
-                showQuickActionDialog(mBinding.cardViewQuickAction5);
+                showEventDialog();
             }
         }));
     }
@@ -101,17 +85,30 @@ public class DialogActivity extends BaseBindingActivity {
     }
 
     private void showBottomSheetDialog() {
-        LayoutSheetDialogBinding binding = DataBindingUtil.inflate(
-                LayoutInflater.from(this), R.layout.layout_sheet_dialog, null, false);
+        DialogSheetBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(this), R.layout.dialog_sheet, null, false);
         BottomSheetDialog sheetDialog = new BottomSheetDialog(this);
         sheetDialog.setContentView(binding.getRoot());
         sheetDialog.show();
     }
 
-    private void showCustomDialog() {
-        LayoutSheetDialogBinding binding = DataBindingUtil.inflate(
-                LayoutInflater.from(this), R.layout.layout_sheet_dialog, null, false);
+    private void showCustomBottomSheetDialog() {
+        DialogSheetBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(this), R.layout.dialog_sheet, null, false);
         ViewUtils.createSheetDialog(this, binding.getRoot()).show();
+    }
+
+    private void showEventDialog() {
+        if (mEventDialog == null) {
+            DialogEventBinding binding = DataBindingUtil.inflate(
+                    LayoutInflater.from(this), R.layout.dialog_event, null, false);
+            mEventDialog = ViewUtils.createEventDialog(this, binding.getRoot());
+        }
+        if (mEventDialog.isShowing()) {
+            mEventDialog.dismiss();
+        } else {
+            mEventDialog.show();
+        }
     }
 
     private void showQuickActionDialog(View view) {
@@ -121,8 +118,8 @@ public class DialogActivity extends BaseBindingActivity {
     }
 
     private void showQuickActionDialog(final int screenX, final int screenY) {
-        final LayoutQuickActionDialogBinding binding = DataBindingUtil.inflate(
-                LayoutInflater.from(this), R.layout.layout_quick_action_dialog, null, false);
+        final DialogQuickActionBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(this), R.layout.dialog_quick_action, null, false);
         binding.tvTitle.setText("学术性词汇");
         binding.tvContent.setText("该标签表示某个单词属于学术词汇表，此类单词属于在英语环境中学习或撰写学术文章时需要掌握的重要词汇。");
         binding.tvContent.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
