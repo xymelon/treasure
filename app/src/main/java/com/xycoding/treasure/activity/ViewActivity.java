@@ -8,7 +8,6 @@ import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityViewBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
-import com.xycoding.treasure.utils.KeyboardUtils;
 
 import rx.functions.Action1;
 
@@ -65,5 +64,6 @@ public class ViewActivity extends BaseBindingActivity {
     }
 
     private void initViews() {
+        mBinding.autoEditText.shouldBlinkOnMeiZu(true);
     }
 }

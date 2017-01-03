@@ -120,4 +120,8 @@ public class DeviceUtils {
         return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, context.getResources().getDisplayMetrics()) + 0.5f);
     }
 
+    public static boolean isMeizu() {
+        return Build.BRAND.equalsIgnoreCase("Meizu");
+    }
+
 }
