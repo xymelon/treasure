@@ -1,6 +1,7 @@
 package com.xycoding.treasure.activity;
 
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -8,6 +9,7 @@ import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityHandwritingBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.view.handwriting.HandwritingView;
+import com.xycoding.treasure.view.handwriting.HandwritingViewBezier;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -46,12 +48,13 @@ public class HandwritingActivity extends BaseBindingActivity {
             @Override
             public void call(Void aVoid) {
                 mBinding.viewHandwriting.clear();
+                mBinding.viewHandwriting1.clear();
                 mBinding.tvContent.setText("");
                 mCurHandwriting = "";
                 mCurPointSize = 0;
             }
         }));
-        mBinding.viewHandwriting.setOnHandwritingListener(new HandwritingView.OnHandwritingListener() {
+        mBinding.viewHandwriting.setOnHandwritingListener(new HandwritingViewBezier.OnHandwritingListener() {
 
             private List<Point> points = new ArrayList<>();
 
@@ -75,6 +78,12 @@ public class HandwritingActivity extends BaseBindingActivity {
             @Override
             public void onFinished() {
                 querySuggest(points);
+            }
+        });
+        mBinding.viewHandwriting1.setOnHandwritingListener(new HandwritingView.OnHandwritingListener() {
+            @Override
+            public void onWritingFinished(List<List<PointF>> points) {
+
             }
         });
     }

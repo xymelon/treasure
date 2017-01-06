@@ -25,7 +25,7 @@
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <com.xycoding.treasure.view.handwriting.HandwritingView
+            <com.xycoding.treasure.view.handwriting.HandwritingViewBezier
                 android:id="@+id/view_handwriting"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -35,15 +35,23 @@
                 android:id="@+id/btn_clear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_marginTop="16dp"
                 android:text="清除" />
 
             <TextView
                 android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:textSize="16sp"
                 tools:text="1,2,3,3" />
+
+            <com.xycoding.treasure.view.handwriting.HandwritingView
+                android:id="@+id/view_handwriting1"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/B1" />
 
         </LinearLayout>
 
