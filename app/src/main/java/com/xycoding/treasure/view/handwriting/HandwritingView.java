@@ -144,6 +144,8 @@ public class HandwritingView extends View {
                 //New path.
                 mCurrentPath = new Path();
                 mCurrentPath.moveTo(eventX, eventY);
+                //若path只有相同坐标时不绘制，+0.1f强制使得path绘点。
+                mCurrentPath.lineTo(eventX + 0.1f, eventY + 0.1f);
                 mPaths.add(mCurrentPath);
                 //New path points.
                 mCurrentPathPoints = new ArrayList<>();
@@ -182,10 +184,6 @@ public class HandwritingView extends View {
     protected void onDraw(Canvas canvas) {
         for (Path path : mPaths) {
             canvas.drawPath(path, mPaint);
-        }
-        //drawPath不绘画点
-        if (mCurrentPathPoints != null && mCurrentPathPoints.size() <= 2) {
-            canvas.drawPoint(mLastActionDownX, mLastActionDownY, mPaint);
         }
     }
 
@@ -259,7 +257,7 @@ public class HandwritingView extends View {
      * @param eventY the event y coordinate.
      */
     private void resetDirtyRect(float eventX, float eventY) {
-        // The mLastActionDownX and mLastActionDownY were set when the ACTION_DOWN motion event occurred.
+        //The mLastActionDownX and mLastActionDownY were set when the ACTION_DOWN motion event occurred.
         mDirtyRect.left = Math.min(mLastActionDownX, eventX);
         mDirtyRect.right = Math.max(mLastActionDownX, eventX);
         mDirtyRect.top = Math.min(mLastActionDownY, eventY);
