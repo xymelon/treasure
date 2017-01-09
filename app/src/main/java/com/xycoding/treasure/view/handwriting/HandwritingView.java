@@ -144,7 +144,7 @@ public class HandwritingView extends View {
                 //New path.
                 mCurrentPath = new Path();
                 mCurrentPath.moveTo(eventX, eventY);
-                //若path只有相同坐标时不绘制，+0.1f强制使得path绘点。
+                //若path中只有相同坐标时不会绘制任何图像，+0.1f强制使得path绘点。
                 mCurrentPath.lineTo(eventX + 0.1f, eventY + 0.1f);
                 mPaths.add(mCurrentPath);
                 //New path points.
