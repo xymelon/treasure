@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.NotificationCompat;
@@ -35,6 +36,9 @@ public class MainActivity extends BaseBindingActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         showNotify();
+
+        mBinding.tvJapan.setTypeface(Typeface.createFromAsset(getAssets(), "DroidSansJapanese.ttf"));
+        mBinding.tvJapan.setText("ヮ打开等哈看对哈萨克的和喀什的卡上");
     }
 
     @Override

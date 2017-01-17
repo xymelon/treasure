@@ -172,11 +172,12 @@ public class HandwritingView extends View {
             default:
                 return false;
         }
-        invalidate(
-                (int) (mDirtyRect.left - mPenWidth),
-                (int) (mDirtyRect.top - mPenWidth),
-                (int) (mDirtyRect.right + mPenWidth),
-                (int) (mDirtyRect.bottom + mPenWidth));
+//        invalidate(
+//                (int) (mDirtyRect.left - mPenWidth),
+//                (int) (mDirtyRect.top - mPenWidth),
+//                (int) (mDirtyRect.right + mPenWidth),
+//                (int) (mDirtyRect.bottom + mPenWidth));
+        invalidate();
         return true;
     }
 

@@ -129,6 +129,17 @@
                     android:background="@drawable/layer_list_top_background"
                     android:text="测试" />
 
+                <TextView
+                    android:id="@+id/tv_japan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tv_japan1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ヮ"/>
+
             </LinearLayout>
 
         </android.support.v4.widget.NestedScrollView>
