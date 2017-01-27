@@ -37,7 +37,7 @@ public class MainActivity extends BaseBindingActivity {
         }
         showNotify();
 
-        mBinding.tvJapan.setTypeface(Typeface.createFromAsset(getAssets(), "DroidSansJapanese.ttf"));
+        mBinding.tvJapan.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DroidSansJapanese.ttf"));
         mBinding.tvJapan.setText("ヮ打开等哈看对哈萨克的和喀什的卡上");
     }
 
