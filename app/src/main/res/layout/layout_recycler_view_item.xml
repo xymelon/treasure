@@ -7,6 +7,7 @@
         android:layout_height="wrap_content">
 
         <FrameLayout
+            android:id="@+id/layout_container"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@color/W1"
@@ -31,7 +32,7 @@
                 android:paddingLeft="16dp"
                 android:textColor="@color/G20"
                 android:textSize="@dimen/S16"
-                tools:text="MustardMustardMus" />
+                tools:text="MustardMLayoutRecyclerViewItemBindingustardMus" />
 
         </FrameLayout>
 
