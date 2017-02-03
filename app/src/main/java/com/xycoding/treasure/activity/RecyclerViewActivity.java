@@ -142,7 +142,7 @@ public class RecyclerViewActivity extends BaseBindingActivity {
         for (int i = 1; i <= 10; i++) {
             List<String> children = new ArrayList<>();
             for (int j = 1; j <= i; j++) {
-                children.add("Child : " + j);
+                children.add("Child : " + i + "_" + j);
             }
             String head = "Group : " + i;
             ExpandableRecyclerViewAdapter.ExpandableGroup<String, String> group =
