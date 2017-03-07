@@ -1,14 +1,17 @@
 package com.xycoding.treasure.utils;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
@@ -122,6 +125,45 @@ public class DeviceUtils {
 
     public static boolean isMeizu() {
         return Build.BRAND.equalsIgnoreCase("Meizu");
+    }
+
+    /**
+     * 获取软件盘的高度
+     *
+     * @return
+     */
+    public static int getSoftKeyboardHeight(@NonNull Activity activity) {
+        View decorView = activity.getWindow().getDecorView();
+        Rect rect = new Rect();
+        decorView.getWindowVisibleDisplayFrame(rect);
+        //计算普通键盘高度
+        int heightKeyboard = decorView.getHeight() - rect.bottom;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // When SDK Level >= 21 (Android L), the softInputHeight will contain the height of softButtonsBar (if has)
+            heightKeyboard = heightKeyboard - getSoftButtonsBarHeight(activity);
+        }
+        return heightKeyboard;
+    }
+
+    /**
+     * 底部虚拟按键栏的高度
+     *
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static int getSoftButtonsBarHeight(@NonNull Activity activity) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        //这个方法获取的可能不是真实屏幕的高度
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int usableHeight = metrics.heightPixels;
+        //获取当前屏幕的真实高度
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        int realHeight = metrics.heightPixels;
+        if (realHeight > usableHeight) {
+            return realHeight - usableHeight;
+        } else {
+            return 0;
+        }
     }
 
 }
