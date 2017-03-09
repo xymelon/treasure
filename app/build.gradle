@@ -21,6 +21,11 @@ android {
         enabled = true
     }
     useLibrary 'org.apache.http.legacy'
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
 dependencies {
@@ -55,4 +60,6 @@ dependencies {
     compile "com.facebook.stetho:stetho:$rootProject.ext.stethoVersion"
     compile "com.facebook.stetho:stetho-okhttp3:$rootProject.ext.stethoVersion"
     //调试 end
+
+    compile 'com.nuance:speechkit:2.2+@aar'
 }
