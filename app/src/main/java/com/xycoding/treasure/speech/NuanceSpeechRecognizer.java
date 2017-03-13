@@ -98,7 +98,7 @@ public class NuanceSpeechRecognizer extends DictSpeechRecognizer {
                 //音量范围[0-90]
                 float percent = transaction.getAudioLevel() / 90.f;
                 speechRecognizerListener.onVolumeChanged(percent);
-                mainHandler.postDelayed(volumePoller, 50);
+                mainHandler.postDelayed(volumePoller, SpeechConfiguration.VOLUME_INTERVAL);
             }
         }
     };

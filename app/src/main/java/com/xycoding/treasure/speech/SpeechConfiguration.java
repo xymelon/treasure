@@ -18,7 +18,20 @@ public class SpeechConfiguration {
      */
     public static final long VAD_BEGIN_TIMEOUT = 5 * 1000;
 
+    public static final long VOLUME_INTERVAL = 50;
+
     public static final String VAD_BEGIN_TIMEOUT_ERROR = "您好像没有说话哦";
+
+    public static final String CHINESE = "zh_CN";
+    public static final String ENGLISH2 = "eng";
+    public static final String ENGLISH = "";
+    public static final String JAPANESE = "jap";
+    public static final String KOREAN = "ko";
+    public static final String FRENCH = "fr";
+    public static final String GERMAN = "de";
+    public static final String SPAIN = "es";
+    public static final String PORTUGAL = "pt";
+    public static final String RUSSIA = "ru";
 
 }
 

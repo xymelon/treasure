@@ -56,15 +56,25 @@
 
             </RadioGroup>
 
-            <android.support.v7.widget.AppCompatImageButton
-                android:id="@+id/btn_speech"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
+            <com.xycoding.treasure.view.RippleBackground
+                android:id="@+id/ripple_background"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:background="@drawable/layer_background_blue"
-                android:scaleType="center"
-                android:src="@drawable/ic_record_white" />
+                app:rb_color="#144990E2"
+                app:rb_radius="44dp">
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/btn_speech"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/layer_background_blue"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_record_white" />
+
+            </com.xycoding.treasure.view.RippleBackground>
 
             <TextView
                 android:id="@+id/tv_hint"

@@ -7,6 +7,7 @@ import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivitySpeechBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.speech.DictSpeechRecognizer;
+import com.xycoding.treasure.speech.SpeechConfiguration;
 import com.xycoding.treasure.speech.SpeechRecognizerListener;
 
 import rx.functions.Action1;
@@ -41,7 +42,7 @@ public class SpeechActivity extends BaseBindingActivity {
     @Override
     protected void initData(Bundle savedInstanceState) {
         mBinding.tvHint.setTextSize(30);
-        mBinding.tvHint.setText(Html.fromHtml(String.format(getString(R.string.speech_language_others),"中", "日")));
+        mBinding.tvHint.setText(Html.fromHtml(String.format(getString(R.string.speech_language_others), "中", "日")));
     }
 
     private void startSpeech() {
@@ -50,7 +51,8 @@ public class SpeechActivity extends BaseBindingActivity {
 
             @Override
             public void onVolumeChanged(float volume) {
-
+                //volume百分比
+                mBinding.rippleBackground.setRippleScale(volume);
             }
 
             @Override
@@ -61,6 +63,7 @@ public class SpeechActivity extends BaseBindingActivity {
             @Override
             public void onFinishedRecording() {
                 mBinding.tvHint.setText("识别中...");
+                mBinding.rippleBackground.stopRippleAnimation();
             }
 
             @Override
@@ -71,6 +74,7 @@ public class SpeechActivity extends BaseBindingActivity {
             @Override
             public void onError(String error) {
                 mBinding.tvHint.setText(error);
+                mBinding.rippleBackground.stopRippleAnimation();
             }
 
         });
@@ -78,11 +82,11 @@ public class SpeechActivity extends BaseBindingActivity {
 
     private String getLanguage() {
         if (mBinding.rgLanguagePicker.getCheckedRadioButtonId() == R.id.rb_english) {
-            return DictSpeechRecognizer.ENGLISH;
+            return SpeechConfiguration.ENGLISH;
         } else if (mBinding.rgLanguagePicker.getCheckedRadioButtonId() == R.id.rb_japan) {
-            return DictSpeechRecognizer.JAPANESE;
+            return SpeechConfiguration.JAPANESE;
         }
-        return DictSpeechRecognizer.CHINESE;
+        return SpeechConfiguration.CHINESE;
     }
 }
 

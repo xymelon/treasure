@@ -1,6 +1,7 @@
 package com.xycoding.treasure.speech;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.iflytek.cloud.RecognizerListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -23,6 +24,8 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
 
     private SpeechRecognizer speechRecognizer;
     private SpeechRecognizerListener speechRecognizerListener;
+    private Handler mainHandler = new Handler();
+    private float volumePercent = 0.f;
 
     XunFeiSpeechRecognizer() {
         SpeechUtility.createUtility(TreasureApplication.getInstance(), "appid=" + SpeechConfiguration.XUNFEI_APP_ID);
@@ -91,6 +94,27 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
         speechRecognizerListener = null;
     }
 
+    private void startVolumePoll() {
+        volumePoller.run();
+    }
+
+    private void stopVolumePoll() {
+        mainHandler.removeCallbacks(volumePoller);
+    }
+
+    /**
+     * Every 50 milliseconds we should update the volume meter in our UI.
+     */
+    private Runnable volumePoller = new Runnable() {
+        @Override
+        public void run() {
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onVolumeChanged(volumePercent);
+                mainHandler.postDelayed(volumePoller, SpeechConfiguration.VOLUME_INTERVAL);
+            }
+        }
+    };
+
     private RecognizerListener mRecognizerListener = new RecognizerListener() {
 
         private List<String> speechResults = new ArrayList<>();
@@ -98,10 +122,7 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
         @Override
         public void onVolumeChanged(int i, byte[] bytes) {
             //音量范围[0-30]
-            float percent = i / 30.f;
-            if (speechRecognizerListener != null) {
-                speechRecognizerListener.onVolumeChanged(percent);
-            }
+            volumePercent = i / 30.f;
         }
 
         @Override
@@ -110,6 +131,7 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
             if (speechRecognizerListener != null) {
                 speechRecognizerListener.onStartedRecording();
             }
+            startVolumePoll();
         }
 
         @Override
@@ -117,6 +139,7 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
             if (speechRecognizerListener != null) {
                 speechRecognizerListener.onFinishedRecording();
             }
+            stopVolumePoll();
         }
 
         @Override
