@@ -1,12 +1,13 @@
 package com.xycoding.treasure.activity;
 
 import android.os.Bundle;
+import android.text.Html;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivitySpeechBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.speech.DictSpeechRecognizer;
-import com.xycoding.treasure.speech.SpeechListener;
+import com.xycoding.treasure.speech.SpeechRecognizerListener;
 
 import rx.functions.Action1;
 
@@ -39,12 +40,13 @@ public class SpeechActivity extends BaseBindingActivity {
 
     @Override
     protected void initData(Bundle savedInstanceState) {
-
+        mBinding.tvHint.setTextSize(30);
+        mBinding.tvHint.setText(Html.fromHtml(String.format(getString(R.string.speech_language_others),"中", "日")));
     }
 
     private void startSpeech() {
         String language = getLanguage();
-        DictSpeechRecognizer.getInstance(language).start(new SpeechListener() {
+        DictSpeechRecognizer.getInstance(language).start(new SpeechRecognizerListener() {
 
             @Override
             public void onVolumeChanged(float volume) {

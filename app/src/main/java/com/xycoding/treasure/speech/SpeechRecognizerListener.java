@@ -3,7 +3,7 @@ package com.xycoding.treasure.speech;
 /**
  * Created by xuyang on 2017/3/8.
  */
-public interface SpeechListener {
+public interface SpeechRecognizerListener {
 
     void onVolumeChanged(float volume);
 

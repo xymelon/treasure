@@ -69,7 +69,7 @@ public abstract class DictSpeechRecognizer {
 
     protected abstract void setLanguage(String language);
 
-    public abstract void start(SpeechListener listener);
+    public abstract void start(SpeechRecognizerListener listener);
 
     public abstract void stop();
 

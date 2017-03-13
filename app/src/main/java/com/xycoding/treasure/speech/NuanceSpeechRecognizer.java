@@ -5,6 +5,7 @@ import android.os.Handler;
 import com.nuance.speechkit.DetectionType;
 import com.nuance.speechkit.Language;
 import com.nuance.speechkit.Recognition;
+import com.nuance.speechkit.RecognitionException;
 import com.nuance.speechkit.RecognitionType;
 import com.nuance.speechkit.Session;
 import com.nuance.speechkit.Transaction;
@@ -17,10 +18,10 @@ import com.xycoding.treasure.TreasureApplication;
 public class NuanceSpeechRecognizer extends DictSpeechRecognizer {
 
     private Transaction.Options options = new Transaction.Options();
-    private Handler volumeHandler = new Handler();
+    private Handler mainHandler = new Handler();
     private Session speechSession;
     private Transaction transaction;
-    private SpeechListener speechListener;
+    private SpeechRecognizerListener speechRecognizerListener;
 
     NuanceSpeechRecognizer() {
         speechSession = Session.Factory.session(
@@ -35,17 +36,18 @@ public class NuanceSpeechRecognizer extends DictSpeechRecognizer {
     }
 
     @Override
-    public void start(final SpeechListener listener) {
+    public void start(final SpeechRecognizerListener listener) {
         stop();
-        speechListener = listener;
+        speechRecognizerListener = listener;
         transaction = speechSession.recognize(options, recognizerListener);
     }
 
     @Override
     public void stop() {
-        speechListener = null;
+        speechRecognizerListener = null;
         if (transaction != null) {
             transaction.cancel();
+            transaction = null;
         }
     }
 
@@ -59,8 +61,32 @@ public class NuanceSpeechRecognizer extends DictSpeechRecognizer {
     }
 
     private void stopVolumePoll() {
-        volumeHandler.removeCallbacks(volumePoller);
+        mainHandler.removeCallbacks(volumePoller);
     }
+
+    private void startCountdown() {
+        mainHandler.postDelayed(countdownTimer, SpeechConfiguration.VAD_BEGIN_TIMEOUT);
+    }
+
+    private void stopCountdown() {
+        mainHandler.removeCallbacks(countdownTimer);
+    }
+
+    /**
+     * 开始录入音频后，最长静音超时且未得到结果即返回错误
+     */
+    private Runnable countdownTimer = new Runnable() {
+        @Override
+        public void run() {
+            if (transaction != null) {
+                recognizerListener.onError(
+                        transaction,
+                        SpeechConfiguration.VAD_BEGIN_TIMEOUT_ERROR,
+                        new RecognitionException(SpeechConfiguration.VAD_BEGIN_TIMEOUT_ERROR));
+                stop();
+            }
+        }
+    };
 
     /**
      * Every 50 milliseconds we should update the volume meter in our UI.
@@ -68,11 +94,11 @@ public class NuanceSpeechRecognizer extends DictSpeechRecognizer {
     private Runnable volumePoller = new Runnable() {
         @Override
         public void run() {
-            if (transaction != null && speechListener != null) {
+            if (transaction != null && speechRecognizerListener != null) {
                 //音量范围[0-90]
                 float percent = transaction.getAudioLevel() / 90.f;
-                speechListener.onVolumeChanged(percent);
-                volumeHandler.postDelayed(volumePoller, 50);
+                speechRecognizerListener.onVolumeChanged(percent);
+                mainHandler.postDelayed(volumePoller, 50);
             }
         }
     };
@@ -81,33 +107,35 @@ public class NuanceSpeechRecognizer extends DictSpeechRecognizer {
 
         @Override
         public void onStartedRecording(Transaction transaction) {
-            if (speechListener != null) {
-                speechListener.onStartedRecording();
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onStartedRecording();
             }
+            startCountdown();
             startVolumePoll();
         }
 
         @Override
         public void onFinishedRecording(Transaction transaction) {
-            if (speechListener != null) {
-                speechListener.onFinishedRecording();
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onFinishedRecording();
             }
+            stopCountdown();
             stopVolumePoll();
         }
 
         @Override
         public void onRecognition(Transaction transaction, Recognition recognition) {
-            if (speechListener != null) {
-                speechListener.onSuccess(recognition.getText());
-                speechListener = null;
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onSuccess(recognition.getText());
+                speechRecognizerListener = null;
             }
         }
 
         @Override
         public void onError(Transaction transaction, String suggestion, TransactionException e) {
-            if (speechListener != null) {
-                speechListener.onError(suggestion);
-                speechListener = null;
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onError(suggestion);
+                speechRecognizerListener = null;
             }
         }
 

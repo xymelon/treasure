@@ -22,7 +22,7 @@ import java.util.List;
 public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
 
     private SpeechRecognizer speechRecognizer;
-    private SpeechListener speechListener;
+    private SpeechRecognizerListener speechRecognizerListener;
 
     XunFeiSpeechRecognizer() {
         SpeechUtility.createUtility(TreasureApplication.getInstance(), "appid=" + SpeechConfiguration.XUNFEI_APP_ID);
@@ -41,7 +41,7 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
         //设置返回结果格式
         speechRecognizer.setParameter(SpeechConstant.RESULT_TYPE, "json");
         //设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        speechRecognizer.setParameter(SpeechConstant.VAD_BOS, "10000");
+        speechRecognizer.setParameter(SpeechConstant.VAD_BOS, String.valueOf(SpeechConfiguration.VAD_BEGIN_TIMEOUT));
         //设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入，自动停止录音
         speechRecognizer.setParameter(SpeechConstant.VAD_EOS, "500");
         //设置标点符号,设置为"0"返回结果无标点,设置为"1"返回结果有标点
@@ -65,11 +65,11 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
     }
 
     @Override
-    public void start(final SpeechListener listener) {
+    public void start(final SpeechRecognizerListener listener) {
         ensureRecognizer();
 
         stop();
-        speechListener = listener;
+        speechRecognizerListener = listener;
         speechRecognizer.startListening(mRecognizerListener);
     }
 
@@ -79,7 +79,7 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
             //取消会话，未返回的结果将不再返回
             speechRecognizer.cancel();
         }
-        speechListener = null;
+        speechRecognizerListener = null;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
             speechRecognizer.destroy();
             speechRecognizer = null;
         }
-        speechListener = null;
+        speechRecognizerListener = null;
     }
 
     private RecognizerListener mRecognizerListener = new RecognizerListener() {
@@ -99,23 +99,23 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
         public void onVolumeChanged(int i, byte[] bytes) {
             //音量范围[0-30]
             float percent = i / 30.f;
-            if (speechListener != null) {
-                speechListener.onVolumeChanged(percent);
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onVolumeChanged(percent);
             }
         }
 
         @Override
         public void onBeginOfSpeech() {
             speechResults.clear();
-            if (speechListener != null) {
-                speechListener.onStartedRecording();
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onStartedRecording();
             }
         }
 
         @Override
         public void onEndOfSpeech() {
-            if (speechListener != null) {
-                speechListener.onFinishedRecording();
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onFinishedRecording();
             }
         }
 
@@ -130,19 +130,18 @@ public class XunFeiSpeechRecognizer extends DictSpeechRecognizer {
                 for (String str : speechResults) {
                     strBuilder.append(parseIatResult(str));
                 }
-                if (speechListener != null) {
-                    speechListener.onSuccess(strBuilder.toString());
-                    speechListener = null;
+                if (speechRecognizerListener != null) {
+                    speechRecognizerListener.onSuccess(strBuilder.toString());
+                    speechRecognizerListener = null;
                 }
             }
         }
 
         @Override
         public void onError(SpeechError speechError) {
-            //10118 您好像没有说话哦
-            if (speechListener != null) {
-                speechListener.onError(speechError.getErrorDescription());
-                speechListener = null;
+            if (speechRecognizerListener != null) {
+                speechRecognizerListener.onError(speechError.getErrorDescription());
+                speechRecognizerListener = null;
             }
         }
 

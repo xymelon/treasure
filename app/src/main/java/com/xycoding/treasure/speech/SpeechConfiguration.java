@@ -13,6 +13,13 @@ public class SpeechConfiguration {
 
     public static final String XUNFEI_APP_ID = "531924c7";
 
+    /**
+     * 前置静音超时（即开始录入音频后，音频前面部分最长静音时长）
+     */
+    public static final long VAD_BEGIN_TIMEOUT = 5 * 1000;
+
+    public static final String VAD_BEGIN_TIMEOUT_ERROR = "您好像没有说话哦";
+
 }
 
 
