@@ -58,12 +58,12 @@
 
             <com.xycoding.treasure.view.RippleBackground
                 android:id="@+id/ripple_background"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 app:rb_color="#144990E2"
-                app:rb_radius="44dp">
+                app:rb_radius="56dp">
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/btn_speech"

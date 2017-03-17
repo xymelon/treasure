@@ -1,13 +1,14 @@
 package com.xycoding.treasure.view;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,16 +16,15 @@ import android.widget.RelativeLayout;
 
 import com.xycoding.treasure.R;
 
-public class RippleBackground extends RelativeLayout {
+public class RippleBackground1 extends RelativeLayout {
 
     private static final int DEFAULT_RIPPLE_RADIUS = 50;
-    private static final int DEFAULT_DURATION_TIME = 100;
+    private static final int DEFAULT_DURATION_TIME = 200;
     private static final long DEFAULT_BREATHING_TIME = 800;
     private static final float DEFAULT_RIPPLE_SCALE = 1.f;
     private static final float DEFAULT_RIPPLE_SCALE_MAX = 1.4f;
     private static final float DEFAULT_BREATHING_MAX = 1.1f;
 
-    private Handler mHandler = new Handler();
     private int mRippleColor;
     private float mRippleRadius;
     private int mRippleAnimationTime;
@@ -32,24 +32,22 @@ public class RippleBackground extends RelativeLayout {
     private float mNextRippleScale = DEFAULT_RIPPLE_SCALE;
     private Paint mPaint;
     private AnimatorSet mVolumeAnimatorSet;
-    private AnimatorSet mBreathingAnimatorSet;
     private RippleView mRippleView;
 
     private ObjectAnimator mVolumeScaleX;
     private ObjectAnimator mVolumeScaleY;
-    private ObjectAnimator mBreathingScaleUpX;
-    private ObjectAnimator mBreathingScaleUpY;
+    private ObjectAnimator mBreathingAnimator;
 
-    public RippleBackground(Context context) {
+    public RippleBackground1(Context context) {
         super(context);
     }
 
-    public RippleBackground(Context context, AttributeSet attrs) {
+    public RippleBackground1(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public RippleBackground(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RippleBackground1(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
@@ -82,9 +80,48 @@ public class RippleBackground extends RelativeLayout {
         layoutParams.addRule(CENTER_IN_PARENT, TRUE);
         mRippleView = new RippleView(getContext());
         addView(mRippleView, layoutParams);
+    }
 
+    private void startBreathingAnimation() {
+        if (mBreathingAnimator == null) {
+            mBreathingAnimator = ObjectAnimator.ofPropertyValuesHolder(
+                    mRippleView,
+                    PropertyValuesHolder.ofFloat("ScaleX", DEFAULT_BREATHING_MAX),
+                    PropertyValuesHolder.ofFloat("ScaleY", DEFAULT_BREATHING_MAX));
+            mBreathingAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mRippleView.setVisibility(VISIBLE);
+                }
 
-        mBreathingRunnable.run();
+                @Override
+                public void onAnimationEnd(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+            mBreathingAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mCurrentRippleScale = DEFAULT_RIPPLE_SCALE + (DEFAULT_BREATHING_MAX - DEFAULT_RIPPLE_SCALE) * animation.getAnimatedFraction();
+                }
+            });
+            mBreathingAnimator.setDuration(DEFAULT_BREATHING_TIME);
+            mBreathingAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+            mBreathingAnimator.setRepeatMode(ObjectAnimator.REVERSE);
+        }
+        if (!mBreathingAnimator.isRunning()) {
+            mBreathingAnimator.start();
+        }
     }
 
     private void ensureObjectAnimator() {
@@ -94,27 +131,13 @@ public class RippleBackground extends RelativeLayout {
         if (mVolumeScaleY == null) {
             mVolumeScaleY = ObjectAnimator.ofFloat(mRippleView, "ScaleY", DEFAULT_RIPPLE_SCALE, DEFAULT_RIPPLE_SCALE);
         }
-        if (mBreathingScaleUpX == null) {
-            mBreathingScaleUpX = ObjectAnimator.ofFloat(mRippleView, "ScaleX", DEFAULT_RIPPLE_SCALE, DEFAULT_BREATHING_MAX);
-            mBreathingScaleUpX.setDuration(DEFAULT_BREATHING_TIME);
-            mBreathingScaleUpX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mCurrentRippleScale = DEFAULT_RIPPLE_SCALE + (DEFAULT_BREATHING_MAX - DEFAULT_RIPPLE_SCALE) * animation.getAnimatedFraction();
-                }
-            });
-        }
-        if (mBreathingScaleUpY == null) {
-            mBreathingScaleUpY = ObjectAnimator.ofFloat(mRippleView, "ScaleY", DEFAULT_RIPPLE_SCALE, DEFAULT_BREATHING_MAX);
-            mBreathingScaleUpY.setDuration(DEFAULT_BREATHING_TIME);
-        }
     }
 
     public void stopVolumeAnimation() {
         if (mVolumeAnimatorSet != null && mVolumeAnimatorSet.isRunning()) {
             mVolumeAnimatorSet.end();
         }
-        mBreathingRunnable.run();
+        startBreathingAnimation();
     }
 
     public void stopBreathingAnimation() {
@@ -122,24 +145,32 @@ public class RippleBackground extends RelativeLayout {
         if (mVolumeAnimatorSet != null && mVolumeAnimatorSet.isRunning()) {
             mVolumeAnimatorSet.end();
         }
-        if (mBreathingAnimatorSet != null && mBreathingAnimatorSet.isRunning()) {
-            mBreathingAnimatorSet.end();
+        stopBreathing();
+    }
+
+    private void stopBreathing() {
+        if (mBreathingAnimator != null && mBreathingAnimator.isRunning()) {
+            mBreathingAnimator.end();
         }
-        if (mHandler != null) {
-            mHandler.removeCallbacks(mBreathingRunnable);
-        }
+    }
+
+    private boolean isBreathing() {
+        return mBreathingAnimator != null && mBreathingAnimator.isRunning();
+    }
+
+    private boolean isVolumeRunning() {
+        return mVolumeAnimatorSet != null && mVolumeAnimatorSet.isRunning();
     }
 
     public void setRippleScale(float scale) {
         if (scale > 0.f) {
             mNextRippleScale = DEFAULT_BREATHING_MAX + scale * (DEFAULT_RIPPLE_SCALE_MAX - DEFAULT_BREATHING_MAX);
-            if (mVolumeAnimatorSet == null || !mVolumeAnimatorSet.isRunning()) {
+            if (!isVolumeRunning()) {
                 mVolumeRunnable.run();
             }
         } else {
-            if ((mBreathingAnimatorSet == null || !mBreathingAnimatorSet.isRunning())
-                    && (mVolumeAnimatorSet == null || !mVolumeAnimatorSet.isRunning())) {
-                mBreathingRunnable.run();
+            if (!isBreathing() && !isVolumeRunning()) {
+                startBreathingAnimation();
             }
         }
     }
@@ -148,10 +179,7 @@ public class RippleBackground extends RelativeLayout {
         @Override
         public void run() {
             mRippleView.setVisibility(VISIBLE);
-            mHandler.removeCallbacks(mBreathingRunnable);
-            if (mBreathingAnimatorSet != null && mBreathingAnimatorSet.isRunning()) {
-                mBreathingAnimatorSet.end();
-            }
+            stopBreathing();
             ensureObjectAnimator();
 
             mVolumeScaleX.setFloatValues(mCurrentRippleScale, mNextRippleScale);
@@ -166,36 +194,6 @@ public class RippleBackground extends RelativeLayout {
             mVolumeAnimatorSet = new AnimatorSet();
             mVolumeAnimatorSet.playTogether(mVolumeScaleX, mVolumeScaleY);
             mVolumeAnimatorSet.start();
-        }
-    };
-
-    private Runnable mBreathingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mRippleView.setVisibility(VISIBLE);
-            ensureObjectAnimator();
-
-            final float startScale = mCurrentRippleScale;
-            long startAnimationTime = startScale == DEFAULT_RIPPLE_SCALE ? 0 : DEFAULT_BREATHING_TIME;
-            mVolumeScaleX.setFloatValues(startScale, DEFAULT_RIPPLE_SCALE);
-            mVolumeScaleX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mCurrentRippleScale = startScale + (DEFAULT_RIPPLE_SCALE - startScale) * animation.getAnimatedFraction();
-                }
-            });
-            mVolumeScaleX.setDuration(startAnimationTime);
-
-            mVolumeScaleY.setFloatValues(startScale, DEFAULT_RIPPLE_SCALE);
-            mVolumeScaleY.setDuration(startAnimationTime);
-
-            mBreathingScaleUpX.setStartDelay(startAnimationTime);
-            mBreathingScaleUpY.setStartDelay(startAnimationTime);
-
-            mBreathingAnimatorSet = new AnimatorSet();
-            mBreathingAnimatorSet.playTogether(mVolumeScaleX, mVolumeScaleY, mBreathingScaleUpX, mBreathingScaleUpY);
-            mBreathingAnimatorSet.start();
-            mHandler.postDelayed(mBreathingRunnable, startAnimationTime + DEFAULT_BREATHING_TIME);
         }
     };
 

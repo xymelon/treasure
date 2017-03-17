@@ -143,7 +143,7 @@
                 <Button
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:background="@drawable/layer_background_list_top"
+                    android:background="@drawable/layer_top_shadow"
                     android:text="测试" />
 
                 <TextView

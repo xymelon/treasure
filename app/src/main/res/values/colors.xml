@@ -47,5 +47,5 @@
     <color name="button_press">#EAEAEA</color>
     <color name="red_transparency">#fdebec</color>
 
-    <color name="rippelColor">#144990E2</color>
+    <color name="ripple_color">#144990E2</color>
 </resources>

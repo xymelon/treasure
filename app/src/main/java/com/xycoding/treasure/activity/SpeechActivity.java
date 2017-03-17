@@ -63,18 +63,19 @@ public class SpeechActivity extends BaseBindingActivity {
             @Override
             public void onFinishedRecording() {
                 mBinding.tvHint.setText("识别中...");
-                mBinding.rippleBackground.stopRippleAnimation();
+                mBinding.rippleBackground.stopVolumeAnimation();
             }
 
             @Override
             public void onSuccess(String result) {
                 mBinding.tvHint.setText(result);
+                mBinding.rippleBackground.stopBreathingAnimation();
             }
 
             @Override
             public void onError(String error) {
                 mBinding.tvHint.setText(error);
-                mBinding.rippleBackground.stopRippleAnimation();
+                mBinding.rippleBackground.stopBreathingAnimation();
             }
 
         });
