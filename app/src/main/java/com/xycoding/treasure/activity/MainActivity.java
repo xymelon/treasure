@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.NotificationCompat;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
+import com.xycoding.treasure.service.LocalIntentService;
 
 import rx.functions.Action1;
 
@@ -90,6 +92,7 @@ public class MainActivity extends BaseBindingActivity {
 
     @Override
     protected void initData(Bundle savedInstanceState) {
+        startService();
     }
 
     @Override
@@ -118,6 +121,23 @@ public class MainActivity extends BaseBindingActivity {
                 .setContent(contentView);
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(0, builder.build());
+    }
+
+    private Handler mHandler = new Handler();
+
+    private void startService() {
+        final Intent service = new Intent(this, LocalIntentService.class);
+        service.putExtra(LocalIntentService.BUNDLE_KEY_TASK, "task1");
+        startService(service);
+        service.putExtra(LocalIntentService.BUNDLE_KEY_TASK, "task2");
+        startService(service);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                service.putExtra(LocalIntentService.BUNDLE_KEY_TASK, "task3");
+                startService(service);
+            }
+        }, 5000);
     }
 
 }
