@@ -88,6 +88,12 @@ public class MainActivity extends BaseBindingActivity {
                 startActivity(new Intent(MainActivity.this, SpeechActivity.class));
             }
         }));
+        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewDict).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                startActivity(new Intent(MainActivity.this, DictActivity.class));
+            }
+        }));
     }
 
     @Override

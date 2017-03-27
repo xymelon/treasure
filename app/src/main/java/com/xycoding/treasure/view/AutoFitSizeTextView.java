@@ -3,6 +3,7 @@ package com.xycoding.treasure.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout.Alignment;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -10,7 +11,6 @@ import android.text.method.SingleLineTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.TextView;
 
 import com.xycoding.treasure.R;
 
@@ -23,11 +23,11 @@ import com.xycoding.treasure.R;
  * @author edited by xuyangxy
  * @since Apr 4, 2011
  */
-public class AutoFitSizeTextView extends TextView {
+public class AutoFitSizeTextView extends AppCompatTextView {
 
     // Interface for resize notifications
     public interface OnTextResizeListener {
-        void onTextResize(TextView textView, float oldSize, float newSize);
+        void onTextResize(AppCompatTextView textView, float oldSize, float newSize);
     }
 
     // No limit (Integer.MAX_VALUE means no limit)
@@ -347,7 +347,7 @@ public class AutoFitSizeTextView extends TextView {
         return layout.getLineCount();
     }
 
-    private static int getMaxLines(TextView view) {
+    private static int getMaxLines(AppCompatTextView view) {
         int maxLines = NO_LIMIT_LINES;
         TransformationMethod method = view.getTransformationMethod();
         if (method != null && method instanceof SingleLineTransformationMethod) {
