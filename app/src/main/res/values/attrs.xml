@@ -47,4 +47,8 @@
         <attr name="rb_duration" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="HeaderViewPager">
+        <attr name="hvp_topOffset" format="reference|dimension" />
+    </declare-styleable>
+
 </resources>
