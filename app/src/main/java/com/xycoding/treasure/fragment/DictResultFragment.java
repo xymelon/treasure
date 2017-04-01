@@ -3,7 +3,8 @@ package com.xycoding.treasure.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.Toast;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.FragmentDictResultBinding;
@@ -37,7 +38,12 @@ public class DictResultFragment extends BaseBindingFragment {
 
     @Override
     protected void setListeners() {
-
+        mBinding.layoutHeader.fitTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "hehe", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -74,12 +80,12 @@ public class DictResultFragment extends BaseBindingFragment {
         mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
 
         mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(0));
-        mBinding.viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(position));
-            }
-        });
+//        mBinding.viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(position));
+//            }
+//        });
     }
 
 }

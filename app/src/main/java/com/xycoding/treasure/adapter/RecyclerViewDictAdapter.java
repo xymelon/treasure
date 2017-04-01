@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.LayoutDictItemBinding;
@@ -27,8 +28,13 @@ public class RecyclerViewDictAdapter extends RecyclerView.Adapter<RecyclerViewDi
     }
 
     @Override
-    public void onBindViewHolder(RecyclerViewHolder holder, int position) {
-
+    public void onBindViewHolder(final RecyclerViewHolder holder, final int position) {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(holder.itemView.getContext(), "item " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
