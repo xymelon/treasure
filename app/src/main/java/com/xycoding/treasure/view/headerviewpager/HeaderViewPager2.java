@@ -73,8 +73,8 @@ public class HeaderViewPager2 extends LinearLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        handleTouchEvent(ev, false);
         super.dispatchTouchEvent(ev);
+        handleTouchEvent(ev, false);
         return true;
     }
 
@@ -116,7 +116,7 @@ public class HeaderViewPager2 extends LinearLayout {
                 }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                pointerIndex = MotionEventCompat.getActionIndex(ev);
+                pointerIndex = ev.findPointerIndex(mActivePointerId);
                 if (pointerIndex < 0) {
                     return false;
                 }
@@ -136,7 +136,7 @@ public class HeaderViewPager2 extends LinearLayout {
                 if (pointerIndex < 0) {
                     return false;
                 }
-                //当手指滑动微小距离时，fling header
+                //未拦截事件时：手指滑动微小距离，需fling header
                 mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
                 float vy = mVelocityTracker.getYVelocity(pointerIndex);
                 if (Math.abs(vy) >= mMinFlingVelocity) {
@@ -215,8 +215,8 @@ public class HeaderViewPager2 extends LinearLayout {
                 scroll(Math.round(mLastTouchY - y));
                 mLastTouchY = y;
                 break;
-            case MotionEventCompat.ACTION_POINTER_DOWN:
-                pointerIndex = MotionEventCompat.getActionIndex(ev);
+            case MotionEvent.ACTION_POINTER_DOWN:
+                pointerIndex = ev.findPointerIndex(mActivePointerId);
                 if (pointerIndex < 0) {
                     return false;
                 }
