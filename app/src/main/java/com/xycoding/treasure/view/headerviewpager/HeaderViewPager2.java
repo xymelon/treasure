@@ -28,7 +28,6 @@ public class HeaderViewPager2 extends LinearLayout {
 
     private final Scroller mScroller;
     private VelocityTracker mVelocityTracker;
-    private HeaderScrollHelper.ScrollableContainer mScrollableContainer;
     private int mHeaderHeight;
     private final int mTouchSlop;
     private final int mMinFlingVelocity;
@@ -36,8 +35,28 @@ public class HeaderViewPager2 extends LinearLayout {
     private int mActivePointerId = INVALID_POINTER;
     private float mInitMotionY, mInitMotionDownY, mInitMotionPointerDownY;
     private float mLastTouchY;
-    private boolean mIntercepted = false;
     private int mLastScrollerY;
+    /**
+     * header view pager 是否拦截事件
+     */
+    private boolean mIntercepted = false;
+    private HeaderScrollHelper.ScrollableContainer mScrollableContainer;
+
+    /* 跟踪底部内容变量 begin */
+    private VelocityTracker mTrackVelocityTracker;
+    private int mTrackActivePointerId = INVALID_POINTER;
+    private float mTrackInitMotionX, mTrackInitMotionDownX, mTrackInitMotionPointerDownX;
+    private float mTrackInitMotionY, mTrackInitMotionDownY, mTrackInitMotionPointerDownY;
+    private float mTrackLastTouchY;
+    /**
+     * 底部内容是否横向滑动
+     */
+    private boolean mTrackHorizontalIntercepted = false;
+    /**
+     * 底部内容是否竖向滑动
+     */
+    private boolean mTrackVerticalIntercepted = false;
+    /* 跟踪底部内容变量 end */
 
     public HeaderViewPager2(Context context) {
         this(context, null);
@@ -73,9 +92,97 @@ public class HeaderViewPager2 extends LinearLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (MotionEventCompat.getActionMasked(ev) == MotionEvent.ACTION_DOWN) {
+            mScroller.abortAnimation();
+        }
         super.dispatchTouchEvent(ev);
-        handleTouchEvent(ev, false);
+        trackTouchEvent(ev);
         return true;
+    }
+
+    /**
+     * 未拦截事件（底部内容消费事件）时，跟踪底部内容事件；
+     * 当底部内容滚动或fling到顶部时，需判断header是否已完全展开，再进行header滚动。
+     *
+     * @param ev
+     * @return
+     */
+    private void trackTouchEvent(MotionEvent ev) {
+        int action = MotionEventCompat.getActionMasked(ev);
+        if (action == MotionEvent.ACTION_DOWN) {
+            clearTrackParams();
+        }
+        if (mTrackVelocityTracker == null) {
+            mTrackVelocityTracker = VelocityTracker.obtain();
+        }
+        mTrackVelocityTracker.addMovement(ev);
+        int pointerIndex;
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                mTrackActivePointerId = ev.getPointerId(0);
+                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
+                if (pointerIndex < 0) {
+                    return;
+                }
+                mTrackInitMotionX = mTrackInitMotionDownX = ev.getX(pointerIndex);
+                mTrackInitMotionY = mTrackInitMotionDownY = mTrackLastTouchY = ev.getY(pointerIndex);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
+                if (pointerIndex < 0) {
+                    return;
+                }
+                final float y = ev.getY(pointerIndex);
+                if (mTrackVerticalIntercepted || mTrackHorizontalIntercepted) {
+                    if (mTrackHorizontalIntercepted) {
+                        //底部内容横向滑动，直接返回
+                        return;
+                    }
+                    // TODO: 17/4/4  
+//                    trackScroll(Math.round(mTrackLastTouchY - y));
+                }
+                final float x = ev.getX(pointerIndex);
+                final float dx = Math.abs(x - mTrackInitMotionX);
+                final float dy = Math.abs(y - mTrackInitMotionY);
+                if (dx > mTouchSlop && dx > dy) {
+                    mTrackHorizontalIntercepted = true;
+                }
+                if (dy > mTouchSlop && dy > dx) {
+                    mTrackVerticalIntercepted = true;
+                }
+                mTrackLastTouchY = y;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
+                if (pointerIndex < 0) {
+                    return;
+                }
+                mTrackInitMotionX = mTrackInitMotionPointerDownX = ev.getX(pointerIndex);
+                mTrackInitMotionY = mTrackInitMotionPointerDownY = ev.getY(pointerIndex);
+                mTrackActivePointerId = ev.getPointerId(pointerIndex);
+                mTrackLastTouchY = ev.getY(pointerIndex);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                final int prePointerId = mTrackActivePointerId;
+                onTrackSecondaryPointerUp(ev);
+                if (prePointerId != mActivePointerId) {
+                    //切换手指，改变起始位置
+                    mTrackInitMotionX = mTrackInitMotionX == mTrackInitMotionDownX ? mTrackInitMotionPointerDownX : mTrackInitMotionDownX;
+                    mTrackInitMotionY = mTrackInitMotionY == mTrackInitMotionDownY ? mTrackInitMotionPointerDownY : mTrackInitMotionDownY;
+                }
+                mTrackLastTouchY = ev.getY(ev.findPointerIndex(mTrackActivePointerId));
+                break;
+            case MotionEvent.ACTION_UP:
+                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
+                if (pointerIndex < 0) {
+                    return;
+                }
+                if (mTrackVerticalIntercepted) {
+                    mTrackVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
+                    trackFling(mTrackVelocityTracker.getYVelocity(pointerIndex));
+                }
+                break;
+        }
     }
 
     @Override
@@ -85,7 +192,10 @@ public class HeaderViewPager2 extends LinearLayout {
             mIntercepted = false;
             return false;
         }
-        ensureVelocityTracker(ev);
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(ev);
         int pointerIndex;
         switch (MotionEventCompat.getActionMasked(ev)) {
             case MotionEvent.ACTION_DOWN:
@@ -153,7 +263,58 @@ public class HeaderViewPager2 extends LinearLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        return handleTouchEvent(ev, true);
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(ev);
+        int pointerIndex;
+        switch (MotionEventCompat.getActionMasked(ev)) {
+            case MotionEvent.ACTION_DOWN:
+                mIntercepted = false;
+                mActivePointerId = ev.getPointerId(0);
+                pointerIndex = ev.findPointerIndex(mActivePointerId);
+                if (pointerIndex < 0) {
+                    return false;
+                }
+                mLastTouchY = ev.getY(pointerIndex);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                pointerIndex = ev.findPointerIndex(mActivePointerId);
+                if (pointerIndex < 0) {
+                    return false;
+                }
+                mIntercepted = true;
+                final float y = ev.getY(pointerIndex);
+                scroll(Math.round(mLastTouchY - y));
+                mLastTouchY = y;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                pointerIndex = ev.findPointerIndex(mActivePointerId);
+                if (pointerIndex < 0) {
+                    return false;
+                }
+                mActivePointerId = ev.getPointerId(pointerIndex);
+                mLastTouchY = ev.getY(pointerIndex);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                onSecondaryPointerUp(ev);
+                mLastTouchY = ev.getY(ev.findPointerIndex(mActivePointerId));
+                break;
+            case MotionEvent.ACTION_UP:
+                pointerIndex = ev.findPointerIndex(mActivePointerId);
+                if (pointerIndex < 0) {
+                    return false;
+                }
+                mIntercepted = true;
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
+                fling(mVelocityTracker.getYVelocity(pointerIndex));
+                clearParams();
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                clearParams();
+                break;
+        }
+        return true;
     }
 
     @Override
@@ -192,71 +353,66 @@ public class HeaderViewPager2 extends LinearLayout {
         super.scrollTo(x, y);
     }
 
-    private boolean handleTouchEvent(MotionEvent ev, boolean fromOnTouchEvent) {
-        ensureVelocityTracker(ev);
-        int pointerIndex;
-        switch (MotionEventCompat.getActionMasked(ev)) {
-            case MotionEvent.ACTION_DOWN:
-                mActivePointerId = ev.getPointerId(0);
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mLastTouchY = ev.getY(pointerIndex);
-                mScroller.abortAnimation();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mIntercepted = mIntercepted || fromOnTouchEvent;
-                final float y = ev.getY(pointerIndex);
-                scroll(Math.round(mLastTouchY - y));
-                mLastTouchY = y;
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mActivePointerId = ev.getPointerId(pointerIndex);
-                mLastTouchY = ev.getY(pointerIndex);
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                onSecondaryPointerUp(ev);
-                mLastTouchY = ev.getY(ev.findPointerIndex(mActivePointerId));
-                break;
-            case MotionEvent.ACTION_UP:
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mIntercepted = mIntercepted || fromOnTouchEvent;
-                mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
-                fling(mVelocityTracker.getYVelocity(pointerIndex));
-                clearParams();
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                clearParams();
-                break;
+    private void onSecondaryPointerUp(MotionEvent ev) {
+        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+        final int pointerId = ev.getPointerId(pointerIndex);
+        if (pointerId == mActivePointerId) {
+            // This was our active pointer going up. Choose a new
+            // active pointer and adjust accordingly.
+            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+            mActivePointerId = ev.getPointerId(newPointerIndex);
         }
-        return true;
+    }
+
+    private void onTrackSecondaryPointerUp(MotionEvent ev) {
+        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+        final int pointerId = ev.getPointerId(pointerIndex);
+        if (pointerId == mTrackActivePointerId) {
+            // This was our active pointer going up. Choose a new
+            // active pointer and adjust accordingly.
+            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+            mTrackActivePointerId = ev.getPointerId(newPointerIndex);
+        }
+    }
+
+    private void clearParams() {
+        mActivePointerId = INVALID_POINTER;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+    }
+
+    private void clearTrackParams() {
+        mTrackVerticalIntercepted = false;
+        mTrackHorizontalIntercepted = false;
+        mTrackActivePointerId = INVALID_POINTER;
+        if (mTrackVelocityTracker != null) {
+            mTrackVelocityTracker.recycle();
+            mTrackVelocityTracker = null;
+        }
     }
 
     private void scroll(int dy) {
-        if (!mIntercepted) {
-            return;
-        }
         if (isScrollContainerTop() || !isHeaderCollapseCompletely()) {
             //当底部内容在顶部或header未完全隐藏时，滑动header
             scrollBy(0, dy);
         }
         if (isHeaderCollapseCompletely()) {
-            //当header滑动到顶部后，滑动底部内容
+            //当header完全隐藏时，滑动底部内容
             if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
                 mScrollableContainer.getScrollableView().scrollBy(0, dy);
             }
+        }
+    }
+
+    private void trackScroll(int dy) {
+        if (mIntercepted) {
+            return;
+        }
+        if (isScrollContainerTop() || !isHeaderCollapseCompletely()) {
+            //当底部内容在顶部或header未完全隐藏时，滑动header
+            scrollBy(0, dy);
         }
     }
 
@@ -264,6 +420,13 @@ public class HeaderViewPager2 extends LinearLayout {
         mLastScrollerY = getScrollY();
         mScroller.fling(0, getScrollY(), 0, -Math.round(vy), 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
         invalidate();
+    }
+
+    private void trackFling(float vy) {
+        if (mIntercepted) {
+            return;
+        }
+        fling(vy);
     }
 
     /**
@@ -292,32 +455,6 @@ public class HeaderViewPager2 extends LinearLayout {
         }
     }
 
-    private void ensureVelocityTracker(MotionEvent ev) {
-        if (mVelocityTracker == null) {
-            mVelocityTracker = VelocityTracker.obtain();
-        }
-        mVelocityTracker.addMovement(ev);
-    }
-
-    private void clearParams() {
-        mActivePointerId = INVALID_POINTER;
-        if (mVelocityTracker != null) {
-            mVelocityTracker.recycle();
-            mVelocityTracker = null;
-        }
-    }
-
-    private void onSecondaryPointerUp(MotionEvent ev) {
-        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
-        final int pointerId = ev.getPointerId(pointerIndex);
-        if (pointerId == mActivePointerId) {
-            // This was our active pointer going up. Choose a new
-            // active pointer and adjust accordingly.
-            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-            mActivePointerId = ev.getPointerId(newPointerIndex);
-        }
-    }
-
     /**
      * header是否完全隐藏
      *
@@ -325,15 +462,6 @@ public class HeaderViewPager2 extends LinearLayout {
      */
     private boolean isHeaderCollapseCompletely() {
         return getScrollY() == mHeaderHeight;
-    }
-
-    /**
-     * header是否完全可见
-     *
-     * @return
-     */
-    private boolean isHeaderExpandCompletely() {
-        return getScrollY() == 0;
     }
 
     /**
