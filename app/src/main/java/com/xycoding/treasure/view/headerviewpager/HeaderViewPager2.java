@@ -133,13 +133,15 @@ public class HeaderViewPager2 extends LinearLayout {
                     return;
                 }
                 final float y = ev.getY(pointerIndex);
+                final int yDiff = Math.round(mTrackLastTouchY - y);
+                mTrackLastTouchY = y;
                 if (mTrackVerticalIntercepted || mTrackHorizontalIntercepted) {
                     if (mTrackHorizontalIntercepted) {
                         //底部内容横向滑动，直接返回
                         return;
                     }
-                    // TODO: 17/4/4  
-//                    trackScroll(Math.round(mTrackLastTouchY - y));
+                    trackScroll(yDiff);
+                    return;
                 }
                 final float x = ev.getX(pointerIndex);
                 final float dx = Math.abs(x - mTrackInitMotionX);
@@ -150,7 +152,6 @@ public class HeaderViewPager2 extends LinearLayout {
                 if (dy > mTouchSlop && dy > dx) {
                     mTrackVerticalIntercepted = true;
                 }
-                mTrackLastTouchY = y;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
@@ -394,6 +395,9 @@ public class HeaderViewPager2 extends LinearLayout {
     }
 
     private void scroll(int dy) {
+        if (dy == 0) {
+            return;
+        }
         if (isScrollContainerTop() || !isHeaderCollapseCompletely()) {
             //当底部内容在顶部或header未完全隐藏时，滑动header
             scrollBy(0, dy);
@@ -407,16 +411,26 @@ public class HeaderViewPager2 extends LinearLayout {
     }
 
     private void trackScroll(int dy) {
-        if (mIntercepted) {
+        if (mIntercepted || dy == 0) {
             return;
         }
-        if (isScrollContainerTop() || !isHeaderCollapseCompletely()) {
-            //当底部内容在顶部或header未完全隐藏时，滑动header
+        boolean isScrollContainerTop = isScrollContainerTop();
+        if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
+            //当底部内容在顶部或header未完全隐藏时，滚动header
             scrollBy(0, dy);
+            //异常情况：向下滚动且开始滚动header时，若底部内容未滚动到顶部时，需手动指定滚动
+            if (dy < 0 && !isScrollContainerTop) {
+                if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+                    mScrollableContainer.getScrollableView().scrollBy(0, dy);
+                }
+            }
         }
     }
 
     private void fling(float vy) {
+        if (vy == 0) {
+            return;
+        }
         mLastScrollerY = getScrollY();
         mScroller.fling(0, getScrollY(), 0, -Math.round(vy), 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
         invalidate();
