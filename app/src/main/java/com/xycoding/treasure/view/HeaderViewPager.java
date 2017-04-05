@@ -38,7 +38,7 @@ public class HeaderViewPager extends LinearLayout {
     private int mLastScrollerY;
     private boolean mFlingUp = false;
     /**
-     * header view pager 是否拦截事件
+     * header view pager是否拦截事件
      */
     private boolean mIntercepted = false;
     private ScrollableContainer mScrollableContainer;
@@ -96,14 +96,16 @@ public class HeaderViewPager extends LinearLayout {
         if (MotionEventCompat.getActionMasked(ev) == MotionEvent.ACTION_DOWN) {
             mScroller.abortAnimation();
         }
+        //正常分发事件，
         super.dispatchTouchEvent(ev);
+        //若header view pager未拦截事件时，同样需跟踪事件
         trackTouchEvent(ev);
         return true;
     }
 
     /**
-     * 未拦截事件（底部内容消费事件）时，跟踪底部内容事件；
-     * 当底部内容滚动或fling到顶部时，需判断header是否已完全展开，再进行header滚动。
+     * 未拦截事件（底部内容消费事件）时，跟踪事件；
+     * 当底部内容滑动或fling到顶部时，需判断header的状态进行滑动。
      *
      * @param ev
      * @return
@@ -136,6 +138,7 @@ public class HeaderViewPager extends LinearLayout {
                 final float y = ev.getY(pointerIndex);
                 final int yDiff = Math.round(mTrackLastTouchY - y);
                 mTrackLastTouchY = y;
+                //若底部内容已消费事件，则直接判定是否滑动
                 if (mTrackVerticalIntercepted || mTrackHorizontalIntercepted) {
                     if (mTrackHorizontalIntercepted) {
                         //底部内容横向滑动，直接返回
@@ -148,9 +151,11 @@ public class HeaderViewPager extends LinearLayout {
                 final float dx = Math.abs(x - mTrackInitMotionX);
                 final float dy = Math.abs(y - mTrackInitMotionY);
                 if (dx > mTouchSlop && dx > dy) {
+                    //底部内容横向消费事件（如view pager翻页）
                     mTrackHorizontalIntercepted = true;
                 }
                 if (dy > mTouchSlop && dy > dx) {
+                    //底部内容竖向消费事件
                     mTrackVerticalIntercepted = true;
                 }
                 break;
@@ -189,7 +194,7 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        //header完全隐藏且底部内容未在顶部时，不拦截事件
+        //header完全隐藏且底部内容未滑动到顶部时，不拦截事件
         if (isHeaderCollapseCompletely() && !isScrollContainerTop()) {
             mIntercepted = false;
             return false;
@@ -223,6 +228,7 @@ public class HeaderViewPager extends LinearLayout {
                         return false;
                     }
                     mLastTouchY = dy > 0 ? mInitMotionY + mTouchSlop : mInitMotionY - mTouchSlop;
+                    //竖直滑动时，拦截事件
                     mIntercepted = true;
                     return true;
                 }
@@ -341,13 +347,13 @@ public class HeaderViewPager extends LinearLayout {
                         int remainDuration = mScroller.getDuration() - mScroller.timePassed();
                         flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
                     }
-                    //向下fling时，若header未完全展开时，则滚动header
+                    //向下fling时，若header未完全展开时，则滑动header
                     if (!isHeaderExpandCompletely()) {
                         scrollTo(0, mScroller.getCurrY());
                     }
                 }
             } else {
-                //底部内容消费事件且向下fling时，若底部内容已到顶部，则开始滚动header
+                //底部内容消费事件且向下fling时，若底部内容已到顶部，则开始滑动header
                 if (!mFlingUp && isScrollContainerTop()) {
                     final int deltaY = mScroller.getCurrY() - mLastScrollerY;
                     scrollTo(0, getScrollY() + deltaY);
@@ -414,11 +420,11 @@ public class HeaderViewPager extends LinearLayout {
         }
         boolean isScrollContainerTop = isScrollContainerTop();
         if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
-            //当底部内容在顶部或header未完全隐藏时，滑动header
+            //当底部内容滑动到顶部或header未完全隐藏时，滑动header
             scrollBy(0, dy);
         }
-        if (!isScrollContainerTop || isHeaderCollapseCompletely()) {
-            //当header完全隐藏时，滑动底部内容
+        if ((!isScrollContainerTop && isHeaderExpandCompletely()) || isHeaderCollapseCompletely()) {
+            //当底部内容未滑动到顶部且header完全展开或header完全隐藏时，滑动底部内容
             if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
                 mScrollableContainer.getScrollableView().scrollBy(0, dy);
             }
@@ -431,9 +437,9 @@ public class HeaderViewPager extends LinearLayout {
         }
         boolean isScrollContainerTop = isScrollContainerTop();
         if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
-            //当底部内容在顶部或header未完全隐藏时，滚动header
+            //当底部内容在顶部或header未完全隐藏时，滑动header
             scrollBy(0, dy);
-            //异常情况：向下滚动且开始滚动header时，若底部内容未滚动到顶部时，需手动指定滚动
+            //异常情况：向下滑动且开始滑动header时，若底部内容未滑动到顶部时，需手动滑动
             if (dy < 0 && !isScrollContainerTop) {
                 if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
                     mScrollableContainer.getScrollableView().scrollBy(0, dy);
