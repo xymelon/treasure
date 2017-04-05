@@ -1,4 +1,4 @@
-package com.xycoding.treasure.view.headerviewpager;
+package com.xycoding.treasure.view;
 
 import android.content.Context;
 import android.os.Build;
@@ -22,7 +22,7 @@ import android.widget.Scroller;
 /**
  * Created by xuyang on 2017/3/31.
  */
-public class HeaderViewPager2 extends LinearLayout {
+public class HeaderViewPager extends LinearLayout {
 
     private static final int INVALID_POINTER = -1;
 
@@ -36,11 +36,12 @@ public class HeaderViewPager2 extends LinearLayout {
     private float mInitMotionY, mInitMotionDownY, mInitMotionPointerDownY;
     private float mLastTouchY;
     private int mLastScrollerY;
+    private boolean mFlingUp = false;
     /**
      * header view pager 是否拦截事件
      */
     private boolean mIntercepted = false;
-    private HeaderScrollHelper.ScrollableContainer mScrollableContainer;
+    private ScrollableContainer mScrollableContainer;
 
     /* 跟踪底部内容变量 begin */
     private VelocityTracker mTrackVelocityTracker;
@@ -58,15 +59,15 @@ public class HeaderViewPager2 extends LinearLayout {
     private boolean mTrackVerticalIntercepted = false;
     /* 跟踪底部内容变量 end */
 
-    public HeaderViewPager2(Context context) {
+    public HeaderViewPager(Context context) {
         this(context, null);
     }
 
-    public HeaderViewPager2(Context context, @Nullable AttributeSet attrs) {
+    public HeaderViewPager(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public HeaderViewPager2(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public HeaderViewPager(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
 
@@ -322,24 +323,37 @@ public class HeaderViewPager2 extends LinearLayout {
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
             float currVelocity = mScroller.getCurrVelocity();
-            if (currVelocity > 0 && mIntercepted) {
-                //向上fling时，若header已完全隐藏，则开始fling底部内容
-                if (isHeaderCollapseCompletely()) {
-                    mScroller.abortAnimation();
-                    int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                    int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                    flingContent(Math.round(mScroller.getCurrVelocity()), remainDistance, remainDuration);
+            if (mIntercepted) {
+                //当前view拦截事件
+                if (mFlingUp) {
+                    //向上fling时，若header已完全隐藏，则向上fling底部内容
+                    if (isHeaderCollapseCompletely()) {
+                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
+                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
+                        flingContent(Math.round(currVelocity), remainDistance, remainDuration);
+                    } else {
+                        scrollTo(0, mScroller.getCurrY());
+                    }
                 } else {
-                    scrollTo(0, mScroller.getCurrY());
+                    //向下fling时，若header已完全展开且底部内容未滑动到顶部时，则向下fling底部内容
+                    if (isHeaderExpandCompletely() && !isScrollContainerTop()) {
+                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
+                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
+                        flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
+                    }
+                    //向下fling时，若header未完全展开时，则滚动header
+                    if (!isHeaderExpandCompletely()) {
+                        scrollTo(0, mScroller.getCurrY());
+                    }
                 }
             } else {
-                //向下fling时，若底部内容已到顶部，则开始滚动header
-                if (isScrollContainerTop()) {
+                //底部内容消费事件且向下fling时，若底部内容已到顶部，则开始滚动header
+                if (!mFlingUp && isScrollContainerTop()) {
                     final int deltaY = mScroller.getCurrY() - mLastScrollerY;
                     scrollTo(0, getScrollY() + deltaY);
                 }
             }
-            postInvalidate();
+            invalidate();
             mLastScrollerY = mScroller.getCurrY();
         }
     }
@@ -398,11 +412,12 @@ public class HeaderViewPager2 extends LinearLayout {
         if (dy == 0) {
             return;
         }
-        if (isScrollContainerTop() || !isHeaderCollapseCompletely()) {
+        boolean isScrollContainerTop = isScrollContainerTop();
+        if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
             //当底部内容在顶部或header未完全隐藏时，滑动header
             scrollBy(0, dy);
         }
-        if (isHeaderCollapseCompletely()) {
+        if (!isScrollContainerTop || isHeaderCollapseCompletely()) {
             //当header完全隐藏时，滑动底部内容
             if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
                 mScrollableContainer.getScrollableView().scrollBy(0, dy);
@@ -431,6 +446,8 @@ public class HeaderViewPager2 extends LinearLayout {
         if (vy == 0) {
             return;
         }
+        //上滑速度小于0，下滑速度大于0
+        mFlingUp = vy < 0;
         mLastScrollerY = getScrollY();
         mScroller.fling(0, getScrollY(), 0, -Math.round(vy), 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
         invalidate();
@@ -479,6 +496,15 @@ public class HeaderViewPager2 extends LinearLayout {
     }
 
     /**
+     * header是否完全展开
+     *
+     * @return
+     */
+    private boolean isHeaderExpandCompletely() {
+        return getScrollY() == 0;
+    }
+
+    /**
      * scroll container是否已滑动到顶部
      *
      * @return
@@ -510,8 +536,12 @@ public class HeaderViewPager2 extends LinearLayout {
         }
     }
 
-    public void setCurrentScrollableContainer(@NonNull HeaderScrollHelper.ScrollableContainer scrollableContainer) {
+    public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
         mScrollableContainer = scrollableContainer;
+    }
+
+    public interface ScrollableContainer {
+        View getScrollableView();
     }
 
 }

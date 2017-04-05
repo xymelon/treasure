@@ -7,13 +7,13 @@ import android.view.View;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.adapter.RecyclerViewDictAdapter;
 import com.xycoding.treasure.databinding.FragmentDictContentBinding;
-import com.xycoding.treasure.view.headerviewpager.HeaderScrollHelper;
+import com.xycoding.treasure.view.HeaderViewPager;
 import com.xycoding.treasure.view.recyclerview.LinearDividerItemDecoration;
 
 /**
  * Created by xuyang on 2017/3/24.
  */
-public class DictContentFragment extends BaseBindingFragment implements HeaderScrollHelper.ScrollableContainer {
+public class DictContentFragment extends BaseBindingFragment implements HeaderViewPager.ScrollableContainer {
 
     private final static String BUNDLE_KEY_ITEMS = "bundle_key_items";
     private FragmentDictContentBinding mBinding;
