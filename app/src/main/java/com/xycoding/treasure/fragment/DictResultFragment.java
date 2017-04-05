@@ -4,14 +4,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.widget.Toast;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.FragmentDictResultBinding;
+import com.xycoding.treasure.rx.RxViewWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.functions.Action1;
 
 /**
  * Created by xuyang on 2017/3/22.
@@ -39,10 +41,15 @@ public class DictResultFragment extends BaseBindingFragment {
 
     @Override
     protected void setListeners() {
-        mBinding.layoutHeader.fitTextView.setOnClickListener(new View.OnClickListener() {
+        RxViewWrapper.clicks(mBinding.layoutHeader.fitTextView).subscribe(new Action1<Void>() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "hehe", Toast.LENGTH_SHORT).show();
+            public void call(Void aVoid) {
+                Toast.makeText(getContext(), mBinding.layoutHeader.fitTextView.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        RxViewWrapper.clicks(mBinding.fab).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
             }
         });
     }

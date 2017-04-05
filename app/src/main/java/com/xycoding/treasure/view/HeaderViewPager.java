@@ -337,6 +337,7 @@ public class HeaderViewPager extends LinearLayout {
                         int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
                         int remainDuration = mScroller.getDuration() - mScroller.timePassed();
                         flingContent(Math.round(currVelocity), remainDistance, remainDuration);
+                        mScroller.abortAnimation();
                     } else {
                         scrollTo(0, mScroller.getCurrY());
                     }
