@@ -1,4 +1,4 @@
-package com.xycoding.treasure.view;
+package com.xycoding.treasure.view.headerviewpager;
 
 import android.content.Context;
 import android.os.Build;
@@ -545,10 +545,6 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
         mScrollableContainer = scrollableContainer;
-    }
-
-    public interface ScrollableContainer {
-        View getScrollableView();
     }
 
 }
