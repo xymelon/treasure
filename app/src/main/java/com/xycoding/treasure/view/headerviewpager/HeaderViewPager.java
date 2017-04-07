@@ -96,7 +96,7 @@ public class HeaderViewPager extends LinearLayout {
         if (MotionEventCompat.getActionMasked(ev) == MotionEvent.ACTION_DOWN) {
             mScroller.abortAnimation();
         }
-        //正常分发事件，
+        //正常分发事件
         super.dispatchTouchEvent(ev);
         //若header view pager未拦截事件时，同样需跟踪事件
         trackTouchEvent(ev);
@@ -339,7 +339,7 @@ public class HeaderViewPager extends LinearLayout {
                         flingContent(Math.round(currVelocity), remainDistance, remainDuration);
                         mScroller.abortAnimation();
                     } else {
-                        scrollTo(0, mScroller.getCurrY());
+                        scrollHeader();
                     }
                 } else {
                     //向下fling时，若header已完全展开且底部内容未滑动到顶部时，则向下fling底部内容
@@ -350,19 +350,25 @@ public class HeaderViewPager extends LinearLayout {
                     }
                     //向下fling时，若header未完全展开时，则滑动header
                     if (!isHeaderExpandCompletely()) {
-                        scrollTo(0, mScroller.getCurrY());
+                        scrollHeader();
                     }
                 }
             } else {
-                //底部内容消费事件且向下fling时，若底部内容已到顶部，则开始滑动header
-                if (!mFlingUp && isScrollContainerTop()) {
-                    final int deltaY = mScroller.getCurrY() - mLastScrollerY;
-                    scrollTo(0, getScrollY() + deltaY);
+                //底部内容消费事件且向下fling时，若底部内容已到顶部，则滑动header
+                //或底部内容消费事件且向上fling时，若header未完全隐藏，则滑动header
+                if ((!mFlingUp && isScrollContainerTop())
+                        || (mFlingUp && !isHeaderCollapseCompletely())) {
+                    scrollHeader();
                 }
             }
-            invalidate();
             mLastScrollerY = mScroller.getCurrY();
+            invalidate();
         }
+    }
+
+    private void scrollHeader() {
+        final int deltaY = mScroller.getCurrY() - mLastScrollerY;
+        scrollTo(0, getScrollY() + deltaY);
     }
 
     @Override
@@ -373,6 +379,19 @@ public class HeaderViewPager extends LinearLayout {
             y = 0;
         }
         super.scrollTo(x, y);
+    }
+
+    public void scrollToTop() {
+//        int distance = getScrollY();
+//        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+//            if (mScrollableContainer.getScrollableView() instanceof RecyclerView) {
+//                distance += ((RecyclerView) mScrollableContainer.getScrollableView()).computeVerticalScrollOffset();
+//            } else {
+//                distance += mScrollableContainer.getScrollableView().getScrollY();
+//            }
+//        }
+//        mIntercepted = false;
+//        mScroller.startScroll(0, 0, 0, distance);
     }
 
     private void onSecondaryPointerUp(MotionEvent ev) {

@@ -50,6 +50,7 @@ public class DictResultFragment extends BaseBindingFragment {
         RxViewWrapper.clicks(mBinding.fab).subscribe(new Action1<Void>() {
             @Override
             public void call(Void aVoid) {
+                mBinding.headerViewPager.scrollToTop();
             }
         });
     }
