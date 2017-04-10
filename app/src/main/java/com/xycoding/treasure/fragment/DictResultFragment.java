@@ -62,9 +62,9 @@ public class DictResultFragment extends BaseBindingFragment {
 
     private void initViews() {
         mFragments = new ArrayList<>();
-        mFragments.add(DictContentFragment.createInstance(20));
-        mFragments.add(DictContentFragment.createInstance(2));
-        mFragments.add(DictContentFragment.createInstance(10));
+        mFragments.add(DictContentFragment.createInstance(20, true));
+        mFragments.add(DictContentFragment.createInstance(2, false));
+        mFragments.add(DictContentFragment.createInstance(10, false));
 
         mPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
 

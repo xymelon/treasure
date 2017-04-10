@@ -16,11 +16,13 @@ import com.xycoding.treasure.view.recyclerview.LinearDividerItemDecoration;
 public class DictContentFragment extends BaseBindingFragment implements ScrollableContainer {
 
     private final static String BUNDLE_KEY_ITEMS = "bundle_key_items";
+    private final static String BUNDLE_KEY_HAS_CLASS = "bundle_key_has_class";
     private FragmentDictContentBinding mBinding;
 
-    public static DictContentFragment createInstance(int items) {
+    public static DictContentFragment createInstance(int items, boolean hasClass) {
         Bundle bundle = new Bundle();
         bundle.putInt(BUNDLE_KEY_ITEMS, items);
+        bundle.putBoolean(BUNDLE_KEY_HAS_CLASS, hasClass);
         DictContentFragment fragment = new DictContentFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -48,7 +50,8 @@ public class DictContentFragment extends BaseBindingFragment implements Scrollab
     }
 
     private void initViews() {
-        mBinding.recyclerView.setAdapter(new RecyclerViewDictAdapter(getArguments().getInt(BUNDLE_KEY_ITEMS)));
+        mBinding.recyclerView.setAdapter(new RecyclerViewDictAdapter(
+                getArguments().getInt(BUNDLE_KEY_ITEMS), getArguments().getBoolean(BUNDLE_KEY_HAS_CLASS)));
         mBinding.recyclerView.addItemDecoration(new LinearDividerItemDecoration(getContext()));
         mBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
