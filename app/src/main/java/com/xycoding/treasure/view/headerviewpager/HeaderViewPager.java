@@ -33,31 +33,12 @@ public class HeaderViewPager extends LinearLayout {
     private final int mMinFlingVelocity;
     private final int mMaxFlingVelocity;
     private int mActivePointerId = INVALID_POINTER;
-    private float mInitMotionY, mInitMotionDownY, mInitMotionPointerDownY;
-    private float mLastTouchY;
+    private int mInitMotionY;
+    private int mLastTouchY;
     private int mLastScrollerY;
-    private boolean mFlingUp = false;
-    /**
-     * header view pager是否拦截事件
-     */
-    private boolean mIntercepted = false;
     private ScrollableContainer mScrollableContainer;
-
-    /* 跟踪底部内容变量 begin */
-    private VelocityTracker mTrackVelocityTracker;
-    private int mTrackActivePointerId = INVALID_POINTER;
-    private float mTrackInitMotionX, mTrackInitMotionDownX, mTrackInitMotionPointerDownX;
-    private float mTrackInitMotionY, mTrackInitMotionDownY, mTrackInitMotionPointerDownY;
-    private float mTrackLastTouchY;
-    /**
-     * 底部内容是否横向滑动
-     */
-    private boolean mTrackHorizontalIntercepted = false;
-    /**
-     * 底部内容是否竖向滑动
-     */
-    private boolean mTrackVerticalIntercepted = false;
-    /* 跟踪底部内容变量 end */
+    private boolean mFlingUp = false;
+    private boolean mFlingChild = false;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -92,162 +73,43 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (MotionEventCompat.getActionMasked(ev) == MotionEvent.ACTION_DOWN) {
-            mScroller.abortAnimation();
-        }
-        //正常分发事件
-        super.dispatchTouchEvent(ev);
-        //若header view pager未拦截事件时，同样需跟踪事件
-        trackTouchEvent(ev);
-        return true;
-    }
-
-    /**
-     * 未拦截事件（底部内容消费事件）时，跟踪事件；
-     * 当底部内容滑动或fling到顶部时，需判断header的状态进行滑动。
-     *
-     * @param ev
-     * @return
-     */
-    private void trackTouchEvent(MotionEvent ev) {
-        int action = MotionEventCompat.getActionMasked(ev);
-        if (action == MotionEvent.ACTION_DOWN) {
-            clearTrackParams();
-        }
-        if (mTrackVelocityTracker == null) {
-            mTrackVelocityTracker = VelocityTracker.obtain();
-        }
-        mTrackVelocityTracker.addMovement(ev);
-        int pointerIndex;
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                mTrackActivePointerId = ev.getPointerId(0);
-                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
-                if (pointerIndex < 0) {
-                    return;
-                }
-                mTrackInitMotionX = mTrackInitMotionDownX = ev.getX(pointerIndex);
-                mTrackInitMotionY = mTrackInitMotionDownY = mTrackLastTouchY = ev.getY(pointerIndex);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
-                if (pointerIndex < 0) {
-                    return;
-                }
-                final float y = ev.getY(pointerIndex);
-                final int yDiff = Math.round(mTrackLastTouchY - y);
-                mTrackLastTouchY = y;
-                //若底部内容已消费事件，则直接判定是否滑动
-                if (mTrackVerticalIntercepted || mTrackHorizontalIntercepted) {
-                    if (mTrackHorizontalIntercepted) {
-                        //底部内容横向滑动，直接返回
-                        return;
-                    }
-                    trackScroll(yDiff);
-                    return;
-                }
-                final float x = ev.getX(pointerIndex);
-                final float dx = Math.abs(x - mTrackInitMotionX);
-                final float dy = Math.abs(y - mTrackInitMotionY);
-                if (dx > mTouchSlop && dx > dy) {
-                    //底部内容横向消费事件（如view pager翻页）
-                    mTrackHorizontalIntercepted = true;
-                }
-                if (dy > mTouchSlop && dy > dx) {
-                    //底部内容竖向消费事件
-                    mTrackVerticalIntercepted = true;
-                }
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
-                if (pointerIndex < 0) {
-                    return;
-                }
-                mTrackInitMotionX = mTrackInitMotionPointerDownX = ev.getX(pointerIndex);
-                mTrackInitMotionY = mTrackInitMotionPointerDownY = ev.getY(pointerIndex);
-                mTrackActivePointerId = ev.getPointerId(pointerIndex);
-                mTrackLastTouchY = ev.getY(pointerIndex);
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                final int prePointerId = mTrackActivePointerId;
-                onTrackSecondaryPointerUp(ev);
-                if (prePointerId != mActivePointerId) {
-                    //切换手指，改变起始位置
-                    mTrackInitMotionX = mTrackInitMotionX == mTrackInitMotionDownX ? mTrackInitMotionPointerDownX : mTrackInitMotionDownX;
-                    mTrackInitMotionY = mTrackInitMotionY == mTrackInitMotionDownY ? mTrackInitMotionPointerDownY : mTrackInitMotionDownY;
-                }
-                mTrackLastTouchY = ev.getY(ev.findPointerIndex(mTrackActivePointerId));
-                break;
-            case MotionEvent.ACTION_UP:
-                pointerIndex = ev.findPointerIndex(mTrackActivePointerId);
-                if (pointerIndex < 0) {
-                    return;
-                }
-                if (mTrackVerticalIntercepted) {
-                    mTrackVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
-                    trackFling(mTrackVelocityTracker.getYVelocity(pointerIndex));
-                }
-                break;
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        if (mScroller.computeScrollOffset()) {
+            //强制child view不拦截事件
+            super.requestDisallowInterceptTouchEvent(false);
+        } else {
+            super.requestDisallowInterceptTouchEvent(disallowIntercept);
         }
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        //header完全隐藏且底部内容未滑动到顶部时，不拦截事件
-        if (isHeaderCollapseCompletely() && !isScrollContainerTop()) {
-            mIntercepted = false;
-            return false;
-        }
-        if (mVelocityTracker == null) {
-            mVelocityTracker = VelocityTracker.obtain();
-        }
-        mVelocityTracker.addMovement(ev);
+        ensureVelocityTracker(ev);
         int pointerIndex;
         switch (MotionEventCompat.getActionMasked(ev)) {
             case MotionEvent.ACTION_DOWN:
-                mIntercepted = false;
                 mActivePointerId = ev.getPointerId(0);
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mInitMotionY = mInitMotionDownY = ev.getY(pointerIndex);
+                mInitMotionY = mLastTouchY = Math.round(ev.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
                 if (pointerIndex < 0) {
                     return false;
                 }
-                final float y = ev.getY(pointerIndex);
-                final float dy = y - mInitMotionY;
+                final int y = Math.round(ev.getY(pointerIndex));
+                final int dy = y - mInitMotionY;
                 if (Math.abs(dy) > mTouchSlop) {
-                    //header完全隐藏且向上滑动时，不拦截事件
-                    if (isHeaderCollapseCompletely() && dy < 0) {
-                        mIntercepted = false;
-                        return false;
-                    }
                     mLastTouchY = dy > 0 ? mInitMotionY + mTouchSlop : mInitMotionY - mTouchSlop;
-                    //竖直滑动时，拦截事件
-                    mIntercepted = true;
                     return true;
                 }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mInitMotionY = mInitMotionPointerDownY = ev.getY(pointerIndex);
-                mActivePointerId = ev.getPointerId(pointerIndex);
-                break;
+                final int actionIndex = MotionEventCompat.getActionIndex(ev);
+                mActivePointerId = ev.getPointerId(actionIndex);
+                mInitMotionY = mLastTouchY = Math.round(ev.getY(actionIndex));
+                return true;
             case MotionEvent.ACTION_POINTER_UP:
-                final int prePointerId = mActivePointerId;
                 onSecondaryPointerUp(ev);
-                if (prePointerId != mActivePointerId) {
-                    //切换手指，改变起始位置
-                    mInitMotionY = mInitMotionY == mInitMotionDownY ? mInitMotionPointerDownY : mInitMotionDownY;
-                }
                 break;
             case MotionEvent.ACTION_UP:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
@@ -271,49 +133,35 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (mVelocityTracker == null) {
-            mVelocityTracker = VelocityTracker.obtain();
-        }
-        mVelocityTracker.addMovement(ev);
+        ensureVelocityTracker(ev);
         int pointerIndex;
         switch (MotionEventCompat.getActionMasked(ev)) {
             case MotionEvent.ACTION_DOWN:
-                mIntercepted = false;
                 mActivePointerId = ev.getPointerId(0);
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mLastTouchY = ev.getY(pointerIndex);
+                mLastTouchY = Math.round(ev.getY());
                 break;
             case MotionEvent.ACTION_MOVE:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
                 if (pointerIndex < 0) {
                     return false;
                 }
-                mIntercepted = true;
-                final float y = ev.getY(pointerIndex);
+                final int y = Math.round(ev.getY(pointerIndex));
                 scroll(Math.round(mLastTouchY - y));
                 mLastTouchY = y;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                pointerIndex = ev.findPointerIndex(mActivePointerId);
-                if (pointerIndex < 0) {
-                    return false;
-                }
-                mActivePointerId = ev.getPointerId(pointerIndex);
-                mLastTouchY = ev.getY(pointerIndex);
+                final int actionIndex = MotionEventCompat.getActionIndex(ev);
+                mActivePointerId = ev.getPointerId(actionIndex);
+                mLastTouchY = Math.round(ev.getY(actionIndex));
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 onSecondaryPointerUp(ev);
-                mLastTouchY = ev.getY(ev.findPointerIndex(mActivePointerId));
                 break;
             case MotionEvent.ACTION_UP:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
                 if (pointerIndex < 0) {
                     return false;
                 }
-                mIntercepted = true;
                 mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
                 fling(mVelocityTracker.getYVelocity(pointerIndex));
                 clearParams();
@@ -325,50 +173,68 @@ public class HeaderViewPager extends LinearLayout {
         return true;
     }
 
+    private void onSecondaryPointerUp(MotionEvent ev) {
+        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+        if (ev.getPointerId(pointerIndex) == mActivePointerId) {
+            // This was our active pointer going up. Choose a new
+            // active pointer and adjust accordingly.
+            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+            mActivePointerId = ev.getPointerId(newPointerIndex);
+            mInitMotionY = mLastTouchY = Math.round(ev.getY(newPointerIndex));
+        }
+    }
+
+    private void ensureVelocityTracker(MotionEvent ev) {
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+        }
+        mVelocityTracker.addMovement(ev);
+    }
+
+    private void clearParams() {
+        mActivePointerId = INVALID_POINTER;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+    }
+
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
             float currVelocity = mScroller.getCurrVelocity();
-            if (mIntercepted) {
-                //当前view拦截事件
-                if (mFlingUp) {
-                    //向上fling时，若header已完全隐藏，则向上fling底部内容
-                    if (isHeaderCollapseCompletely()) {
-                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                        flingContent(Math.round(currVelocity), remainDistance, remainDuration);
-                        mScroller.abortAnimation();
-                    } else {
-                        scrollHeader();
-                    }
+            if (mFlingUp) {
+                //向上fling时，若header已完全隐藏，则向上fling底部内容
+                if (isHeaderCollapseCompletely() && !mFlingChild) {
+                    //保证fling一次
+                    mFlingChild = true;
+                    int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
+                    int remainDuration = mScroller.getDuration() - mScroller.timePassed();
+                    flingContent(Math.round(currVelocity), remainDistance, remainDuration);
                 } else {
-                    //向下fling时，若header已完全展开且底部内容未滑动到顶部时，则向下fling底部内容
-                    if (isHeaderExpandCompletely() && !isScrollContainerTop()) {
-                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                        flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
-                    }
-                    //向下fling时，若header未完全展开时，则滑动header
-                    if (!isHeaderExpandCompletely()) {
-                        scrollHeader();
-                    }
+                    final int deltaY = mScroller.getCurrY() - mLastScrollerY;
+                    scrollTo(0, getScrollY() + deltaY);
                 }
             } else {
-                //底部内容消费事件且向下fling时，若底部内容已到顶部，则滑动header
-                //或底部内容消费事件且向上fling时，若header未完全隐藏，则滑动header
-                if ((!mFlingUp && isScrollContainerTop())
-                        || (mFlingUp && !isHeaderCollapseCompletely())) {
-                    scrollHeader();
+                boolean isScrollContainerTop = isScrollContainerTop();
+                //向下fling时，若底部内容未滑动到顶部时，则向下fling底部内容
+                if (!isScrollContainerTop && !mFlingChild) {
+                    //保证fling一次
+                    mFlingChild = true;
+                    int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
+                    int remainDuration = mScroller.getDuration() - mScroller.timePassed();
+                    flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
+                }
+                //向下fling时，若header未完全展开时，则滑动header
+                if ((!isHeaderCollapseCompletely() && !isHeaderExpandCompletely())
+                        || (isScrollContainerTop && !isHeaderExpandCompletely())) {
+                    final int deltaY = mScroller.getCurrY() - mLastScrollerY;
+                    scrollTo(0, getScrollY() + deltaY);
                 }
             }
             mLastScrollerY = mScroller.getCurrY();
             invalidate();
         }
-    }
-
-    private void scrollHeader() {
-        final int deltaY = mScroller.getCurrY() - mLastScrollerY;
-        scrollTo(0, getScrollY() + deltaY);
     }
 
     @Override
@@ -394,46 +260,6 @@ public class HeaderViewPager extends LinearLayout {
 //        mScroller.startScroll(0, 0, 0, distance);
     }
 
-    private void onSecondaryPointerUp(MotionEvent ev) {
-        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
-        final int pointerId = ev.getPointerId(pointerIndex);
-        if (pointerId == mActivePointerId) {
-            // This was our active pointer going up. Choose a new
-            // active pointer and adjust accordingly.
-            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-            mActivePointerId = ev.getPointerId(newPointerIndex);
-        }
-    }
-
-    private void onTrackSecondaryPointerUp(MotionEvent ev) {
-        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
-        final int pointerId = ev.getPointerId(pointerIndex);
-        if (pointerId == mTrackActivePointerId) {
-            // This was our active pointer going up. Choose a new
-            // active pointer and adjust accordingly.
-            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-            mTrackActivePointerId = ev.getPointerId(newPointerIndex);
-        }
-    }
-
-    private void clearParams() {
-        mActivePointerId = INVALID_POINTER;
-        if (mVelocityTracker != null) {
-            mVelocityTracker.recycle();
-            mVelocityTracker = null;
-        }
-    }
-
-    private void clearTrackParams() {
-        mTrackVerticalIntercepted = false;
-        mTrackHorizontalIntercepted = false;
-        mTrackActivePointerId = INVALID_POINTER;
-        if (mTrackVelocityTracker != null) {
-            mTrackVelocityTracker.recycle();
-            mTrackVelocityTracker = null;
-        }
-    }
-
     private void scroll(int dy) {
         if (dy == 0) {
             return;
@@ -451,39 +277,17 @@ public class HeaderViewPager extends LinearLayout {
         }
     }
 
-    private void trackScroll(int dy) {
-        if (mIntercepted || dy == 0) {
-            return;
-        }
-        boolean isScrollContainerTop = isScrollContainerTop();
-        if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
-            //当底部内容在顶部或header未完全隐藏时，滑动header
-            scrollBy(0, dy);
-            //异常情况：向下滑动且开始滑动header时，若底部内容未滑动到顶部时，需手动滑动
-            if (dy < 0 && !isScrollContainerTop) {
-                if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-                    mScrollableContainer.getScrollableView().scrollBy(0, dy);
-                }
-            }
-        }
-    }
-
     private void fling(float vy) {
         if (vy == 0) {
             return;
         }
+        mScroller.abortAnimation();
         //上滑速度小于0，下滑速度大于0
         mFlingUp = vy < 0;
+        mFlingChild = false;
         mLastScrollerY = getScrollY();
         mScroller.fling(0, getScrollY(), 0, -Math.round(vy), 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
         invalidate();
-    }
-
-    private void trackFling(float vy) {
-        if (mIntercepted) {
-            return;
-        }
-        fling(vy);
     }
 
     /**

@@ -29,6 +29,7 @@ public class RecyclerViewDictAdapter extends RecyclerView.Adapter<RecyclerViewDi
 
     @Override
     public void onBindViewHolder(final RecyclerViewHolder holder, final int position) {
+        holder.binding.tvTitle.setText("21世纪英汉词典" + (position + 1));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
