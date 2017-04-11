@@ -19,12 +19,15 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Scroller;
 
+import com.xycoding.treasure.utils.DeviceUtils;
+
 /**
  * Created by xuyang on 2017/3/31.
  */
 public class HeaderViewPager extends LinearLayout {
 
     private static final int INVALID_POINTER = -1;
+    private static final int FAST_RETURN_TOP_TIME = 2000;
 
     private final Scroller mScroller;
     private VelocityTracker mVelocityTracker;
@@ -39,6 +42,7 @@ public class HeaderViewPager extends LinearLayout {
     private ScrollableContainer mScrollableContainer;
     private boolean mFlingUp = false;
     private boolean mFlingChild = false;
+    private boolean mFlingToTop = false;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -202,34 +206,44 @@ public class HeaderViewPager extends LinearLayout {
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
-            float currVelocity = mScroller.getCurrVelocity();
-            if (mFlingUp) {
-                //向上fling时，若header已完全隐藏，则向上fling底部内容
-                if (isHeaderCollapseCompletely() && !mFlingChild) {
-                    //保证fling一次
-                    mFlingChild = true;
-                    int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                    int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                    flingContent(Math.round(currVelocity), remainDistance, remainDuration);
-                } else {
-                    final int deltaY = mScroller.getCurrY() - mLastScrollerY;
+            if (mFlingToTop) {
+                //快速滑到顶部
+                final int deltaY = mLastScrollerY - mScroller.getCurrY();
+                if (isScrollContainerTop()) {
                     scrollTo(0, getScrollY() + deltaY);
+                } else {
+                    scrollContent(deltaY);
                 }
             } else {
-                boolean isScrollContainerTop = isScrollContainerTop();
-                //向下fling时，若底部内容未滑动到顶部时，则向下fling底部内容
-                if (!isScrollContainerTop && !mFlingChild) {
-                    //保证fling一次
-                    mFlingChild = true;
-                    int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                    int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                    flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
-                }
-                //向下fling时，若header未完全展开时，则滑动header
-                if ((!isHeaderCollapseCompletely() && !isHeaderExpandCompletely())
-                        || (isScrollContainerTop && !isHeaderExpandCompletely())) {
-                    final int deltaY = mScroller.getCurrY() - mLastScrollerY;
-                    scrollTo(0, getScrollY() + deltaY);
+                float currVelocity = mScroller.getCurrVelocity();
+                if (mFlingUp) {
+                    //向上fling时，若header已完全隐藏，则向上fling底部内容
+                    if (isHeaderCollapseCompletely() && !mFlingChild) {
+                        //保证fling一次
+                        mFlingChild = true;
+                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
+                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
+                        flingContent(Math.round(currVelocity), remainDistance, remainDuration);
+                    } else {
+                        final int deltaY = mScroller.getCurrY() - mLastScrollerY;
+                        scrollTo(0, getScrollY() + deltaY);
+                    }
+                } else {
+                    boolean isScrollContainerTop = isScrollContainerTop();
+                    //向下fling时，若底部内容未滑动到顶部时，则向下fling底部内容
+                    if (!isScrollContainerTop && !mFlingChild) {
+                        //保证fling一次
+                        mFlingChild = true;
+                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
+                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
+                        flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
+                    }
+                    //向下fling时，若header未完全展开时，则滑动header
+                    if ((!isHeaderCollapseCompletely() && !isHeaderExpandCompletely())
+                            || (isScrollContainerTop && !isHeaderExpandCompletely())) {
+                        final int deltaY = mScroller.getCurrY() - mLastScrollerY;
+                        scrollTo(0, getScrollY() + deltaY);
+                    }
                 }
             }
             mLastScrollerY = mScroller.getCurrY();
@@ -248,16 +262,32 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     public void scrollToTop() {
-//        int distance = getScrollY();
-//        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-//            if (mScrollableContainer.getScrollableView() instanceof RecyclerView) {
-//                distance += ((RecyclerView) mScrollableContainer.getScrollableView()).computeVerticalScrollOffset();
-//            } else {
-//                distance += mScrollableContainer.getScrollableView().getScrollY();
-//            }
-//        }
-//        mIntercepted = false;
-//        mScroller.startScroll(0, 0, 0, distance);
+        int distance = 0;
+        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+            if (mScrollableContainer.getScrollableView() instanceof RecyclerView) {
+                distance = ((RecyclerView) mScrollableContainer.getScrollableView()).computeVerticalScrollOffset();
+            } else {
+                distance = mScrollableContainer.getScrollableView().getScrollY();
+            }
+            //大于0说明底部内容已滚动
+            if (distance > 0) {
+                //计算底部内容和header之间距离
+                if (mScrollableContainer.getScrollableView().getParent() instanceof View && getChildAt(0) != null) {
+                    distance += ((View) mScrollableContainer.getScrollableView().getParent()).getTop() - getChildAt(0).getBottom();
+                }
+            }
+        }
+        //加上header滚动距离
+        distance += getScrollY();
+        int duration = FAST_RETURN_TOP_TIME;
+        if (distance <= DeviceUtils.getScreenHeight(getContext())) {
+            //滑动距离小于屏幕，时间减少
+            duration = FAST_RETURN_TOP_TIME / 3;
+        }
+        mLastScrollerY = 0;
+        mFlingToTop = true;
+        mScroller.startScroll(0, 0, 0, distance, duration);
+        invalidate();
     }
 
     private void scroll(int dy) {
@@ -271,9 +301,13 @@ public class HeaderViewPager extends LinearLayout {
         }
         if ((!isScrollContainerTop && isHeaderExpandCompletely()) || isHeaderCollapseCompletely()) {
             //当底部内容未滑动到顶部且header完全展开或header完全隐藏时，滑动底部内容
-            if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-                mScrollableContainer.getScrollableView().scrollBy(0, dy);
-            }
+            scrollContent(dy);
+        }
+    }
+
+    private void scrollContent(int dy) {
+        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+            mScrollableContainer.getScrollableView().scrollBy(0, dy);
         }
     }
 
@@ -285,6 +319,7 @@ public class HeaderViewPager extends LinearLayout {
         //上滑速度小于0，下滑速度大于0
         mFlingUp = vy < 0;
         mFlingChild = false;
+        mFlingToTop = false;
         mLastScrollerY = getScrollY();
         mScroller.fling(0, getScrollY(), 0, -Math.round(vy), 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
         invalidate();

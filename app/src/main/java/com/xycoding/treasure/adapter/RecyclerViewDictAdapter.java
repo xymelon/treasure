@@ -72,7 +72,7 @@ public class RecyclerViewDictAdapter extends RecyclerView.Adapter<RecyclerViewDi
 
     @Override
     public int getItemViewType(int position) {
-        if (mHasClass && position == 0) {
+        if (mHasClass && position == mItems % 3) {
             return ITEM_TYPE_CLASS;
         }
         return ITEM_TYPE_DICT;
