@@ -14,10 +14,8 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Scroller;
 
 import com.xycoding.treasure.R;
@@ -40,7 +38,7 @@ public class HeaderViewPager extends LinearLayout {
     /**
      * 向上滑动最大距离（等于header高度减去偏移量）
      */
-    private int mMaxScrollTop;
+    private int mMaxScrollY;
     private final int mTouchSlop;
     private final int mMinFlingVelocity;
     private final int mMaxFlingVelocity;
@@ -84,8 +82,8 @@ public class HeaderViewPager extends LinearLayout {
         View header = getChildAt(0);
         if (header != null) {
             measureChildWithMargins(header, widthMeasureSpec, 0, MeasureSpec.UNSPECIFIED, 0);
-            mMaxScrollTop = header.getMeasuredHeight() - mTopOffset;
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) + mMaxScrollTop, MeasureSpec.EXACTLY);
+            mMaxScrollY = header.getMeasuredHeight() - mTopOffset;
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) + mMaxScrollY, MeasureSpec.EXACTLY);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -235,9 +233,7 @@ public class HeaderViewPager extends LinearLayout {
                     if (isHeaderCollapseCompletely() && !mFlingChild) {
                         //保证fling一次
                         mFlingChild = true;
-                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                        flingContent(Math.round(currVelocity), remainDistance, remainDuration);
+                        flingContent(Math.round(currVelocity));
                     } else {
                         final int deltaY = mScroller.getCurrY() - mLastScrollerY;
                         scrollTo(0, getScrollY() + deltaY);
@@ -248,9 +244,7 @@ public class HeaderViewPager extends LinearLayout {
                     if (!isScrollContainerTop && !mFlingChild) {
                         //保证fling一次
                         mFlingChild = true;
-                        int remainDistance = mScroller.getFinalY() - mScroller.getCurrY();
-                        int remainDuration = mScroller.getDuration() - mScroller.timePassed();
-                        flingContent(-Math.round(currVelocity), remainDistance, remainDuration);
+                        flingContent(-Math.round(currVelocity));
                     }
                     //向下fling时，若header未完全展开时，则滑动header
                     if ((!isHeaderCollapseCompletely() && !isHeaderExpandCompletely())
@@ -267,13 +261,13 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public void scrollTo(@Px int x, @Px int y) {
-        if (y > mMaxScrollTop) {
-            y = mMaxScrollTop;
+        if (y > mMaxScrollY) {
+            y = mMaxScrollY;
         } else if (y < 0) {
             y = 0;
         }
         if (mOnScrollHeaderListener != null && getScrollY() != y) {
-            mOnScrollHeaderListener.onScroll(y, mMaxScrollTop);
+            mOnScrollHeaderListener.onScroll(y, mMaxScrollY);
         }
         super.scrollTo(x, y);
     }
@@ -281,11 +275,7 @@ public class HeaderViewPager extends LinearLayout {
     public void scrollToTop() {
         int distance = 0;
         if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            if (mScrollableContainer.getScrollableView() instanceof RecyclerView) {
-                distance = ((RecyclerView) mScrollableContainer.getScrollableView()).computeVerticalScrollOffset();
-            } else {
-                distance = mScrollableContainer.getScrollableView().getScrollY();
-            }
+            distance = mScrollableContainer.getScrollableView().computeVerticalScrollOffset();
             //大于0说明底部内容已滚动
             if (distance > 0) {
                 //计算底部内容和header之间距离
@@ -346,25 +336,10 @@ public class HeaderViewPager extends LinearLayout {
      * fling底部内容
      *
      * @param vy
-     * @param distance
-     * @param duration
      */
-    private void flingContent(int vy, int distance, int duration) {
+    private void flingContent(int vy) {
         if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            if (mScrollableContainer.getScrollableView() instanceof AbsListView) {
-                AbsListView absListView = (AbsListView) mScrollableContainer.getScrollableView();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    absListView.fling(vy);
-                } else {
-                    absListView.smoothScrollBy(distance, duration);
-                }
-            } else if (mScrollableContainer.getScrollableView() instanceof ScrollView) {
-                ((ScrollView) mScrollableContainer.getScrollableView()).fling(vy);
-            } else if (mScrollableContainer.getScrollableView() instanceof RecyclerView) {
-                ((RecyclerView) mScrollableContainer.getScrollableView()).fling(0, vy);
-            } else if (mScrollableContainer.getScrollableView() instanceof WebView) {
-                ((WebView) mScrollableContainer.getScrollableView()).flingScroll(0, vy);
-            }
+            mScrollableContainer.getScrollableView().fling(0, vy);
         }
     }
 
@@ -374,7 +349,7 @@ public class HeaderViewPager extends LinearLayout {
      * @return
      */
     private boolean isHeaderCollapseCompletely() {
-        return getScrollY() == mMaxScrollTop;
+        return getScrollY() == mMaxScrollY;
     }
 
     /**
@@ -424,6 +399,14 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
         mOnScrollHeaderListener = listener;
+    }
+
+    public interface ScrollableContainer {
+        RecyclerView getScrollableView();
+    }
+
+    public interface OnScrollHeaderListener {
+        void onScroll(int currentPosition, int maxPosition);
     }
 
 }

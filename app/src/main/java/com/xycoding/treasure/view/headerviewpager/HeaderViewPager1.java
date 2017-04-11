@@ -566,4 +566,8 @@ public class HeaderViewPager1 extends LinearLayout {
         mScrollableContainer = scrollableContainer;
     }
 
+    public interface ScrollableContainer {
+        View getScrollableView();
+    }
+
 }

@@ -1,18 +1,16 @@
 package com.xycoding.treasure.fragment;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.Toast;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.FragmentDictResultBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
-import com.xycoding.treasure.view.headerviewpager.OnScrollHeaderListener;
+import com.xycoding.treasure.view.headerviewpager.HeaderViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,15 +55,15 @@ public class DictResultFragment extends BaseBindingFragment {
                 mBinding.headerViewPager.scrollToTop();
             }
         });
-        mBinding.headerViewPager.setOnScrollHeaderListener(new OnScrollHeaderListener() {
+        mBinding.headerViewPager.setOnScrollHeaderListener(new HeaderViewPager.OnScrollHeaderListener() {
             @Override
             public void onScroll(int currentPosition, int maxPosition) {
-                if (maxPosition - currentPosition <= mBinding.tabLayoutLanguage.getHeight()) {
-                    mBinding.tabLayoutLanguage.scrollBy(0, maxPosition - currentPosition);
-//                    mBinding.tabLayoutLanguage.setAlpha(0.5f);
-//                    mBinding.tabLayoutLanguage.setBackgroundColor(Color.TRANSPARENT);
+                int tabHeight = mBinding.tabLayoutLanguage.getHeight();
+                if (maxPosition - currentPosition <= tabHeight) {
+                    mBinding.layoutTabDict2.getRoot().setVisibility(View.VISIBLE);
+                    mBinding.layoutTabDict2.getRoot().setTranslationY((maxPosition - currentPosition) - tabHeight);
                 } else {
-                    mBinding.tabLayoutLanguage.setVisibility(View.VISIBLE);
+                    mBinding.layoutTabDict2.getRoot().setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -102,7 +100,8 @@ public class DictResultFragment extends BaseBindingFragment {
             }
         };
         mBinding.viewPager.setAdapter(mPagerAdapter);
-        mBinding.tabLayout.setupWithViewPager(mBinding.viewPager);
+        mBinding.layoutTabDict1.tabLayoutDict.setupWithViewPager(mBinding.viewPager);
+        mBinding.layoutTabDict2.tabLayoutDict.setupWithViewPager(mBinding.viewPager);
 
         mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(0));
         mBinding.viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
