@@ -4,12 +4,46 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/B1">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout_language"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@color/W1"
+            app:tabTextColor="@color/G20">
+
+            <android.support.design.widget.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="英汉" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:text="日汉" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:text="韩汉" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:text="德汉" />
+
+        </android.support.design.widget.TabLayout>
 
         <com.xycoding.treasure.view.headerviewpager.HeaderViewPager
             android:id="@+id/header_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingTop="40dp"
+            app:hvp_topOffset="-40dp">
 
             <include
                 android:id="@+id/layout_header"

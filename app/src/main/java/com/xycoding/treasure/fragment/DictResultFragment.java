@@ -1,14 +1,18 @@
 package com.xycoding.treasure.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Toast;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.FragmentDictResultBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
+import com.xycoding.treasure.view.headerviewpager.OnScrollHeaderListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,18 @@ public class DictResultFragment extends BaseBindingFragment {
             @Override
             public void call(Void aVoid) {
                 mBinding.headerViewPager.scrollToTop();
+            }
+        });
+        mBinding.headerViewPager.setOnScrollHeaderListener(new OnScrollHeaderListener() {
+            @Override
+            public void onScroll(int currentPosition, int maxPosition) {
+                if (maxPosition - currentPosition <= mBinding.tabLayoutLanguage.getHeight()) {
+                    mBinding.tabLayoutLanguage.scrollBy(0, maxPosition - currentPosition);
+//                    mBinding.tabLayoutLanguage.setAlpha(0.5f);
+//                    mBinding.tabLayoutLanguage.setBackgroundColor(Color.TRANSPARENT);
+                } else {
+                    mBinding.tabLayoutLanguage.setVisibility(View.VISIBLE);
+                }
             }
         });
     }

@@ -1,6 +1,7 @@
 package com.xycoding.treasure.view.headerviewpager;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Scroller;
 
+import com.xycoding.treasure.R;
 import com.xycoding.treasure.utils.DeviceUtils;
 
 /**
@@ -31,7 +33,14 @@ public class HeaderViewPager extends LinearLayout {
 
     private final Scroller mScroller;
     private VelocityTracker mVelocityTracker;
-    private int mHeaderHeight;
+    /**
+     * 向上滑动偏移量
+     */
+    private int mTopOffset;
+    /**
+     * 向上滑动最大距离（等于header高度减去偏移量）
+     */
+    private int mMaxScrollTop;
     private final int mTouchSlop;
     private final int mMinFlingVelocity;
     private final int mMaxFlingVelocity;
@@ -39,10 +48,11 @@ public class HeaderViewPager extends LinearLayout {
     private int mInitMotionY;
     private int mLastTouchY;
     private int mLastScrollerY;
-    private ScrollableContainer mScrollableContainer;
     private boolean mFlingUp = false;
     private boolean mFlingChild = false;
     private boolean mFlingToTop = false;
+    private ScrollableContainer mScrollableContainer;
+    private OnScrollHeaderListener mOnScrollHeaderListener;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -55,6 +65,10 @@ public class HeaderViewPager extends LinearLayout {
     public HeaderViewPager(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
+
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HeaderViewPager);
+        mTopOffset = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_topOffset), 0);
+        typedArray.recycle();
 
         final ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
@@ -70,8 +84,8 @@ public class HeaderViewPager extends LinearLayout {
         View header = getChildAt(0);
         if (header != null) {
             measureChildWithMargins(header, widthMeasureSpec, 0, MeasureSpec.UNSPECIFIED, 0);
-            mHeaderHeight = header.getMeasuredHeight();
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) + mHeaderHeight, MeasureSpec.EXACTLY);
+            mMaxScrollTop = header.getMeasuredHeight() - mTopOffset;
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) + mMaxScrollTop, MeasureSpec.EXACTLY);
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -253,10 +267,13 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public void scrollTo(@Px int x, @Px int y) {
-        if (y > mHeaderHeight) {
-            y = mHeaderHeight;
+        if (y > mMaxScrollTop) {
+            y = mMaxScrollTop;
         } else if (y < 0) {
             y = 0;
+        }
+        if (mOnScrollHeaderListener != null && getScrollY() != y) {
+            mOnScrollHeaderListener.onScroll(y, mMaxScrollTop);
         }
         super.scrollTo(x, y);
     }
@@ -357,7 +374,7 @@ public class HeaderViewPager extends LinearLayout {
      * @return
      */
     private boolean isHeaderCollapseCompletely() {
-        return getScrollY() == mHeaderHeight;
+        return getScrollY() == mMaxScrollTop;
     }
 
     /**
@@ -403,6 +420,10 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
         mScrollableContainer = scrollableContainer;
+    }
+
+    public void setOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
+        mOnScrollHeaderListener = listener;
     }
 
 }
