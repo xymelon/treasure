@@ -299,81 +299,52 @@ public class HeaderViewPager extends LinearLayout {
         }
     }
 
-    @Override
-    protected int computeVerticalScrollExtent() {
-        return super.computeVerticalScrollExtent();
-    }
 
     @Override
-    protected int computeVerticalScrollOffset() {
-        return super.computeVerticalScrollOffset();
-    }
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        if (mEdgeEffectTop != null) {
+            final int width = getWidth() - getPaddingLeft() - getPaddingRight();
+            final int height = getHeight();
+            if (!mEdgeEffectTop.isFinished()) {
+                final int restoreCount = canvas.save();
 
-    @Override
-    protected int computeVerticalScrollRange() {
-        return super.computeVerticalScrollRange();
-    }
+                canvas.translate(getPaddingLeft(), getPaddingTop());
+                mEdgeEffectTop.setSize(width, height);
+                if (mEdgeEffectTop.draw(canvas)) {
+                    invalidate();
+                }
+                canvas.restoreToCount(restoreCount);
+            }
+            if (!mEdgeEffectBottom.isFinished()) {
+                final int restoreCount = canvas.save();
 
-    @Override
-    public void scrollTo(@Px int x, @Px int y) {
-        if (y > mMaxScrollY) {
-            y = mMaxScrollY;
-        } else if (y < 0) {
-            y = 0;
-        }
-        if (mOnScrollHeaderListener != null && getScrollY() != y) {
-            mOnScrollHeaderListener.onScroll(y, mMaxScrollY);
-        }
-        super.scrollTo(x, y);
-    }
-
-    public void scrollToTop() {
-        int distance = getCurrentScrollY();
-        int duration = FAST_RETURN_TOP_TIME;
-        if (distance <= DeviceUtils.getScreenHeight(getContext())) {
-            //滑动距离小于屏幕，时间减少
-            duration = FAST_RETURN_TOP_TIME / 3;
-        }
-        mLastScrollerY = 0;
-        mFlingToTop = true;
-        mScroller.startScroll(0, 0, 0, distance, duration);
-        invalidate();
-    }
-
-    private int getScrollRange() {
-        int scrollRange = 0;
-        scrollRange += mMaxScrollY; //加上header
-        scrollRange += getContentHeaderGap(); //加上header与内容之间高度
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            //加上底部内容滚动范围
-            scrollRange += mScrollableContainer.getScrollableView().computeVerticalScrollRange()
-                    + mScrollableContainer.getScrollableView().getPaddingTop()
-                    + mScrollableContainer.getScrollableView().getPaddingBottom();
-        }
-        scrollRange -= getHeight() - mMaxScrollY - getPaddingBottom() - getPaddingTop();
-        return Math.max(0, scrollRange);
-    }
-
-    private int getCurrentScrollY() {
-        int distance = 0;
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            distance = mScrollableContainer.getScrollableView().computeVerticalScrollOffset();
-            //大于0说明底部内容已滚动
-            if (distance > 0) {
-                distance += getContentHeaderGap();
+                canvas.translate(-width + getPaddingLeft(), height);
+                canvas.rotate(180, width, 0);
+                mEdgeEffectBottom.setSize(width, height);
+                if (mEdgeEffectBottom.draw(canvas)) {
+                    invalidate();
+                }
+                canvas.restoreToCount(restoreCount);
             }
         }
-        //加上header滚动距离
-        distance += getScrollY();
-        return distance;
     }
 
-    private int getContentHeaderGap() {
-        //计算底部内容和header之间距离
-        if (mScrollableContainer.getScrollableView().getParent() instanceof View && getChildAt(0) != null) {
-            return ((View) mScrollableContainer.getScrollableView().getParent()).getTop() - getChildAt(0).getBottom();
+    private void ensureGlows() {
+        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+            //隐藏recycler view滑到顶部和底部时的效果
+            mScrollableContainer.getScrollableView().setOverScrollMode(OVER_SCROLL_NEVER);
         }
-        return 0;
+        if (getOverScrollMode() != View.OVER_SCROLL_NEVER) {
+            if (mEdgeEffectTop == null) {
+                Context context = getContext();
+                mEdgeEffectTop = new EdgeEffectCompat(context);
+                mEdgeEffectBottom = new EdgeEffectCompat(context);
+            }
+        } else {
+            mEdgeEffectTop = null;
+            mEdgeEffectBottom = null;
+        }
     }
 
     private void edgeEffectPull(float touchX, int deltaY) {
@@ -404,6 +375,54 @@ public class HeaderViewPager extends LinearLayout {
     private boolean canOverScroll() {
         final int overScrollMode = getOverScrollMode();
         return overScrollMode == View.OVER_SCROLL_ALWAYS || overScrollMode == View.OVER_SCROLL_IF_CONTENT_SCROLLS;
+    }
+
+    @Override
+    public void scrollTo(@Px int x, @Px int y) {
+        if (y > mMaxScrollY) {
+            y = mMaxScrollY;
+        } else if (y < 0) {
+            y = 0;
+        }
+        if (mOnScrollHeaderListener != null && getScrollY() != y) {
+            mOnScrollHeaderListener.onScroll(y, mMaxScrollY);
+        }
+        super.scrollTo(x, y);
+    }
+
+    public void scrollToTop() {
+        int distance = getCurrentScrollY();
+        int duration = FAST_RETURN_TOP_TIME;
+        if (distance <= DeviceUtils.getScreenHeight(getContext())) {
+            //滑动距离小于屏幕，时间减少
+            duration = FAST_RETURN_TOP_TIME / 3;
+        }
+        mLastScrollerY = 0;
+        mFlingToTop = true;
+        mScroller.startScroll(0, 0, 0, distance, duration);
+        invalidate();
+    }
+
+    private int getCurrentScrollY() {
+        int distance = 0;
+        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+            distance = mScrollableContainer.getScrollableView().computeVerticalScrollOffset();
+            //大于0说明底部内容已滚动
+            if (distance > 0) {
+                distance += getContentHeaderGap();
+            }
+        }
+        //加上header滚动距离
+        distance += getScrollY();
+        return distance;
+    }
+
+    private int getContentHeaderGap() {
+        //计算底部内容和header之间距离
+        if (mScrollableContainer.getScrollableView().getParent() instanceof View && getChildAt(0) != null) {
+            return ((View) mScrollableContainer.getScrollableView().getParent()).getTop() - getChildAt(0).getBottom();
+        }
+        return 0;
     }
 
     private void scroll(int dy) {
@@ -497,7 +516,6 @@ public class HeaderViewPager extends LinearLayout {
                 && !canViewScrollDown(mScrollableContainer.getScrollableView());
     }
 
-
     private boolean canViewScrollUp(View view) {
         return ViewCompat.canScrollVertically(view, -1);
     }
@@ -512,53 +530,6 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
         mOnScrollHeaderListener = listener;
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-        if (mEdgeEffectTop != null) {
-            final int width = getWidth() - getPaddingLeft() - getPaddingRight();
-            final int height = getHeight();
-            if (!mEdgeEffectTop.isFinished()) {
-                final int restoreCount = canvas.save();
-
-                canvas.translate(getPaddingLeft(), getPaddingTop());
-                mEdgeEffectTop.setSize(width, height);
-                if (mEdgeEffectTop.draw(canvas)) {
-                    invalidate();
-                }
-                canvas.restoreToCount(restoreCount);
-            }
-            if (!mEdgeEffectBottom.isFinished()) {
-                final int restoreCount = canvas.save();
-
-                canvas.translate(-width + getPaddingLeft(), height);
-                canvas.rotate(180, width, 0);
-                mEdgeEffectBottom.setSize(width, height);
-                if (mEdgeEffectBottom.draw(canvas)) {
-                    invalidate();
-                }
-                canvas.restoreToCount(restoreCount);
-            }
-        }
-    }
-
-    private void ensureGlows() {
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            //隐藏recycler view滑到顶部和底部时的效果
-            mScrollableContainer.getScrollableView().setOverScrollMode(OVER_SCROLL_NEVER);
-        }
-        if (getOverScrollMode() != View.OVER_SCROLL_NEVER) {
-            if (mEdgeEffectTop == null) {
-                Context context = getContext();
-                mEdgeEffectTop = new EdgeEffectCompat(context);
-                mEdgeEffectBottom = new EdgeEffectCompat(context);
-            }
-        } else {
-            mEdgeEffectTop = null;
-            mEdgeEffectBottom = null;
-        }
     }
 
     public interface ScrollableContainer {
