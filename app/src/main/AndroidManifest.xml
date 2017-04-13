@@ -75,6 +75,11 @@
             android:label="@string/activity_speech"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.ChartActivity"
+            android:label="@string/activity_chart"
+            android:screenOrientation="portrait" />
+
         <service android:name=".service.LocalIntentService" />
 
     </application>

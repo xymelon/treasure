@@ -51,4 +51,16 @@
         <attr name="hvp_topOffset" format="reference|dimension" />
     </declare-styleable>
 
+    <declare-styleable name="InteractiveLineGraphView">
+        <attr name="labelTextSize" format="dimension" />
+        <attr name="labelTextColor" format="color" />
+        <attr name="labelSeparation" format="dimension" />
+        <attr name="axisThickness" format="dimension" />
+        <attr name="axisColor" format="color" />
+        <attr name="dataThickness" format="dimension" />
+        <attr name="dataColor" format="color" />
+        <attr name="gridThickness" format="dimension" />
+        <attr name="gridColor" format="color" />
+    </declare-styleable>
+
 </resources>

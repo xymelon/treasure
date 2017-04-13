@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.xycoding.treasure.view.interactivechart.InteractiveLineGraphView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/chart"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/chart_padding"
+    app:axisColor="#d000"
+    app:axisThickness="2dp"
+    app:dataColor="#a6c"
+    app:dataThickness="8dp"
+    app:gridColor="#2000"
+    app:gridThickness="1dp"
+    app:labelSeparation="10dp"
+    app:labelTextColor="#d000"
+    app:labelTextSize="14sp" />

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_zoom_in"
+        android:icon="@drawable/ic_action_zoom_in"
+        android:title="@string/action_zoom_in"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_zoom_out"
+        android:icon="@drawable/ic_action_zoom_out"
+        android:title="@string/action_zoom_out"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_pan_left"
+        android:icon="@drawable/ic_action_pan_left"
+        android:title="@string/action_pan_left"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_pan_right"
+        android:icon="@drawable/ic_action_pan_right"
+        android:title="@string/action_pan_right"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_pan_up"
+        android:icon="@drawable/ic_action_pan_up"
+        android:title="@string/action_pan_up"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_pan_down"
+        android:icon="@drawable/ic_action_pan_down"
+        android:title="@string/action_pan_down"
+        app:showAsAction="never" />
+</menu>

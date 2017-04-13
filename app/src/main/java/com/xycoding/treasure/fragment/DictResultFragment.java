@@ -55,6 +55,12 @@ public class DictResultFragment extends BaseBindingFragment {
                 mBinding.headerViewPager.scrollToTop();
             }
         });
+        RxViewWrapper.clicks(mBinding.layoutHeader.tvAd).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                Toast.makeText(getContext(), mBinding.layoutHeader.tvAd.getText(), Toast.LENGTH_SHORT).show();
+            }
+        });
         mBinding.headerViewPager.setOnScrollHeaderListener(new HeaderViewPager.OnScrollHeaderListener() {
             @Override
             public void onScroll(int currentPosition, int maxPosition) {
