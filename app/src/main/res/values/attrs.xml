@@ -49,6 +49,9 @@
 
     <declare-styleable name="HeaderViewPager">
         <attr name="hvp_topOffset" format="reference|dimension" />
+        <attr name="hvp_scrollbar" format="reference" />
+        <attr name="hvp_scrollbar_marginTop" format="reference|dimension" />
+        <attr name="hvp_scrollbar_marginBottom" format="reference|dimension" />
     </declare-styleable>
 
     <declare-styleable name="InteractiveLineGraphView">

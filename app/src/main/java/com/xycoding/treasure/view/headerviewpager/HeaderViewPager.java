@@ -2,7 +2,10 @@ package com.xycoding.treasure.view.headerviewpager;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
@@ -19,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.Scroller;
 
 import com.xycoding.treasure.R;
+import com.xycoding.treasure.utils.BitmapUtils;
 import com.xycoding.treasure.utils.DeviceUtils;
 
 /**
@@ -57,6 +61,11 @@ public class HeaderViewPager extends LinearLayout {
     private boolean mEdgeEffectTopActive;
     private boolean mEdgeEffectBottomActive;
 
+    private Rect mRect = new Rect();
+    private Bitmap mScrollBarBitmap;
+    private RectF mScrollBarBitmapRectF = new RectF();
+    private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
+
     public HeaderViewPager(Context context) {
         this(context, null);
     }
@@ -72,6 +81,9 @@ public class HeaderViewPager extends LinearLayout {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HeaderViewPager);
         mTopOffset = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_topOffset), 0);
+        mScrollBarBitmap = BitmapUtils.drawableToBitmap(typedArray.getDrawable(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar)));
+        mScrollBarBitmapMarginTop = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop), 0);
+        mScrollbarBitmapMarginBottom = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom), 0);
         typedArray.recycle();
 
         final ViewConfiguration vc = ViewConfiguration.get(context);
@@ -290,7 +302,7 @@ public class HeaderViewPager extends LinearLayout {
                     }
                 } else {
                     //向下fling时，若已滑动到顶部，触发顶部边界动效
-                    if (isHeaderExpandCompletely() && !mEdgeEffectTopActive) {
+                    if (isScrollTop() && !mEdgeEffectTopActive) {
                         mEdgeEffectTopActive = true;
                         mEdgeEffectTop.onAbsorb((int) mScroller.getCurrVelocity());
                     }
@@ -307,8 +319,8 @@ public class HeaderViewPager extends LinearLayout {
             final int width = getWidth() - getPaddingLeft() - getPaddingRight();
             final int height = getHeight();
             if (!mEdgeEffectTop.isFinished()) {
+                //绘制顶部边界动效
                 final int restoreCount = canvas.save();
-
                 canvas.translate(getPaddingLeft(), getPaddingTop());
                 mEdgeEffectTop.setSize(width, height);
                 if (mEdgeEffectTop.draw(canvas)) {
@@ -317,8 +329,8 @@ public class HeaderViewPager extends LinearLayout {
                 canvas.restoreToCount(restoreCount);
             }
             if (!mEdgeEffectBottom.isFinished()) {
+                //绘制底部边界动效
                 final int restoreCount = canvas.save();
-
                 canvas.translate(-width + getPaddingLeft(), height);
                 canvas.rotate(180, width, 0);
                 mEdgeEffectBottom.setSize(width, height);
@@ -328,6 +340,55 @@ public class HeaderViewPager extends LinearLayout {
                 canvas.restoreToCount(restoreCount);
             }
         }
+
+        if (mScrollBarBitmap != null) {
+            //绘制scroll bar
+            final int scrollbarRange = computeVerticalScrollExtent() + mTopOffset
+                    - mScrollBarBitmapMarginTop - mScrollbarBitmapMarginBottom - mScrollBarBitmap.getHeight();
+            final float currentPercent = (float) (computeVerticalScrollOffset()) / (computeVerticalScrollRange() - computeVerticalScrollExtent());
+            final float scrollBarTop = mScrollBarBitmapMarginTop + currentPercent * scrollbarRange;
+            mScrollBarBitmapRectF.set(
+                    getPaddingLeft() + getWidth() - mScrollBarBitmap.getWidth(),
+                    scrollBarTop,
+                    getPaddingLeft() + getWidth() + getPaddingRight(),
+                    scrollBarTop + mScrollBarBitmap.getHeight());
+            final int restoreCount = canvas.save();
+            canvas.translate(0, getScrollY());
+            canvas.drawBitmap(mScrollBarBitmap, null, mScrollBarBitmapRectF, null);
+            canvas.restoreToCount(restoreCount);
+        }
+    }
+
+    @Override
+    protected int computeVerticalScrollRange() {
+        int range = 0;
+        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+            if (mScrollableContainer.getScrollableView().computeVerticalScrollExtent()
+                    == mScrollableContainer.getScrollableView().computeVerticalScrollRange()) {
+                //底部内容不能滚动，直接返回当前view高度
+                return getHeight() - mTopOffset;
+            }
+            range = mScrollableContainer.getScrollableView().computeVerticalScrollRange();
+        }
+        range += mMaxScrollY + getContentHeaderGap();
+        return range;
+    }
+
+    @Override
+    protected int computeVerticalScrollOffset() {
+        int offset = getScrollY();
+        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+            offset += mScrollableContainer.getScrollableView().computeVerticalScrollOffset();
+        }
+        return offset;
+    }
+
+    @Override
+    protected int computeVerticalScrollExtent() {
+        if (mRect.isEmpty()) {
+            getGlobalVisibleRect(mRect);
+        }
+        return mRect.height() - mTopOffset;
     }
 
     private void ensureGlows() {
@@ -350,7 +411,7 @@ public class HeaderViewPager extends LinearLayout {
     private void edgeEffectPull(float touchX, int deltaY) {
         if (canOverScroll()) {
             ensureGlows();
-            if (isHeaderExpandCompletely() && deltaY < 0) {
+            if (isScrollTop() && deltaY < 0) {
                 mEdgeEffectTopActive = true;
                 //滑到顶部且向下滑时，触发顶部边界动效
                 mEdgeEffectTop.onPull((float) deltaY / getHeight(), touchX / getWidth());
@@ -457,8 +518,8 @@ public class HeaderViewPager extends LinearLayout {
         mFlingToTop = false;
         mLastScrollerY = getScrollY();
         if ((mFlingUp && isScrollBottom())
-                || (!mFlingUp && isHeaderExpandCompletely())) {
-            //上滑且已滑到底部，或下滑且滑动顶部，不用fling
+                || (!mFlingUp && isScrollTop())) {
+            //上滑且滑到底部，或下滑且滑到顶部，不用fling
             return;
         }
         mScroller.fling(0, getScrollY(), 0, -Math.round(vy), 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -503,6 +564,15 @@ public class HeaderViewPager extends LinearLayout {
         return mScrollableContainer == null
                 || mScrollableContainer.getScrollableView() == null
                 || !canViewScrollUp(mScrollableContainer.getScrollableView());
+    }
+
+    /**
+     * 是否已滑动到顶部
+     *
+     * @return
+     */
+    private boolean isScrollTop() {
+        return isScrollContainerTop() && isHeaderExpandCompletely();
     }
 
     /**
