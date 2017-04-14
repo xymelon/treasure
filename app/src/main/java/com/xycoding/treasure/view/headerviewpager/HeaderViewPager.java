@@ -65,6 +65,8 @@ public class HeaderViewPager extends LinearLayout {
     private Bitmap mScrollBarBitmap;
     private RectF mScrollBarBitmapRectF = new RectF();
     private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
+    private boolean mScrollBarConsumeEvent = false;
+    private OnScrollBarClickListener mOnScrollBarClickListener;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -125,6 +127,10 @@ public class HeaderViewPager extends LinearLayout {
                 resetEdgeEffects();
                 mActivePointerId = ev.getPointerId(0);
                 mInitMotionY = mLastTouchY = Math.round(ev.getY());
+                if (isScrollBarConsumeEvent(ev)) {
+                    //scroll bar消费事件
+                    return true;
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
@@ -166,6 +172,10 @@ public class HeaderViewPager extends LinearLayout {
         return false;
     }
 
+    private boolean isScrollBarConsumeEvent(MotionEvent ev) {
+        return mScrollBarConsumeEvent = mScrollBarBitmapRectF.contains(ev.getX(), ev.getY());
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         ensureVelocityTracker(ev);
@@ -175,6 +185,7 @@ public class HeaderViewPager extends LinearLayout {
                 resetEdgeEffects();
                 mActivePointerId = ev.getPointerId(0);
                 mLastTouchY = Math.round(ev.getY());
+                isScrollBarConsumeEvent(ev);
                 break;
             case MotionEvent.ACTION_MOVE:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
@@ -183,9 +194,10 @@ public class HeaderViewPager extends LinearLayout {
                 }
                 final int y = Math.round(ev.getY(pointerIndex));
                 final int deltaY = mLastTouchY - y;
-                scroll(deltaY);
-
-                edgeEffectPull(ev.getX(pointerIndex), deltaY);
+                if (!mScrollBarConsumeEvent) {
+                    scroll(deltaY);
+                    edgeEffectPull(ev.getX(pointerIndex), deltaY);
+                }
                 mLastTouchY = y;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -201,8 +213,14 @@ public class HeaderViewPager extends LinearLayout {
                 if (pointerIndex < 0) {
                     return false;
                 }
-                mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
-                fling(mVelocityTracker.getYVelocity(pointerIndex));
+                if (mScrollBarConsumeEvent) {
+                    if (mOnScrollHeaderListener != null && isScrollBarConsumeEvent(ev)) {
+                        mOnScrollBarClickListener.onClick(ev.getX(pointerIndex), ev.getY(pointerIndex));
+                    }
+                } else {
+                    mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
+                    fling(mVelocityTracker.getYVelocity(pointerIndex));
+                }
                 clearParams();
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -343,19 +361,24 @@ public class HeaderViewPager extends LinearLayout {
 
         if (mScrollBarBitmap != null) {
             //绘制scroll bar
-            final int scrollbarRange = computeVerticalScrollExtent() + mTopOffset
-                    - mScrollBarBitmapMarginTop - mScrollbarBitmapMarginBottom - mScrollBarBitmap.getHeight();
-            final float currentPercent = (float) (computeVerticalScrollOffset()) / (computeVerticalScrollRange() - computeVerticalScrollExtent());
-            final float scrollBarTop = mScrollBarBitmapMarginTop + currentPercent * scrollbarRange;
-            mScrollBarBitmapRectF.set(
-                    getPaddingLeft() + getWidth() - mScrollBarBitmap.getWidth(),
-                    scrollBarTop,
-                    getPaddingLeft() + getWidth() + getPaddingRight(),
-                    scrollBarTop + mScrollBarBitmap.getHeight());
-            final int restoreCount = canvas.save();
-            canvas.translate(0, getScrollY());
-            canvas.drawBitmap(mScrollBarBitmap, null, mScrollBarBitmapRectF, null);
-            canvas.restoreToCount(restoreCount);
+            final int scrollRange = computeVerticalScrollRange();
+            final int scrollExtent = computeVerticalScrollExtent();
+            //可滚动距离大于指定范围时，才绘制scroll bar
+            if (scrollRange > scrollExtent * 2) {
+                final int scrollbarRange = scrollExtent + mTopOffset
+                        - mScrollBarBitmapMarginTop - mScrollbarBitmapMarginBottom - mScrollBarBitmap.getHeight();
+                final float currentPercent = (float) (computeVerticalScrollOffset()) / (scrollRange - scrollExtent);
+                final float scrollBarTop = mScrollBarBitmapMarginTop + currentPercent * scrollbarRange;
+                mScrollBarBitmapRectF.set(
+                        getPaddingLeft() + getWidth() - mScrollBarBitmap.getWidth(),
+                        scrollBarTop,
+                        getPaddingLeft() + getWidth() + getPaddingRight(),
+                        scrollBarTop + mScrollBarBitmap.getHeight());
+                final int restoreCount = canvas.save();
+                canvas.translate(0, getScrollY());
+                canvas.drawBitmap(mScrollBarBitmap, null, mScrollBarBitmapRectF, null);
+                canvas.restoreToCount(restoreCount);
+            }
         }
     }
 
@@ -602,12 +625,20 @@ public class HeaderViewPager extends LinearLayout {
         mOnScrollHeaderListener = listener;
     }
 
+    public void setOnScrollBarClickListener(@NonNull OnScrollBarClickListener listener) {
+        mOnScrollBarClickListener = listener;
+    }
+
     public interface ScrollableContainer {
         RecyclerView getScrollableView();
     }
 
     public interface OnScrollHeaderListener {
         void onScroll(int currentPosition, int maxPosition);
+    }
+
+    public interface OnScrollBarClickListener {
+        void onClick(float x, float y);
     }
 
 }

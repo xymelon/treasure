@@ -73,6 +73,12 @@ public class DictResultFragment extends BaseBindingFragment {
                 }
             }
         });
+        mBinding.headerViewPager.setOnScrollBarClickListener(new HeaderViewPager.OnScrollBarClickListener() {
+            @Override
+            public void onClick(float x, float y) {
+                Toast.makeText(getContext(), "scroll bar:" + x + "_" + y, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
