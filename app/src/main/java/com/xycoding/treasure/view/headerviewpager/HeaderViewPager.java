@@ -332,12 +332,14 @@ public class HeaderViewPager extends LinearLayout {
                 if (mFlingToTop || mFlingUp) {
                     //向上fling时，若已滑动到底部，触发底部边界动效
                     if (isScrollBottom() && !mEdgeEffectBottomActive) {
+                        mScroller.abortAnimation();
                         mEdgeEffectBottomActive = true;
                         mEdgeEffectBottom.onAbsorb((int) mScroller.getCurrVelocity());
                     }
                 } else {
                     //向下fling时，若已滑动到顶部，触发顶部边界动效
                     if (isScrollTop() && !mEdgeEffectTopActive) {
+                        mScroller.abortAnimation();
                         mEdgeEffectTopActive = true;
                         mEdgeEffectTop.onAbsorb((int) mScroller.getCurrVelocity());
                     }
