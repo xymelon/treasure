@@ -64,6 +64,8 @@ public class HeaderViewPager extends LinearLayout {
     private Rect mRect = new Rect();
     private Bitmap mScrollBarBitmap;
     private RectF mScrollBarBitmapRectF = new RectF();
+    private RectF mScrollBarEventRectF = new RectF();
+    private final int mScrollBarMinHotArea;
     private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
     private boolean mScrollBarConsumeEvent = false;
     private OnScrollBarClickListener mOnScrollBarClickListener;
@@ -87,6 +89,9 @@ public class HeaderViewPager extends LinearLayout {
         mScrollBarBitmapMarginTop = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop), 0);
         mScrollbarBitmapMarginBottom = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom), 0);
         typedArray.recycle();
+
+        //scroll bar最小点击热区
+        mScrollBarMinHotArea = DeviceUtils.dp2px(context, 36);
 
         final ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
@@ -172,10 +177,6 @@ public class HeaderViewPager extends LinearLayout {
         return false;
     }
 
-    private boolean isScrollBarConsumeEvent(MotionEvent ev) {
-        return mScrollBarConsumeEvent = mScrollBarBitmapRectF.contains(ev.getX(), ev.getY());
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         ensureVelocityTracker(ev);
@@ -228,6 +229,22 @@ public class HeaderViewPager extends LinearLayout {
                 break;
         }
         return true;
+    }
+
+    private boolean isScrollBarConsumeEvent(MotionEvent ev) {
+        mScrollBarEventRectF.set(mScrollBarBitmapRectF);
+        //扩展scroll bar点击热区
+        if (mScrollBarEventRectF.width() < mScrollBarMinHotArea) {
+            float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.width()) / 2;
+            mScrollBarEventRectF.left -= expand;
+            mScrollBarEventRectF.right += expand;
+        }
+        if (mScrollBarEventRectF.height() < mScrollBarMinHotArea) {
+            float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.height()) / 2;
+            mScrollBarEventRectF.top -= expand;
+            mScrollBarEventRectF.bottom += expand;
+        }
+        return mScrollBarConsumeEvent = mScrollBarEventRectF.contains(ev.getX(), ev.getY());
     }
 
     private void onSecondaryPointerUp(MotionEvent ev) {
