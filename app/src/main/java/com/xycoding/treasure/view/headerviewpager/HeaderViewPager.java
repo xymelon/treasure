@@ -68,6 +68,7 @@ public class HeaderViewPager extends LinearLayout {
     private final int mScrollBarMinHotArea;
     private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
     private boolean mScrollBarConsumeEvent = false;
+    private boolean mShowScrollBar = true;
     private OnScrollBarClickListener mOnScrollBarClickListener;
 
     public HeaderViewPager(Context context) {
@@ -378,7 +379,7 @@ public class HeaderViewPager extends LinearLayout {
             }
         }
 
-        if (mScrollBarBitmap != null) {
+        if (mShowScrollBar && mScrollBarBitmap != null) {
             //绘制scroll bar
             final int scrollRange = computeVerticalScrollRange();
             final int scrollExtent = computeVerticalScrollExtent();
@@ -646,6 +647,10 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setOnScrollBarClickListener(@NonNull OnScrollBarClickListener listener) {
         mOnScrollBarClickListener = listener;
+    }
+
+    public void setShowScrollBar(boolean show) {
+        mShowScrollBar = show;
     }
 
     public interface ScrollableContainer {
