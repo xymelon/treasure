@@ -68,6 +68,7 @@ public class DictResultFragment extends BaseBindingFragment {
                 if (maxPosition - currentPosition <= tabHeight) {
                     mBinding.layoutTabDict2.getRoot().setVisibility(View.VISIBLE);
                     mBinding.layoutTabDict2.getRoot().setTranslationY((maxPosition - currentPosition) - tabHeight);
+                    mBinding.tabLayoutLanguage.setTranslationY((maxPosition - currentPosition) - tabHeight);
                 } else {
                     mBinding.layoutTabDict2.getRoot().setVisibility(View.INVISIBLE);
                 }

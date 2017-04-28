@@ -62,5 +62,8 @@ dependencies {
     compile "com.facebook.stetho:stetho-okhttp3:$rootProject.ext.stethoVersion"
     //调试 end
 
+    //小语种发音
     compile 'com.nuance:speechkit:2.2+@aar'
+    //解析html
+    compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 }
