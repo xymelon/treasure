@@ -1,0 +1,70 @@
+package com.xycoding.treasure.view.richtext;
+
+import android.text.Layout;
+import android.text.Selection;
+import android.text.Spannable;
+import android.text.method.LinkMovementMethod;
+import android.view.MotionEvent;
+import android.widget.TextView;
+
+import com.xycoding.treasure.view.richtext.typeface.ClickSpan;
+
+public class LinkTouchMovementMethod extends LinkMovementMethod {
+
+    private ClickSpan mPressedSpan;
+
+    @Override
+    public boolean onTouchEvent(TextView textView, Spannable spannable, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            mPressedSpan = getPressedSpan(textView, spannable, event);
+            if (mPressedSpan != null) {
+                int start = spannable.getSpanStart(mPressedSpan);
+                int end = spannable.getSpanEnd(mPressedSpan);
+                mPressedSpan.setPressed(true, textView.getText().subSequence(start, end));
+                Selection.setSelection(spannable, start, end);
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            ClickSpan touchedSpan = getPressedSpan(textView, spannable, event);
+            if (mPressedSpan != null && touchedSpan != mPressedSpan) {
+                mPressedSpan.setPressed(false, null);
+                mPressedSpan = null;
+                Selection.removeSelection(spannable);
+            }
+        } else {
+            if (mPressedSpan != null) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    //click callback
+                    mPressedSpan.onClick();
+                }
+                mPressedSpan.setPressed(false, null);
+                super.onTouchEvent(textView, spannable, event);
+            }
+            mPressedSpan = null;
+            Selection.removeSelection(spannable);
+        }
+        return true;
+    }
+
+    private ClickSpan getPressedSpan(TextView textView, Spannable spannable, MotionEvent event) {
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        x -= textView.getTotalPaddingLeft();
+        y -= textView.getTotalPaddingTop();
+
+        x += textView.getScrollX();
+        y += textView.getScrollY();
+
+        Layout layout = textView.getLayout();
+        int line = layout.getLineForVertical(y);
+        int off = layout.getOffsetForHorizontal(line, x);
+
+        ClickSpan[] link = spannable.getSpans(off, off, ClickSpan.class);
+        ClickSpan span = null;
+        if (link.length > 0) {
+            span = link[0];
+        }
+        return span;
+    }
+
+}

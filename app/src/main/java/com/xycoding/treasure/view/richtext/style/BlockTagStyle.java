@@ -3,14 +3,14 @@ package com.xycoding.treasure.view.richtext.style;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.style.CharacterStyle;
 
 import com.xycoding.treasure.view.richtext.TagBlock;
+import com.xycoding.treasure.view.richtext.typeface.IStyleSpan;
 
 public class BlockTagStyle extends BaseTagStyle {
 
-    public BlockTagStyle(CharacterStyle style, String... tags) {
-        super(style, tags);
+    public BlockTagStyle(IStyleSpan span, String... tags) {
+        super(span, tags);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class BlockTagStyle extends BaseTagStyle {
             int start = builder.getSpanStart(obj);
             builder.removeSpan(obj);
             if (start != len) {
-                builder.setSpan(mSpanStyle, start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                builder.setSpan(mStyleSpan.getStyleSpan(), start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
     }

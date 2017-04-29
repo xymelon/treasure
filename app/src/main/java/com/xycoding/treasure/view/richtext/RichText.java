@@ -2,9 +2,9 @@ package com.xycoding.treasure.view.richtext;
 
 import android.support.annotation.NonNull;
 import android.text.Spanned;
-import android.text.style.CharacterStyle;
 
 import com.xycoding.treasure.view.richtext.style.BlockTagStyle;
+import com.xycoding.treasure.view.richtext.typeface.IStyleSpan;
 
 /**
  * Created by xuyang on 2017/4/28.
@@ -18,7 +18,7 @@ public class RichText {
     }
 
     public Spanned parse(String tagString) {
-        return mTagParser.parse(tagString);
+        return mTagParser.parse("<html>" + tagString + "</html>");
     }
 
     public static class Builder {
@@ -29,8 +29,8 @@ public class RichText {
             mParser = new TagParser();
         }
 
-        public Builder addTypefaceStyle(@NonNull CharacterStyle style, String... tags) {
-            mParser.addTypefaceStyle(new BlockTagStyle(style, tags));
+        public Builder addTypefaceSpan(@NonNull IStyleSpan span, String... tags) {
+            mParser.addTypefaceStyle(new BlockTagStyle(span, tags));
             return this;
         }
 

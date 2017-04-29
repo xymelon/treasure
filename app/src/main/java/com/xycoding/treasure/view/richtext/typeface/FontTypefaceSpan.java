@@ -2,19 +2,23 @@ package com.xycoding.treasure.view.richtext.typeface;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.renderscript.Matrix2f;
 import android.support.annotation.NonNull;
 import android.text.TextPaint;
+import android.text.style.CharacterStyle;
 import android.text.style.TypefaceSpan;
 
 /**
  * Created by xuyang on 2017/4/28.
  */
-public class FontTypefaceSpan extends TypefaceSpan {
+public class FontTypefaceSpan extends TypefaceSpan implements IStyleSpan {
 
+    private final String mFamily;
     private final Typeface mTypeface;
 
     public FontTypefaceSpan(String family, @NonNull Typeface typeface) {
         super(family);
+        mFamily = family;
         mTypeface = typeface;
     }
 
@@ -49,6 +53,11 @@ public class FontTypefaceSpan extends TypefaceSpan {
         }
 
         paint.setTypeface(tf);
+    }
+
+    @Override
+    public CharacterStyle getStyleSpan() {
+        return new FontTypefaceSpan(mFamily, mTypeface);
     }
 
 }
