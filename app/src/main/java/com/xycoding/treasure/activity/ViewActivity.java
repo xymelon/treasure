@@ -18,6 +18,11 @@ import com.xycoding.treasure.view.richtext.RichText;
 import com.xycoding.treasure.view.richtext.typeface.ClickSpan;
 import com.xycoding.treasure.view.richtext.typeface.IStyleSpan;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import rx.functions.Action1;
 
 /**
@@ -78,22 +83,40 @@ public class ViewActivity extends BaseBindingActivity {
     }
 
     private void initRichTextView() {
-        String tagString = "<f>中文</f>:<b>China (乐团)</b>;英语:<b>China</b>;法语:<b>China</b>;";
+        String tagString = "Her eyes beginning to water, she went on, \"So I would like you all to make me a promise: from now on, on your way to school， or on your way home, find something beautiful to notice. It doesn' t have to be something you see -it could be a scent perhaps of freshly baked bread wafting out of someone 's house, or it could be the sound of the breeze slightly rustling the leaves in the trees, or the way the morning light catches one autumn leaf as it falls gently to the ground. Please, look for these things, and remember them.\"\n" +
+                "　　她的眼睛开始湿润了，她接着说因此我想让你们每个人答应我:从今以后，在你上学或者放学的路上，要发现一些美丽的事物。它不一定是你看到的某个东西——它可能是一种香味——也许是新鲜烤面包的味道从某一座房里飘出来，也许是微风轻拂树叶的声音，或者是晨光照射在轻轻飘落的秋叶上的方式。请你们寻找这些东西并且记住它们吧。 \"";
+        Pattern pattern = Pattern.compile("(?![^<]*>)[a-zA-Z]+");
+        Matcher matcher = pattern.matcher(tagString);
+        Set<String> words = new HashSet<>();
+        while (matcher.find()) {
+            words.add(matcher.group());
+        }
+        for (String word : words) {
+            tagString = tagString.replaceAll("(?<![a-zA-Z])" + word + "(?![a-zA-Z])", "<c>" + word + "</c>");
+        }
+        System.out.println(tagString);
+
+//        String expression1 = "(?<![a-zA-Z])(?=((?![^<]*>)[a-zA-Z]+))";
+//        String expression2 = "(?<=((?![^<]{0,10})[a-zA-Z]))(?![a-zA-Z])";
+//        tagString = tagString.replaceAll(expression1, Matcher.quoteReplacement("<c>"));
+//        System.out.println(tagString);
+//        tagString = tagString.replaceAll(expression2, Matcher.quoteReplacement("</c>"));
+//        System.out.println(tagString);
+
         int normalTextColor = ContextCompat.getColor(this, R.color.R1);
         int pressedTextColor = ContextCompat.getColor(this, R.color.W1);
         int pressedBackgroundColor = ContextCompat.getColor(this, R.color.B2);
         RichText richText = new RichText.Builder()
                 .addTypefaceSpan(new ClickSpan(
-                        mBinding.tvRichText,
                         normalTextColor,
                         pressedTextColor,
                         pressedBackgroundColor,
                         new ClickSpan.OnClickListener() {
                             @Override
-                            public void onClick(CharSequence text) {
+                            public void onClick(CharSequence text, float rawX, float rawY) {
                                 Toast.makeText(ViewActivity.this, text, Toast.LENGTH_SHORT).show();
                             }
-                        }), "b")
+                        }), "c")
                 .addTypefaceSpan(new IStyleSpan() {
                     @Override
                     public CharacterStyle getStyleSpan() {
@@ -110,6 +133,7 @@ public class ViewActivity extends BaseBindingActivity {
                     }
                 }, "f")
                 .build();
+        richText.with(mBinding.tvRichText);
         mBinding.tvRichText.setText(richText.parse(tagString));
     }
 }

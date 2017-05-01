@@ -2,22 +2,17 @@ package com.xycoding.treasure.view.richtext.typeface;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 import android.text.style.ClickableSpan;
 import android.view.View;
-import android.widget.TextView;
-
-import com.xycoding.treasure.view.richtext.LinkTouchMovementMethod;
 
 /**
  * Created by xuyang on 2017/4/28.
  */
 public class ClickSpan extends ClickableSpan implements IStyleSpan {
 
-    private TextView mTextView;
     private int mPressedBackgroundColor;
     private int mNormalTextColor;
     private int mPressedTextColor;
@@ -26,22 +21,10 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
     private boolean mPressed;
     private CharSequence mPressedText;
 
-    public ClickSpan(@NonNull TextView textView) {
-        this(textView, 0, 0, 0, null);
-    }
-
-    public ClickSpan(@NonNull TextView textView, @NonNull OnClickListener listener) {
-        this(textView, 0, 0, 0, listener);
-    }
-
-    public ClickSpan(@NonNull TextView textView,
-                     @ColorInt int normalTextColor,
+    public ClickSpan(@ColorInt int normalTextColor,
                      @ColorInt int pressedTextColor,
                      @ColorInt int pressedBackgroundColor,
                      @Nullable OnClickListener listener) {
-        mTextView = textView;
-        mTextView.setMovementMethod(new LinkTouchMovementMethod());
-
         mNormalTextColor = normalTextColor;
         mPressedTextColor = pressedTextColor;
         mPressedBackgroundColor = pressedBackgroundColor;
@@ -53,9 +36,9 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
         //do nothing.
     }
 
-    public void onClick() {
+    public void onClick(float rawX, float rawY) {
         if (mOnClickListener != null) {
-            mOnClickListener.onClick(mPressedText);
+            mOnClickListener.onClick(mPressedText, rawX, rawY);
         }
     }
 
@@ -75,7 +58,7 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
 
     @Override
     public CharacterStyle getStyleSpan() {
-        return new ClickSpan(mTextView, mNormalTextColor, mPressedTextColor, mPressedBackgroundColor, mOnClickListener);
+        return new ClickSpan(mNormalTextColor, mPressedTextColor, mPressedBackgroundColor, mOnClickListener);
     }
 
     public void setPressed(boolean pressed, CharSequence pressedText) {
@@ -84,7 +67,7 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
     }
 
     public interface OnClickListener {
-        void onClick(CharSequence text);
+        void onClick(CharSequence text, float rawX, float rawY);
     }
 
 }

@@ -2,6 +2,7 @@ package com.xycoding.treasure.view.richtext;
 
 import android.support.annotation.NonNull;
 import android.text.Spanned;
+import android.widget.TextView;
 
 import com.xycoding.treasure.view.richtext.style.BlockTagStyle;
 import com.xycoding.treasure.view.richtext.typeface.IStyleSpan;
@@ -17,8 +18,14 @@ public class RichText {
         mTagParser = parser;
     }
 
+    public void with(@NonNull TextView textView) {
+        textView.setMovementMethod(new LinkTouchMovementMethod());
+    }
+
     public Spanned parse(String tagString) {
-        return mTagParser.parse("<html>" + tagString + "</html>");
+        // add a tag at the start that is not handled by default,
+        // because custom tag handler does not work for the first html tag, thus a fake tag has to be added at the start.
+        return mTagParser.parse("<inject/>" + tagString);
     }
 
     public static class Builder {
