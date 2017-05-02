@@ -34,6 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/S16"
+                    android:textColor="@color/G20"
                     tools:text="富文本测试" />
 
                 <TextView

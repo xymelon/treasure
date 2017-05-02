@@ -60,11 +60,11 @@ public class LinkTouchMovementMethod extends LinkMovementMethod {
         int off = layout.getOffsetForHorizontal(line, x);
 
         ClickSpan[] link = spannable.getSpans(off, off, ClickSpan.class);
-        ClickSpan span = null;
         if (link.length > 0) {
-            span = link[0];
+            //if multi spans find same position, return outer span.
+            return link[link.length - 1];
         }
-        return span;
+        return null;
     }
 
 }

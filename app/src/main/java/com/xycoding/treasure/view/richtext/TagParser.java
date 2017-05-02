@@ -72,34 +72,8 @@ class TagParser extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        StringBuilder sb = new StringBuilder();
-        /*
-         * Ignore whitespace that immediately follows other whitespace;
-         * newlines count as spaces.
-         */
-        for (int i = 0; i < length; i++) {
-            char c = ch[i + start];
-            if (c == ' ' || c == '\n') {
-                char pred;
-                int len = sb.length();
-                if (len == 0) {
-                    len = mSpannableStringBuilder.length();
-                    if (len == 0) {
-                        pred = '\n';
-                    } else {
-                        pred = mSpannableStringBuilder.charAt(len - 1);
-                    }
-                } else {
-                    pred = sb.charAt(len - 1);
-                }
-                if (pred != ' ' && pred != '\n') {
-                    sb.append(' ');
-                }
-            } else {
-                sb.append(c);
-            }
-        }
-        mSpannableStringBuilder.append(sb);
+        StringBuilder stringBuilder = new StringBuilder();
+        mSpannableStringBuilder.append(stringBuilder.append(ch, start, length));
     }
 
 }

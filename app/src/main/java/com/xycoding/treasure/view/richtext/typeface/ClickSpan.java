@@ -13,13 +13,13 @@ import android.view.View;
  */
 public class ClickSpan extends ClickableSpan implements IStyleSpan {
 
-    private int mPressedBackgroundColor;
-    private int mNormalTextColor;
-    private int mPressedTextColor;
-    private OnClickListener mOnClickListener;
+    int mPressedBackgroundColor;
+    int mNormalTextColor;
+    int mPressedTextColor;
+    CharSequence mPressedText;
 
+    private OnClickListener mClickListener;
     private boolean mPressed;
-    private CharSequence mPressedText;
 
     public ClickSpan(@ColorInt int normalTextColor,
                      @ColorInt int pressedTextColor,
@@ -28,7 +28,7 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
         mNormalTextColor = normalTextColor;
         mPressedTextColor = pressedTextColor;
         mPressedBackgroundColor = pressedBackgroundColor;
-        mOnClickListener = listener;
+        mClickListener = listener;
     }
 
     @Override
@@ -37,20 +37,14 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
     }
 
     public void onClick(float rawX, float rawY) {
-        if (mOnClickListener != null) {
-            mOnClickListener.onClick(mPressedText, rawX, rawY);
+        if (mClickListener != null) {
+            mClickListener.onClick(mPressedText, rawX, rawY);
         }
     }
 
     @Override
     public void updateDrawState(TextPaint paint) {
         super.updateDrawState(paint);
-        if (mNormalTextColor == 0) {
-            mNormalTextColor = paint.getColor();
-        }
-        if (mPressedTextColor == 0) {
-            mPressedTextColor = mNormalTextColor;
-        }
         paint.setColor(mPressed ? mPressedTextColor : mNormalTextColor);
         paint.bgColor = mPressed ? mPressedBackgroundColor : Color.TRANSPARENT;
         paint.setUnderlineText(false);
@@ -58,7 +52,7 @@ public class ClickSpan extends ClickableSpan implements IStyleSpan {
 
     @Override
     public CharacterStyle getStyleSpan() {
-        return new ClickSpan(mNormalTextColor, mPressedTextColor, mPressedBackgroundColor, mOnClickListener);
+        return new ClickSpan(mNormalTextColor, mPressedTextColor, mPressedBackgroundColor, mClickListener);
     }
 
     public void setPressed(boolean pressed, CharSequence pressedText) {

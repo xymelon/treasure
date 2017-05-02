@@ -5,7 +5,9 @@ import android.text.Spanned;
 import android.widget.TextView;
 
 import com.xycoding.treasure.view.richtext.style.BlockTagStyle;
+import com.xycoding.treasure.view.richtext.style.LinkTagStyle;
 import com.xycoding.treasure.view.richtext.typeface.IStyleSpan;
+import com.xycoding.treasure.view.richtext.typeface.LinkClickSpan;
 
 /**
  * Created by xuyang on 2017/4/28.
@@ -36,8 +38,13 @@ public class RichText {
             mParser = new TagParser();
         }
 
-        public Builder addTypefaceSpan(@NonNull IStyleSpan span, String... tags) {
+        public Builder addBlockTypeSpan(@NonNull IStyleSpan span, String... tags) {
             mParser.addTypefaceStyle(new BlockTagStyle(span, tags));
+            return this;
+        }
+
+        public Builder addLinkTypeSpan(@NonNull LinkClickSpan span) {
+            mParser.addTypefaceStyle(new LinkTagStyle(span));
             return this;
         }
 
