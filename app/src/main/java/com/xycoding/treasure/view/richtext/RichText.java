@@ -21,7 +21,7 @@ public class RichText {
     }
 
     public void with(@NonNull TextView textView) {
-        textView.setMovementMethod(new LinkTouchMovementMethod());
+        textView.setMovementMethod(LinkTouchMovementMethod.getInstance());
     }
 
     public Spanned parse(String tagString) {

@@ -4,6 +4,7 @@ import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -11,7 +12,21 @@ import com.xycoding.treasure.view.richtext.typeface.ClickSpan;
 
 public class LinkTouchMovementMethod extends LinkMovementMethod {
 
+    private static volatile LinkMovementMethod sInstance;
     private ClickSpan mPressedSpan;
+
+    private LinkTouchMovementMethod() {
+    }
+
+    public static MovementMethod getInstance() {
+        if (sInstance == null)
+            synchronized (LinkTouchMovementMethod.class) {
+                if (sInstance == null) {
+                    sInstance = new LinkTouchMovementMethod();
+                }
+            }
+        return sInstance;
+    }
 
     @Override
     public boolean onTouchEvent(TextView textView, Spannable spannable, MotionEvent event) {

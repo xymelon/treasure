@@ -78,9 +78,6 @@ public class ViewActivity extends BaseBindingActivity {
     }
 
     private void initRichTextView() {
-        String tagString = "英语单词<a href='http://www.etymonline.com'>china</a>小写时表示“中国瓷”，大写时表示“中国”，那么它最初究竟是对中国的称呼还是对中国瓷的称呼呢？\n词源学研究显示，它最初是对中国的称呼。明代中期葡萄牙人贩瓷器到欧洲，将其称为chinaware，ware是器具的意思，可见china是地名，并无瓷器之意。";
-        tagString = StringUtils.replaceWordsWithTag(tagString, "<c>", "</c>");
-
         final int foregroundTextColor = ContextCompat.getColor(this, R.color.T1);
         int normalTextColor = ContextCompat.getColor(this, R.color.G20);
         int pressedTextColor = ContextCompat.getColor(this, R.color.W1);
@@ -114,7 +111,15 @@ public class ViewActivity extends BaseBindingActivity {
                         })
                 )
                 .build();
-        richText.with(mBinding.tvRichText);
-        mBinding.tvRichText.setText(richText.parse(tagString));
+        richText.with(mBinding.tvRichText1);
+        richText.with(mBinding.tvRichText2);
+
+        String tagString1 = "英语单词<a href='http://www.etymonline.com'>china</a>小写时表示“中国瓷”，大写时表示“中国”，那么它最初究竟是对中国的称呼还是对中国瓷的称呼呢？\n词源学研究显示，它最初是对中国的称呼。明代中期葡萄牙人贩瓷器到欧洲，将其称为chinaware，ware是器具的意思，可见china是地名，并无瓷器之意。";
+        tagString1 = StringUtils.replaceWordsWithTag(tagString1, "<c>", "</c>");
+        mBinding.tvRichText1.setText(richText.parse(tagString1));
+
+        String tagString2 = "He did his award-winning work at the Chinese University of Hong Kong,<b>China</b> and at the Standard Telecommunication Laboratories in Britain.";
+        tagString2 = StringUtils.replaceWordsWithTag(tagString2, "<c>", "</c>");
+        mBinding.tvRichText2.setText(richText.parse(tagString2));
     }
 }

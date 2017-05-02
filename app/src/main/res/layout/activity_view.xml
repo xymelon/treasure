@@ -30,12 +30,20 @@
                 android:padding="@dimen/activity_horizontal_margin">
 
                 <TextView
-                    android:id="@+id/tv_rich_text"
+                    android:id="@+id/tv_rich_text1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/S16"
                     android:textColor="@color/G20"
-                    tools:text="富文本测试" />
+                    android:textSize="@dimen/S16"
+                    tools:text="富文本测试1" />
+
+                <TextView
+                    android:id="@+id/tv_rich_text2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/G20"
+                    android:textSize="@dimen/S16"
+                    tools:text="富文本测试2" />
 
                 <TextView
                     android:layout_width="wrap_content"
