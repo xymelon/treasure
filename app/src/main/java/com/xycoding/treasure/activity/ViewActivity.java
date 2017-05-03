@@ -9,14 +9,14 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+import com.xycoding.richtext.RichText;
+import com.xycoding.richtext.typeface.ClickSpan;
+import com.xycoding.richtext.typeface.IStyleSpan;
+import com.xycoding.richtext.typeface.LinkClickSpan;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityViewBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.utils.StringUtils;
-import com.xycoding.treasure.view.richtext.RichText;
-import com.xycoding.treasure.view.richtext.typeface.ClickSpan;
-import com.xycoding.treasure.view.richtext.typeface.IStyleSpan;
-import com.xycoding.treasure.view.richtext.typeface.LinkClickSpan;
 
 import rx.functions.Action1;
 
