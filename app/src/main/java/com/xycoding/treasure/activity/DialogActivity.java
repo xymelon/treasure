@@ -3,14 +3,11 @@ package com.xycoding.treasure.activity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,9 +24,8 @@ import com.xycoding.treasure.databinding.DialogEventBinding;
 import com.xycoding.treasure.databinding.DialogQuickActionBinding;
 import com.xycoding.treasure.databinding.DialogSheetBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
+import com.xycoding.treasure.utils.DeviceUtils;
 import com.xycoding.treasure.utils.ViewUtils;
-
-import java.lang.reflect.Field;
 
 import rx.functions.Action1;
 
@@ -142,7 +138,7 @@ public class DialogActivity extends BaseBindingActivity {
                     params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
                     //计算对话框显示位置
                     int contentHeight = binding.getRoot().getHeight();
-                    int screenHeight = getScreenHeight(getApplicationContext());
+                    int screenHeight = DeviceUtils.getScreenHeight(getApplicationContext());
                     ImageView arrowView;
                     int dialogY;
                     boolean showBelow = screenHeight - screenY > contentHeight;
@@ -150,12 +146,12 @@ public class DialogActivity extends BaseBindingActivity {
                         arrowView = binding.ivArrowUp;
                         binding.ivArrowUp.setVisibility(View.VISIBLE);
                         binding.ivArrowDown.setVisibility(View.GONE);
-                        dialogY = screenY - getStatusBarHeight(getApplicationContext()) + dp2px(getApplicationContext(), 2);
+                        dialogY = screenY - DeviceUtils.getStatusBarHeight(getApplicationContext()) + DeviceUtils.dp2px(getApplicationContext(), 2);
                     } else {
                         arrowView = binding.ivArrowDown;
                         binding.ivArrowUp.setVisibility(View.GONE);
                         binding.ivArrowDown.setVisibility(View.VISIBLE);
-                        dialogY = screenY - getStatusBarHeight(getApplicationContext()) - contentHeight - dp2px(getApplicationContext(), 52);
+                        dialogY = screenY - DeviceUtils.getStatusBarHeight(getApplicationContext()) - contentHeight - DeviceUtils.dp2px(getApplicationContext(), 52);
                     }
                     params.y = dialogY;
                     window.setAttributes(params);
@@ -176,27 +172,6 @@ public class DialogActivity extends BaseBindingActivity {
             }
         });
         actionDialog.show();
-    }
-
-    private int getScreenHeight(@NonNull Context context) {
-        return context.getResources().getDisplayMetrics().heightPixels;
-    }
-
-    private int getStatusBarHeight(@NonNull Context context) {
-        try {
-            Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-            Object object = clazz.newInstance();
-            Field field = clazz.getField("status_bar_height");
-            int x = (Integer) field.get(object);
-            return context.getResources().getDimensionPixelSize(x);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dp2px(context, 24);
-    }
-
-    private int dp2px(@NonNull Context context, float dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
     }
 
 }

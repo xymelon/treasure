@@ -65,5 +65,5 @@ dependencies {
     //小语种发音
     compile 'com.nuance:speechkit:2.2+@aar'
 
-    compile 'com.github.xymelon:richtext:1.0.3'
+    compile 'com.github.xymelon:richtext:1.0.4'
 }
