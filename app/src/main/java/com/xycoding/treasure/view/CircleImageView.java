@@ -18,8 +18,8 @@ import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.xycoding.treasure.R;
 
@@ -38,7 +38,7 @@ import com.xycoding.treasure.R;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class CircleImageView extends ImageView {
+public class CircleImageView extends AppCompatImageView {
 
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 
