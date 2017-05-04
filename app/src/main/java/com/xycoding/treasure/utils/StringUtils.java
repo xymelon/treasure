@@ -1,7 +1,5 @@
 package com.xycoding.treasure.utils;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,15 +12,12 @@ public class StringUtils {
         //正则表达式：匹配除html标签的英文单词
         Pattern pattern = Pattern.compile("(?![^<]*>)[a-zA-Z]+");
         Matcher matcher = pattern.matcher(origin);
-        Set<String> words = new HashSet<>();
+        StringBuffer buffer = new StringBuffer();
         while (matcher.find()) {
-            words.add(matcher.group());
+            matcher.appendReplacement(buffer, startTag + matcher.group() + endTag);
         }
-        for (String word : words) {
-            //将匹配到的单词加上tag，(?![a-zA-Z])断言保证替换完整单词
-            origin = origin.replaceAll("(?<![a-zA-Z])" + word + "(?![a-zA-Z])", startTag + word + endTag);
-        }
-        return origin;
+        matcher.appendTail(buffer);
+        return buffer.toString();
     }
 
 }
