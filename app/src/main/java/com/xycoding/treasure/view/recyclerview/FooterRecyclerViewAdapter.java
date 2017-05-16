@@ -87,6 +87,45 @@ public class FooterRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     }
 
     @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        if (!(holder instanceof FooterViewHolder)) {
+            mRealAdapter.onViewRecycled(holder);
+        }
+    }
+
+    @Override
+    public boolean onFailedToRecycleView(RecyclerView.ViewHolder holder) {
+        if (!(holder instanceof FooterViewHolder)) {
+            return mRealAdapter.onFailedToRecycleView(holder);
+        }
+        return super.onFailedToRecycleView(holder);
+    }
+
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        if (!(holder instanceof FooterViewHolder)) {
+            mRealAdapter.onViewAttachedToWindow(holder);
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        if (!(holder instanceof FooterViewHolder)) {
+            mRealAdapter.onViewDetachedFromWindow(holder);
+        }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        mRealAdapter.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        mRealAdapter.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    @Override
     public long getItemId(int position) {
         return position;
     }

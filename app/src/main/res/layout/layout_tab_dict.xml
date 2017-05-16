@@ -7,6 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="?attr/colorPrimary"
+        app:tabIndicatorColor="#FFF03744"
+        app:tabIndicatorHeight="2dp"
         app:tabMode="scrollable" />
 
 </layout>

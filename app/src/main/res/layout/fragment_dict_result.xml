@@ -57,7 +57,7 @@
                 android:id="@+id/layout_tab_dict1"
                 layout="@layout/layout_tab_dict"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="40dp" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/view_pager"

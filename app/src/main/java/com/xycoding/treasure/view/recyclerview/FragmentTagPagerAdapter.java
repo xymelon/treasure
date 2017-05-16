@@ -1,4 +1,4 @@
-package com.xycoding.treasure.view;
+package com.xycoding.treasure.view.recyclerview;
 
 
 import android.os.Parcelable;
@@ -163,4 +163,3 @@ public abstract class FragmentTagPagerAdapter extends PagerAdapter {
     public abstract String makeFragmentName(int position);
 
 }
-
