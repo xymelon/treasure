@@ -25,25 +25,14 @@ import com.xycoding.treasure.R;
  */
 public class AutoFitSizeTextView extends AppCompatTextView {
 
-    // Interface for resize notifications
-    public interface OnTextResizeListener {
-        void onTextResize(AppCompatTextView textView, float oldSize, float newSize);
-    }
-
     // No limit (Integer.MAX_VALUE means no limit)
     private static final int NO_LIMIT_LINES = Integer.MAX_VALUE;
 
     // Our ellipse string
     private static final String mEllipsis = "...";
 
-    // Registered resize listener
-    private OnTextResizeListener mTextResizeListener;
-
     // Flag for text and/or size changes to force a resize
     private boolean mNeedsResize = false;
-
-    // Text size that is set from code. This acts as a starting point for resizing
-    private float mTextSize;
 
     // Text Line indicates that start fit size.
     private int mFitSizeLine;
@@ -76,11 +65,12 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     // Default constructor override
     public AutoFitSizeTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mTextSize = getTextSize();
-        mMinTextSize = mTextSize;
+        final float textSize = getTextSize();
+        mMaxTextSize = textSize;
+        mMinTextSize = textSize;
         if (attrs != null) {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.AutoFitSizeTextView);
-            mMinTextSize = typedArray.getDimension(R.styleable.AutoFitSizeTextView_minTextSize, mTextSize);
+            mMinTextSize = typedArray.getDimension(R.styleable.AutoFitSizeTextView_minTextSize, textSize);
             mFitSizeLine = typedArray.getInteger(R.styleable.AutoFitSizeTextView_fitLine, NO_LIMIT_LINES);
             mAddEllipsis = typedArray.getBoolean(R.styleable.AutoFitSizeTextView_addEllipsis, true);
             typedArray.recycle();
@@ -107,7 +97,7 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     protected void onTextChanged(final CharSequence text, final int start, final int before, final int after) {
         mNeedsResize = true;
         // Since this view may be reused, it is good to reset the text size
-        resetTextSize();
+        resizeText();
     }
 
     /**
@@ -126,7 +116,7 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     @Override
     public void setTextSize(float size) {
         super.setTextSize(size);
-        mTextSize = getTextSize();
+        mMaxTextSize = getTextSize();
     }
 
     /**
@@ -135,7 +125,7 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     @Override
     public void setTextSize(int unit, float size) {
         super.setTextSize(unit, size);
-        mTextSize = getTextSize();
+        mMaxTextSize = getTextSize();
     }
 
     /**
@@ -146,35 +136,6 @@ public class AutoFitSizeTextView extends AppCompatTextView {
         super.setLineSpacing(add, mult);
         mSpacingMult = mult;
         mSpacingAdd = add;
-    }
-
-    /**
-     * Register listener to receive resize notifications
-     *
-     * @param listener
-     */
-    public void setOnResizeListener(OnTextResizeListener listener) {
-        mTextResizeListener = listener;
-    }
-
-    /**
-     * Set the upper text size limit and invalidate the view
-     *
-     * @param maxTextSize
-     */
-    public void setMaxTextSize(float maxTextSize) {
-        mMaxTextSize = maxTextSize;
-        requestLayout();
-        invalidate();
-    }
-
-    /**
-     * Return upper text size limit
-     *
-     * @return
-     */
-    public float getMaxTextSize() {
-        return mMaxTextSize;
     }
 
     /**
@@ -216,17 +177,6 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     }
 
     /**
-     * Reset the text to the original size
-     */
-    public void resetTextSize() {
-        if (mTextSize > 0) {
-            super.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
-            mMaxTextSize = mTextSize;
-        }
-        resizeText();
-    }
-
-    /**
      * Resize the text size with default width and height
      */
     public void resizeText() {
@@ -244,7 +194,7 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     public void resizeText(int width, int height) {
         CharSequence text = getText();
         // Do not resize if the view does not have dimensions or there is no text
-        if (text == null || text.length() == 0 || height <= 0 || width <= 0 || mTextSize == 0) {
+        if (text == null || text.length() == 0 || height <= 0 || width <= 0 || getTextSize() == 0 || mMaxTextSize == mMinTextSize) {
             return;
         }
 
@@ -255,10 +205,8 @@ public class AutoFitSizeTextView extends AppCompatTextView {
         // Get the text view's paint object
         TextPaint textPaint = getPaint();
 
-        // Store the current text size
-        float oldTextSize = textPaint.getTextSize();
-        // If there is a max text size set, use the lesser of that and the default text size
-        float targetTextSize = mMaxTextSize > 0 ? Math.min(mTextSize, mMaxTextSize) : mTextSize;
+        // Get max text size
+        float targetTextSize = mMaxTextSize;
 
         // Get the required text height
         int textHeight = getTextHeight(text, textPaint, width, targetTextSize);
@@ -315,14 +263,8 @@ public class AutoFitSizeTextView extends AppCompatTextView {
 
         // Some devices try to auto adjust line spacing, so force default line spacing
         // and invalidate the layout as a side effect
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
+        super.setTextSize(TypedValue.COMPLEX_UNIT_PX, targetTextSize);
         setLineSpacing(mSpacingAdd, mSpacingMult);
-
-        // Notify the listener if registered
-        if (mTextResizeListener != null) {
-            mTextResizeListener.onTextResize(this, oldTextSize, targetTextSize);
-        }
-
         // Reset force resize flag
         mNeedsResize = false;
     }

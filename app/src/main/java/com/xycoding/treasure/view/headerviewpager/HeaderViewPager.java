@@ -1,29 +1,41 @@
 package com.xycoding.treasure.view.headerviewpager;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.EdgeEffectCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.AbsListView;
+import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Scroller;
 
 import com.xycoding.treasure.R;
-import com.xycoding.treasure.utils.BitmapUtils;
-import com.xycoding.treasure.utils.DeviceUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * Created by xuyang on 2017/3/31.
@@ -54,6 +66,7 @@ public class HeaderViewPager extends LinearLayout {
     private boolean mFlingChild = false;
     private boolean mFlingToTop = false;
     private ScrollableContainer mScrollableContainer;
+    private ViewPager mViewPager;
     private OnScrollHeaderListener mOnScrollHeaderListener;
 
     private EdgeEffectCompat mEdgeEffectTop;
@@ -86,13 +99,13 @@ public class HeaderViewPager extends LinearLayout {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HeaderViewPager);
         mTopOffset = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_topOffset), 0);
-        mScrollBarBitmap = BitmapUtils.drawableToBitmap(typedArray.getDrawable(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar)));
+        mScrollBarBitmap = drawableToBitmap(typedArray.getDrawable(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar)));
         mScrollBarBitmapMarginTop = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop), 0);
         mScrollbarBitmapMarginBottom = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom), 0);
         typedArray.recycle();
 
         //scroll bar最小点击热区
-        mScrollBarMinHotArea = DeviceUtils.dp2px(context, 36);
+        mScrollBarMinHotArea = dp2px(context, 36);
 
         final ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
@@ -104,6 +117,10 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (onlyOneDirectChildVisible()) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
         //测量需加上header高度
         View header = getChildAt(0);
         if (header != null) {
@@ -116,6 +133,10 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        if (onlyOneDirectChildVisible()) {
+            super.requestDisallowInterceptTouchEvent(disallowIntercept);
+            return;
+        }
         if (mScroller.computeScrollOffset()) {
             //强制child view不拦截事件
             super.requestDisallowInterceptTouchEvent(false);
@@ -126,6 +147,10 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (onlyOneDirectChildVisible()) {
+            return super.onInterceptTouchEvent(ev);
+        }
+
         ensureVelocityTracker(ev);
         int pointerIndex;
         switch (MotionEventCompat.getActionMasked(ev)) {
@@ -180,6 +205,10 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        if (onlyOneDirectChildVisible()) {
+            return super.onTouchEvent(ev);
+        }
+
         ensureVelocityTracker(ev);
         int pointerIndex;
         switch (MotionEventCompat.getActionMasked(ev)) {
@@ -298,13 +327,15 @@ public class HeaderViewPager extends LinearLayout {
                     scrollContent(deltaY);
                 }
             } else {
-                float currVelocity = mScroller.getCurrVelocity();
+                final int distance = mScroller.getFinalY() - mScroller.getCurrY();
+                final int duration = mScroller.getDuration() - mScroller.timePassed();
+                final float currVelocity = mScroller.getCurrVelocity();
                 if (mFlingUp) {
                     //向上fling时，若header已完全隐藏，则向上fling底部内容
                     if (isHeaderCollapseCompletely() && !mFlingChild) {
                         //保证fling一次
                         mFlingChild = true;
-                        flingContent(Math.round(currVelocity));
+                        flingContent(Math.round(currVelocity), distance, duration);
                     } else {
                         final int deltaY = mScroller.getCurrY() - mLastScrollerY;
                         scrollTo(0, getScrollY() + deltaY);
@@ -315,7 +346,7 @@ public class HeaderViewPager extends LinearLayout {
                     if (!isScrollContainerTop && !mFlingChild) {
                         //保证fling一次
                         mFlingChild = true;
-                        flingContent(-Math.round(currVelocity));
+                        flingContent(-Math.round(currVelocity), distance, duration);
                     }
                     //向下fling时，若header未完全展开时，则滑动header
                     if ((!isHeaderCollapseCompletely() && !isHeaderExpandCompletely())
@@ -353,6 +384,10 @@ public class HeaderViewPager extends LinearLayout {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+        if (onlyOneDirectChildVisible()) {
+            return;
+        }
+
         if (mEdgeEffectTop != null) {
             final int width = getWidth() - getPaddingLeft() - getPaddingRight();
             final int height = getHeight();
@@ -404,14 +439,20 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     protected int computeVerticalScrollRange() {
+        if (onlyOneDirectChildVisible()) {
+            return super.computeVerticalScrollRange();
+        }
+
         int range = 0;
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            if (mScrollableContainer.getScrollableView().computeVerticalScrollExtent()
-                    == mScrollableContainer.getScrollableView().computeVerticalScrollRange()) {
+        View view = getCurrentScrollableView();
+        if (view != null) {
+            int scrollExtent = compute(view, "computeVerticalScrollExtent");
+            int scrollRange = compute(view, "computeVerticalScrollRange");
+            if (scrollExtent == scrollRange) {
                 //底部内容不能滚动，直接返回当前view高度
                 return getHeight() - mTopOffset;
             }
-            range = mScrollableContainer.getScrollableView().computeVerticalScrollRange();
+            range = scrollRange;
         }
         range += mMaxScrollY + getContentHeaderGap();
         return range;
@@ -419,25 +460,59 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     protected int computeVerticalScrollOffset() {
+        if (onlyOneDirectChildVisible()) {
+            return super.computeVerticalScrollOffset();
+        }
+
         int offset = getScrollY();
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            offset += mScrollableContainer.getScrollableView().computeVerticalScrollOffset();
+        View view = getCurrentScrollableView();
+        if (view != null) {
+            offset += compute(view, "computeVerticalScrollOffset");
         }
         return offset;
     }
 
     @Override
     protected int computeVerticalScrollExtent() {
+        if (onlyOneDirectChildVisible()) {
+            return super.computeVerticalScrollExtent();
+        }
+
         if (mRect.isEmpty()) {
             getGlobalVisibleRect(mRect);
         }
         return mRect.height() - mTopOffset;
     }
 
+    private int compute(View view, String methodName) {
+        try {
+            Method method = view.getClass().getDeclaredMethod(methodName);
+            method.setAccessible(true);
+            return (int) method.invoke(view);
+        } catch (Exception e) {
+            //do nothing.
+        }
+        return 0;
+    }
+
+    private boolean onlyOneDirectChildVisible() {
+        int visibleCount = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child.getVisibility() == VISIBLE) {
+                visibleCount++;
+                if (visibleCount > 1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void ensureGlows() {
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
+        if (getCurrentScrollableView() != null) {
             //隐藏recycler view滑到顶部和底部时的效果
-            mScrollableContainer.getScrollableView().setOverScrollMode(OVER_SCROLL_NEVER);
+            getCurrentScrollableView().setOverScrollMode(OVER_SCROLL_NEVER);
         }
         if (getOverScrollMode() != View.OVER_SCROLL_NEVER) {
             if (mEdgeEffectTop == null) {
@@ -483,6 +558,11 @@ public class HeaderViewPager extends LinearLayout {
 
     @Override
     public void scrollTo(@Px int x, @Px int y) {
+        if (onlyOneDirectChildVisible()) {
+            super.scrollTo(x, y);
+            return;
+        }
+
         if (y > mMaxScrollY) {
             y = mMaxScrollY;
         } else if (y < 0) {
@@ -497,7 +577,7 @@ public class HeaderViewPager extends LinearLayout {
     public void scrollToTop() {
         int distance = getCurrentScrollY();
         int duration = FAST_RETURN_TOP_TIME;
-        if (distance <= DeviceUtils.getScreenHeight(getContext())) {
+        if (distance <= getResources().getDisplayMetrics().heightPixels) {
             //滑动距离小于屏幕，时间减少
             duration = FAST_RETURN_TOP_TIME / 3;
         }
@@ -507,10 +587,25 @@ public class HeaderViewPager extends LinearLayout {
         invalidate();
     }
 
+    public void scrollToTopImmediately() {
+        mLastScrollerY = 0;
+        scrollTo(0, 0);
+
+        View view = getCurrentScrollableView();
+        if (view != null) {
+            if (view instanceof RecyclerView) {
+                ((RecyclerView) view).scrollToPosition(0);
+            } else {
+                view.scrollTo(0, 0);
+            }
+        }
+    }
+
     private int getCurrentScrollY() {
         int distance = 0;
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            distance = mScrollableContainer.getScrollableView().computeVerticalScrollOffset();
+        View view = getCurrentScrollableView();
+        if (view != null) {
+            distance = compute(view, "computeVerticalScrollOffset");
             //大于0说明底部内容已滚动
             if (distance > 0) {
                 distance += getContentHeaderGap();
@@ -522,15 +617,17 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     private int getContentHeaderGap() {
-        //计算底部内容和header之间距离
-        if (mScrollableContainer.getScrollableView().getParent() instanceof View && getChildAt(0) != null) {
-            return ((View) mScrollableContainer.getScrollableView().getParent()).getTop() - getChildAt(0).getBottom();
+        try {
+            //计算底部内容和header之间距离
+            return ((View) getCurrentScrollableView().getParent()).getTop() - getChildAt(0).getBottom();
+        } catch (Exception e) {
+            return 0;
         }
-        return 0;
     }
 
     private void scroll(int dy) {
-        if (dy == 0) {
+        //dy为0或首屏展示内容完毕，则禁止滚动
+        if (dy == 0 || !canVerticalScroll()) {
             return;
         }
         boolean isScrollContainerTop = isScrollContainerTop();
@@ -545,13 +642,14 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     private void scrollContent(int dy) {
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            mScrollableContainer.getScrollableView().scrollBy(0, dy);
+        if (getCurrentScrollableView() != null) {
+            getCurrentScrollableView().scrollBy(0, dy);
         }
     }
 
     private void fling(float vy) {
-        if (vy == 0) {
+        //vy为0或首屏展示内容完毕，则禁止滚动
+        if (vy == 0 || !canVerticalScroll()) {
             return;
         }
         mScroller.abortAnimation();
@@ -574,10 +672,42 @@ public class HeaderViewPager extends LinearLayout {
      *
      * @param vy
      */
-    private void flingContent(int vy) {
-        if (mScrollableContainer != null && mScrollableContainer.getScrollableView() != null) {
-            mScrollableContainer.getScrollableView().fling(0, vy);
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void flingContent(int vy, int distance, int duration) {
+        View view = getCurrentScrollableView();
+        if (view != null) {
+            if (view instanceof RecyclerView) {
+                ((RecyclerView) view).fling(0, vy);
+            } else if (view instanceof WebView) {
+                ((WebView) view).flingScroll(0, vy);
+            } else if (view instanceof ScrollView) {
+                ((ScrollView) view).fling(vy);
+            } else if (view instanceof AbsListView) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ((AbsListView) view).fling(vy);
+                } else {
+                    ((AbsListView) view).smoothScrollBy(distance, duration);
+                }
+            }
         }
+    }
+
+    private boolean canVerticalScroll() {
+        int realHeight = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if (view instanceof ViewPager) {
+                int maxHeight = 0;
+                for (int j = 0; j < ((ViewPager) view).getChildCount(); j++) {
+                    View child = ((ViewPager) view).getChildAt(j);
+                    maxHeight = Math.max(maxHeight, compute(child, "computeVerticalScrollExtent"));
+                }
+                realHeight += maxHeight;
+            } else {
+                realHeight += view.getHeight();
+            }
+        }
+        return realHeight > computeVerticalScrollExtent();
     }
 
     /**
@@ -604,9 +734,8 @@ public class HeaderViewPager extends LinearLayout {
      * @return
      */
     private boolean isScrollContainerTop() {
-        return mScrollableContainer == null
-                || mScrollableContainer.getScrollableView() == null
-                || !canViewScrollUp(mScrollableContainer.getScrollableView());
+        return getCurrentScrollableView() == null
+                || !canViewScrollUp(getCurrentScrollableView());
     }
 
     /**
@@ -625,8 +754,8 @@ public class HeaderViewPager extends LinearLayout {
      */
     private boolean isScrollBottom() {
         return isHeaderCollapseCompletely()
-                && !(mScrollableContainer == null || mScrollableContainer.getScrollableView() == null)
-                && !canViewScrollDown(mScrollableContainer.getScrollableView());
+                && !(getCurrentScrollableView() == null)
+                && !canViewScrollDown(getCurrentScrollableView());
     }
 
     private boolean canViewScrollUp(View view) {
@@ -637,8 +766,42 @@ public class HeaderViewPager extends LinearLayout {
         return ViewCompat.canScrollVertically(view, 1);
     }
 
+    @Nullable
+    private View getCurrentScrollableView() {
+        if (mScrollableContainer != null) {
+            return mScrollableContainer.getScrollableView();
+        }
+        if (mViewPager != null) {
+            return findChildScrollableView(mViewPager.getChildAt(mViewPager.getCurrentItem()));
+        }
+        return null;
+    }
+
+    private View findChildScrollableView(View view) {
+        if (view instanceof RecyclerView
+                || view instanceof WebView
+                || view instanceof ListView
+                || view instanceof GridView) {
+            return view;
+        }
+        if (view instanceof ViewGroup) {
+            int count = ((ViewGroup) view).getChildCount();
+            for (int i = 0; i < count; i++) {
+                View childView = findChildScrollableView(((ViewGroup) view).getChildAt(i));
+                if (childView != null) {
+                    return childView;
+                }
+            }
+        }
+        return null;
+    }
+
     public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
         mScrollableContainer = scrollableContainer;
+    }
+
+    public void setupViewPager(@NonNull ViewPager viewPager) {
+        mViewPager = viewPager;
     }
 
     public void setOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
@@ -651,6 +814,34 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setShowScrollBar(boolean show) {
         mShowScrollBar = show;
+    }
+
+    @Nullable
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable == null) {
+            return null;
+        }
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+        Bitmap bitmap;
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            // Single color bitmap will be created of 1x1 pixel
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    public static int dp2px(Context context, float dp) {
+        return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()) + 0.5f);
     }
 
     public interface ScrollableContainer {
