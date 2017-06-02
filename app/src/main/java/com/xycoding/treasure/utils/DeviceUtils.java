@@ -95,6 +95,11 @@ public class DeviceUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            newUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            newUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            newUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        }
         window.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 

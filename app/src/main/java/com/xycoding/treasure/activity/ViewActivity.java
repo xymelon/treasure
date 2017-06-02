@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -105,7 +106,7 @@ public class ViewActivity extends BaseBindingActivity {
                         pressedBackgroundColor,
                         new ClickSpan.OnClickListener() {
                             @Override
-                            public void onClick(CharSequence text, float rawX, float rawY) {
+                            public void onClick(TextView textView, CharSequence text, float rawX, float rawY) {
                                 showQuickActionDialog((int) rawX, (int) rawY);
                             }
                         }), "c")
@@ -121,7 +122,7 @@ public class ViewActivity extends BaseBindingActivity {
                         pressedBackgroundColor,
                         new LinkClickSpan.OnLinkClickListener() {
                             @Override
-                            public void onClick(String url) {
+                            public void onClick(TextView textView, String url) {
                                 Toast.makeText(ViewActivity.this, url, Toast.LENGTH_SHORT).show();
                             }
                         })

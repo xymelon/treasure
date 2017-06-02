@@ -100,6 +100,12 @@ public class MainActivity extends BaseBindingActivity {
                 startActivity(new Intent(MainActivity.this, ChartActivity.class));
             }
         }));
+        subscriptions.add(RxViewWrapper.clicks(mBinding.cardViewImmersiveMode).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                startActivity(new Intent(MainActivity.this, ImmersiveModeActivity.class));
+            }
+        }));
     }
 
     @Override

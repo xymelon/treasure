@@ -80,6 +80,12 @@
             android:label="@string/activity_chart"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.ImmersiveModeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/BlackAppTheme" />
+
         <service android:name=".service.LocalIntentService" />
 
     </application>
