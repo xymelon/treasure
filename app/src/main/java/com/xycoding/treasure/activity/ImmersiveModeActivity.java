@@ -1,5 +1,6 @@
 package com.xycoding.treasure.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -8,7 +9,7 @@ import android.view.animation.AnimationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xycoding.treasure.R;
-import com.xycoding.treasure.databinding.ActivityDictImageBinding;
+import com.xycoding.treasure.databinding.ActivityImmersiveModeBinding;
 import com.xycoding.treasure.utils.DeviceUtils;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -20,11 +21,11 @@ public class ImmersiveModeActivity extends BaseBindingActivity {
 
     private Animation mFadeInAnimation;
     private Animation mFadeOutAnimation;
-    private ActivityDictImageBinding mBinding;
+    private ActivityImmersiveModeBinding mBinding;
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_dict_image;
+        return R.layout.activity_immersive_mode;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class ImmersiveModeActivity extends BaseBindingActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        mBinding = (ActivityDictImageBinding) binding;
+        mBinding = (ActivityImmersiveModeBinding) binding;
         initViews();
     }
 
@@ -65,7 +66,7 @@ public class ImmersiveModeActivity extends BaseBindingActivity {
 
     private void toggleView() {
         DeviceUtils.toggleHideyBar(getWindow());
-        boolean shown = mBinding.toolbarNavigation.isShown();
+        boolean shown = mBinding.toolbar.isShown();
         mBinding.toolbar.startAnimation(shown ? mFadeOutAnimation : mFadeInAnimation);
         mBinding.toolbar.setVisibility(shown ? View.INVISIBLE : View.VISIBLE);
     }

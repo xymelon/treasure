@@ -30,7 +30,7 @@
         <!-- Actionbar color -->
         <item name="colorPrimary">#FF000000</item>
         <!--Status bar color-->
-        <item name="colorPrimaryDark">#FF000000</item>
+        <item name="colorPrimaryDark">#66000000</item>
     </style>
 
     <style name="AppTheme.StatusBar" parent="AppTheme" />
