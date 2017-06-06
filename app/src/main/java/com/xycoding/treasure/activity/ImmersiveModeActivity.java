@@ -1,6 +1,5 @@
 package com.xycoding.treasure.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -56,9 +55,9 @@ public class ImmersiveModeActivity extends BaseBindingActivity {
                 .fitCenter()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mBinding.photoView);
-        new PhotoViewAttacher(mBinding.photoView).setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+        mBinding.photoView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
             @Override
-            public void onPhotoTap(View view, float x, float y) {
+            public void onViewTap(View view, float x, float y) {
                 toggleView();
             }
         });

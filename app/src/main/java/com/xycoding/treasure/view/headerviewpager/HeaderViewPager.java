@@ -693,21 +693,45 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     private boolean canVerticalScroll() {
+        return realHeight() > computeVerticalScrollExtent();
+    }
+
+    private int realHeight() {
         int realHeight = 0;
         for (int i = 0; i < getChildCount(); i++) {
-            View view = getChildAt(i);
-            if (view instanceof ViewPager) {
+            final View view = getChildAt(i);
+            final ViewPager pager = findDirectViewPager(view);
+            if (pager != null) {
                 int maxHeight = 0;
-                for (int j = 0; j < ((ViewPager) view).getChildCount(); j++) {
-                    View child = ((ViewPager) view).getChildAt(j);
-                    maxHeight = Math.max(maxHeight, compute(child, "computeVerticalScrollExtent"));
+                for (int j = 0; j < pager.getChildCount(); j++) {
+                    maxHeight = Math.max(maxHeight, compute(pager.getChildAt(j), "computeVerticalScrollExtent"));
                 }
                 realHeight += maxHeight;
             } else {
                 realHeight += view.getHeight();
             }
         }
-        return realHeight > computeVerticalScrollExtent();
+        return realHeight;
+    }
+
+    public int leftVisibleHeight() {
+        return computeVerticalScrollExtent() - realHeight();
+    }
+
+    @Nullable
+    private ViewPager findDirectViewPager(View parent) {
+        if (parent instanceof ViewPager) {
+            return (ViewPager) parent;
+        }
+        if (parent instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) parent).getChildCount(); i++) {
+                View child = ((ViewGroup) parent).getChildAt(i);
+                if (child instanceof ViewPager) {
+                    return (ViewPager) child;
+                }
+            }
+        }
+        return null;
     }
 
     /**
