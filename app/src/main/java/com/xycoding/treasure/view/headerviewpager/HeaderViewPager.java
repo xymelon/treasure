@@ -56,9 +56,18 @@ public class HeaderViewPager extends LinearLayout {
     private static final int SCROLL_BAR_FADE_ALPHA_STEP = SCROLL_BAR_MAX_ALPHA / (SCROLL_BAR_FADE_DURATION / SCROLL_BAR_FADE_STEP);
     private final Paint mScrollBarAlphaPaint = new Paint();
     private int mScrollBarAlpha = SCROLL_BAR_MAX_ALPHA;
-    private boolean mScrollBarFadingOut = false;
     private Runnable mScrollBarHideRunnable;
+    private Bitmap mScrollBarBitmap;
+    private RectF mScrollBarBitmapRectF = new RectF();
+    private RectF mScrollBarEventRectF = new RectF();
+    private final int mScrollBarMinHotArea;
+    private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
+    private boolean mScrollBarFadingOut = false;
+    private boolean mScrollBarConsumeEvent = false;
+    private boolean mShowScrollBar = false;
+    private OnScrollBarClickListener mOnScrollBarClickListener;
 
+    private Rect mHeaderViewPagerRect = new Rect();
     private final Scroller mScroller;
     private VelocityTracker mVelocityTracker;
     //向上滑动偏移量
@@ -72,8 +81,11 @@ public class HeaderViewPager extends LinearLayout {
     private int mInitMotionY;
     private int mLastTouchY;
     private int mLastScrollerY;
+    //标志是否向上fling
     private boolean mFlingUp = false;
-    private boolean mFlingChild = false;
+    //标志是否fling内容
+    private boolean mFlingContent = false;
+    //标志是否fling到顶部
     private boolean mFlingToTop = false;
     private ScrollableContainer mScrollableContainer;
     private ViewPager mViewPager;
@@ -83,16 +95,6 @@ public class HeaderViewPager extends LinearLayout {
     private EdgeEffectCompat mEdgeEffectBottom;
     private boolean mEdgeEffectTopActive;
     private boolean mEdgeEffectBottomActive;
-
-    private Rect mRect = new Rect();
-    private Bitmap mScrollBarBitmap;
-    private RectF mScrollBarBitmapRectF = new RectF();
-    private RectF mScrollBarEventRectF = new RectF();
-    private final int mScrollBarMinHotArea;
-    private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
-    private boolean mScrollBarConsumeEvent = false;
-    private boolean mShowScrollBar = false;
-    private OnScrollBarClickListener mOnScrollBarClickListener;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -255,8 +257,9 @@ public class HeaderViewPager extends LinearLayout {
                     return false;
                 }
                 if (mScrollBarConsumeEvent) {
-                    if (mOnScrollBarClickListener != null && isScrollBarConsumeEvent(ev)) {
-                        mOnScrollBarClickListener.onClick(ev.getX(pointerIndex), ev.getY(pointerIndex));
+                    //双重验证，判定up事件是否在scroll bar热区
+                    if (isScrollBarConsumeEvent(ev)) {
+                        dispatchScrollBarClickEvent();
                     }
                 } else {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
@@ -269,6 +272,17 @@ public class HeaderViewPager extends LinearLayout {
                 break;
         }
         return true;
+    }
+
+    private void onSecondaryPointerUp(MotionEvent ev) {
+        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+        if (ev.getPointerId(pointerIndex) == mActivePointerId) {
+            // This was our active pointer going up. Choose a new
+            // active pointer and adjust accordingly.
+            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+            mActivePointerId = ev.getPointerId(newPointerIndex);
+            mInitMotionY = mLastTouchY = Math.round(ev.getY(newPointerIndex));
+        }
     }
 
     private boolean isScrollBarConsumeEvent(MotionEvent ev) {
@@ -295,14 +309,15 @@ public class HeaderViewPager extends LinearLayout {
         return mScrollBarConsumeEvent;
     }
 
-    private void onSecondaryPointerUp(MotionEvent ev) {
-        final int pointerIndex = MotionEventCompat.getActionIndex(ev);
-        if (ev.getPointerId(pointerIndex) == mActivePointerId) {
-            // This was our active pointer going up. Choose a new
-            // active pointer and adjust accordingly.
-            final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-            mActivePointerId = ev.getPointerId(newPointerIndex);
-            mInitMotionY = mLastTouchY = Math.round(ev.getY(newPointerIndex));
+    private void dispatchScrollBarClickEvent() {
+        if (mOnScrollBarClickListener != null) {
+            //计算当前scroll bar全局中心点
+            int[] location = new int[2];
+            getLocationOnScreen(location);
+            mOnScrollBarClickListener.onClick(
+                    Math.round(location[1] + mScrollBarBitmapRectF.centerY()),
+                    location[1] + mScrollBarBitmapMarginTop,
+                    location[1] + computeVerticalScrollExtent() + mTopOffset - mScrollbarBitmapMarginBottom);
         }
     }
 
@@ -357,9 +372,9 @@ public class HeaderViewPager extends LinearLayout {
                 final float currVelocity = mScroller.getCurrVelocity();
                 if (mFlingUp) {
                     //向上fling时，若header已完全隐藏，则向上fling底部内容
-                    if (isHeaderCollapseCompletely() && !mFlingChild) {
+                    if (isHeaderCollapseCompletely() && !mFlingContent) {
                         //保证fling一次
-                        mFlingChild = true;
+                        mFlingContent = true;
                         flingContent(Math.round(currVelocity), distance, duration);
                     } else {
                         final int deltaY = mScroller.getCurrY() - mLastScrollerY;
@@ -368,9 +383,9 @@ public class HeaderViewPager extends LinearLayout {
                 } else {
                     boolean isScrollContainerTop = isScrollContainerTop();
                     //向下fling时，若底部内容未滑动到顶部时，则向下fling底部内容
-                    if (!isScrollContainerTop && !mFlingChild) {
+                    if (!isScrollContainerTop && !mFlingContent) {
                         //保证fling一次
-                        mFlingChild = true;
+                        mFlingContent = true;
                         flingContent(-Math.round(currVelocity), distance, duration);
                     }
                     //向下fling时，若header未完全展开时，则滑动header
@@ -496,7 +511,7 @@ public class HeaderViewPager extends LinearLayout {
             } else {
                 //fade隐藏scroll bar
                 mScrollBarAlpha -= SCROLL_BAR_FADE_ALPHA_STEP;
-                if (mScrollBarAlpha >= 0) {
+                if (mScrollBarAlpha >= 0 && !mScrollBarBitmapRectF.isEmpty()) {
                     mScrollBarFadingOut = true;
                     mScrollBarAlphaPaint.setAlpha(mScrollBarAlpha);
                     drawScrollBar(canvas);
@@ -561,10 +576,10 @@ public class HeaderViewPager extends LinearLayout {
             return super.computeVerticalScrollExtent();
         }
 
-        if (mRect.isEmpty()) {
-            getGlobalVisibleRect(mRect);
+        if (mHeaderViewPagerRect.isEmpty()) {
+            getGlobalVisibleRect(mHeaderViewPagerRect);
         }
-        return mRect.height() - mTopOffset;
+        return mHeaderViewPagerRect.height() - mTopOffset;
     }
 
     private int compute(View view, String methodName) {
@@ -684,6 +699,22 @@ public class HeaderViewPager extends LinearLayout {
         }
     }
 
+    public void scrollToPosition(int position) {
+        if (!isHeaderCollapseCompletely()) {
+            //若header未完全隐藏，则smooth隐藏header
+            mFlingUp = true;
+            mFlingContent = true;
+            mFlingToTop = false;
+            mLastScrollerY = 0;
+            mScroller.startScroll(0, 0, 0, mMaxScrollY - getScrollY(), 100);
+            invalidate();
+        }
+        View view = getCurrentScrollableView();
+        if (view instanceof RecyclerView) {
+            ((RecyclerView) view).smoothScrollToPosition(position);
+        }
+    }
+
     private int getCurrentScrollY() {
         int distance = 0;
         View view = getCurrentScrollableView();
@@ -743,11 +774,10 @@ public class HeaderViewPager extends LinearLayout {
         mScroller.abortAnimation();
         //上滑速度小于0，下滑速度大于0
         mFlingUp = vy < 0;
-        mFlingChild = false;
+        mFlingContent = false;
         mFlingToTop = false;
         mLastScrollerY = getScrollY();
-        if ((mFlingUp && isScrollBottom())
-                || (!mFlingUp && isScrollTop())) {
+        if ((mFlingUp && isScrollBottom()) || (!mFlingUp && isScrollTop())) {
             //上滑且滑到底部，或下滑且滑到顶部，不用fling
             return;
         }
@@ -763,19 +793,17 @@ public class HeaderViewPager extends LinearLayout {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void flingContent(int vy, int distance, int duration) {
         View view = getCurrentScrollableView();
-        if (view != null) {
-            if (view instanceof RecyclerView) {
-                ((RecyclerView) view).fling(0, vy);
-            } else if (view instanceof WebView) {
-                ((WebView) view).flingScroll(0, vy);
-            } else if (view instanceof ScrollView) {
-                ((ScrollView) view).fling(vy);
-            } else if (view instanceof AbsListView) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ((AbsListView) view).fling(vy);
-                } else {
-                    ((AbsListView) view).smoothScrollBy(distance, duration);
-                }
+        if (view instanceof RecyclerView) {
+            ((RecyclerView) view).fling(0, vy);
+        } else if (view instanceof WebView) {
+            ((WebView) view).flingScroll(0, vy);
+        } else if (view instanceof ScrollView) {
+            ((ScrollView) view).fling(vy);
+        } else if (view instanceof AbsListView) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ((AbsListView) view).fling(vy);
+            } else {
+                ((AbsListView) view).smoothScrollBy(distance, duration);
             }
         }
     }
@@ -961,7 +989,7 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     public interface OnScrollBarClickListener {
-        void onClick(float x, float y);
+        void onClick(int centerYInScreen, int startYInScreen, int endYInScreen);
     }
 
 }

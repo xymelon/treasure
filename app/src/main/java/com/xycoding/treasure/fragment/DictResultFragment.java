@@ -9,9 +9,11 @@ import android.widget.Toast;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.FragmentDictResultBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
+import com.xycoding.treasure.view.QuickPositioningDialog;
 import com.xycoding.treasure.view.headerviewpager.HeaderViewPager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rx.functions.Action1;
@@ -23,7 +25,8 @@ public class DictResultFragment extends BaseBindingFragment {
 
     private FragmentDictResultBinding mBinding;
     private FragmentPagerAdapter mPagerAdapter;
-    public List<DictContentFragment> mFragments;
+    private List<DictContentFragment> mFragments;
+    private QuickPositioningDialog mDialog;
 
     public static DictResultFragment createInstance() {
         return new DictResultFragment();
@@ -62,8 +65,18 @@ public class DictResultFragment extends BaseBindingFragment {
         });
         mBinding.headerViewPager.setOnScrollBarClickListener(new HeaderViewPager.OnScrollBarClickListener() {
             @Override
-            public void onClick(float x, float y) {
-                Toast.makeText(getContext(), "scroll bar:" + x + "_" + y, Toast.LENGTH_SHORT).show();
+            public void onClick(int centerYInScreen, int startYInScreen, int endYInScreen) {
+                if (mDialog == null) {
+                    mDialog = new QuickPositioningDialog(getContext());
+                    mDialog.setOnQuickClickListener(new QuickPositioningDialog.OnQuickClickListener() {
+                        @Override
+                        public void onClick(int position) {
+                            mBinding.headerViewPager.scrollToPosition(position);
+                        }
+                    });
+                }
+                String[] data = {"词典1", "词典2", "词典3", "词典4"};
+                mDialog.show(Arrays.asList(data), centerYInScreen, startYInScreen, endYInScreen);
             }
         });
     }

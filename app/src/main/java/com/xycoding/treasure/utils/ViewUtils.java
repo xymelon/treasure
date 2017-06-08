@@ -52,8 +52,10 @@ public class ViewUtils {
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         Window window = dialog.getWindow();
         if (window != null) {
+            //不拦截事件
             window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+            //透明
             window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             layoutParams.copyFrom(window.getAttributes());
         }
