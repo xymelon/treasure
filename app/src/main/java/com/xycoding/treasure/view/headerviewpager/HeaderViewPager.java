@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -43,17 +44,26 @@ import java.lang.reflect.Method;
 public class HeaderViewPager extends LinearLayout {
 
     private static final int INVALID_POINTER = -1;
+    //快速回到顶部最大时长
     private static final int FAST_RETURN_TOP_TIME = 2000;
+    //fling时，剩余距离大于此指才能显示scroll bar
+    private static final int SCROLL_BAR_MAX_ALPHA = 255;
+    //停止滑动时，scroll bar显示时长
+    private static final int SCROLL_BAR_SHOW_DURATION = 2000;
+    private static final int SCROLL_BAR_MIN_DISTANCE = 10;
+    private static final int SCROLL_BAR_FADE_DURATION = 100;
+    private static final int SCROLL_BAR_FADE_STEP = 16;
+    private static final int SCROLL_BAR_FADE_ALPHA_STEP = SCROLL_BAR_MAX_ALPHA / (SCROLL_BAR_FADE_DURATION / SCROLL_BAR_FADE_STEP);
+    private final Paint mScrollBarAlphaPaint = new Paint();
+    private int mScrollBarAlpha = SCROLL_BAR_MAX_ALPHA;
+    private boolean mScrollBarFadingOut = false;
+    private Runnable mScrollBarHideRunnable;
 
     private final Scroller mScroller;
     private VelocityTracker mVelocityTracker;
-    /**
-     * 向上滑动偏移量
-     */
+    //向上滑动偏移量
     private int mTopOffset;
-    /**
-     * 向上滑动最大距离（等于header高度减去偏移量）
-     */
+    //向上滑动最大距离（等于header高度减去偏移量）
     private int mMaxScrollY;
     private final int mTouchSlop;
     private final int mMinFlingVelocity;
@@ -81,7 +91,7 @@ public class HeaderViewPager extends LinearLayout {
     private final int mScrollBarMinHotArea;
     private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
     private boolean mScrollBarConsumeEvent = false;
-    private boolean mShowScrollBar = true;
+    private boolean mShowScrollBar = false;
     private OnScrollBarClickListener mOnScrollBarClickListener;
 
     public HeaderViewPager(Context context) {
@@ -98,10 +108,10 @@ public class HeaderViewPager extends LinearLayout {
         setWillNotDraw(false);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HeaderViewPager);
-        mTopOffset = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_topOffset), 0);
-        mScrollBarBitmap = drawableToBitmap(typedArray.getDrawable(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar)));
-        mScrollBarBitmapMarginTop = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop), 0);
-        mScrollbarBitmapMarginBottom = typedArray.getDimensionPixelSize(typedArray.getIndex(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom), 0);
+        mTopOffset = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_topOffset, 0);
+        mScrollBarBitmap = drawableToBitmap(typedArray.getDrawable(R.styleable.HeaderViewPager_hvp_scrollbar));
+        mScrollBarBitmapMarginTop = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop, 0);
+        mScrollbarBitmapMarginBottom = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom, 0);
         typedArray.recycle();
 
         //scroll bar最小点击热区
@@ -245,7 +255,7 @@ public class HeaderViewPager extends LinearLayout {
                     return false;
                 }
                 if (mScrollBarConsumeEvent) {
-                    if (mOnScrollHeaderListener != null && isScrollBarConsumeEvent(ev)) {
+                    if (mOnScrollBarClickListener != null && isScrollBarConsumeEvent(ev)) {
                         mOnScrollBarClickListener.onClick(ev.getX(pointerIndex), ev.getY(pointerIndex));
                     }
                 } else {
@@ -262,19 +272,27 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     private boolean isScrollBarConsumeEvent(MotionEvent ev) {
-        mScrollBarEventRectF.set(mScrollBarBitmapRectF);
-        //扩展scroll bar点击热区
-        if (mScrollBarEventRectF.width() < mScrollBarMinHotArea) {
-            float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.width()) / 2;
-            mScrollBarEventRectF.left -= expand;
-            mScrollBarEventRectF.right += expand;
+        if (isScrollBarShow()) {
+            mScrollBarEventRectF.set(mScrollBarBitmapRectF);
+            //扩展scroll bar点击热区
+            if (mScrollBarEventRectF.width() < mScrollBarMinHotArea) {
+                float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.width()) / 2;
+                mScrollBarEventRectF.left -= expand;
+                mScrollBarEventRectF.right += expand;
+            }
+            if (mScrollBarEventRectF.height() < mScrollBarMinHotArea) {
+                float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.height()) / 2;
+                mScrollBarEventRectF.top -= expand;
+                mScrollBarEventRectF.bottom += expand;
+            }
+            mScrollBarConsumeEvent = mScrollBarEventRectF.contains(ev.getX(), ev.getY());
+            if (mScrollBarConsumeEvent) {
+                showScrollBar();
+            }
+        } else {
+            mScrollBarConsumeEvent = false;
         }
-        if (mScrollBarEventRectF.height() < mScrollBarMinHotArea) {
-            float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.height()) / 2;
-            mScrollBarEventRectF.top -= expand;
-            mScrollBarEventRectF.bottom += expand;
-        }
-        return mScrollBarConsumeEvent = mScrollBarEventRectF.contains(ev.getX(), ev.getY());
+        return mScrollBarConsumeEvent;
     }
 
     private void onSecondaryPointerUp(MotionEvent ev) {
@@ -308,6 +326,7 @@ public class HeaderViewPager extends LinearLayout {
         if (mEdgeEffectBottom != null) {
             mEdgeEffectBottom.onRelease();
         }
+        hideScrollBar();
     }
 
     private void resetEdgeEffects() {
@@ -318,6 +337,13 @@ public class HeaderViewPager extends LinearLayout {
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
+            final int distance = mScroller.getFinalY() - mScroller.getCurrY();
+            if (!mShowScrollBar) {
+                //fling时，剩余距离大于指定阈值时，显示scroll bar
+                if (Math.abs(distance) >= SCROLL_BAR_MIN_DISTANCE) {
+                    showScrollBar();
+                }
+            }
             if (mFlingToTop) {
                 //快速滑到顶部
                 final int deltaY = mLastScrollerY - mScroller.getCurrY();
@@ -327,7 +353,6 @@ public class HeaderViewPager extends LinearLayout {
                     scrollContent(deltaY);
                 }
             } else {
-                final int distance = mScroller.getFinalY() - mScroller.getCurrY();
                 final int duration = mScroller.getDuration() - mScroller.timePassed();
                 final float currVelocity = mScroller.getCurrVelocity();
                 if (mFlingUp) {
@@ -377,9 +402,45 @@ public class HeaderViewPager extends LinearLayout {
                     }
                 }
             }
+        } else {
+            hideScrollBar();
         }
     }
 
+    private boolean isScrollBarShow() {
+        return mShowScrollBar || mScrollBarFadingOut;
+    }
+
+    private void showScrollBar() {
+        removeCallbacks(mScrollBarHideRunnable);
+        mShowScrollBar = true;
+        invalidate(
+                Math.round(mScrollBarBitmapRectF.left),
+                Math.round(mScrollBarBitmapRectF.top),
+                Math.round(mScrollBarBitmapRectF.right),
+                Math.round(mScrollBarBitmapRectF.bottom));
+    }
+
+    private void hideScrollBar() {
+        if (!mShowScrollBar) {
+            return;
+        }
+        removeCallbacks(mScrollBarHideRunnable);
+        if (mScrollBarHideRunnable == null) {
+            mScrollBarHideRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    mShowScrollBar = false;
+                    invalidate(
+                            Math.round(mScrollBarBitmapRectF.left),
+                            Math.round(mScrollBarBitmapRectF.top),
+                            Math.round(mScrollBarBitmapRectF.right),
+                            Math.round(mScrollBarBitmapRectF.bottom));
+                }
+            };
+        }
+        postDelayed(mScrollBarHideRunnable, SCROLL_BAR_SHOW_DURATION);
+    }
 
     @Override
     public void draw(Canvas canvas) {
@@ -414,12 +475,14 @@ public class HeaderViewPager extends LinearLayout {
             }
         }
 
-        if (mShowScrollBar && mScrollBarBitmap != null) {
-            //绘制scroll bar
-            final int scrollRange = computeVerticalScrollRange();
-            final int scrollExtent = computeVerticalScrollExtent();
-            //可滚动距离大于指定范围时，才绘制scroll bar
-            if (scrollRange > scrollExtent * 2) {
+        if (mScrollBarBitmap != null) {
+            if (mShowScrollBar) {
+                mScrollBarFadingOut = false;
+                mScrollBarAlpha = SCROLL_BAR_MAX_ALPHA;
+                mScrollBarAlphaPaint.setAlpha(mScrollBarAlpha);
+                //绘制scroll bar
+                final int scrollRange = computeVerticalScrollRange();
+                final int scrollExtent = computeVerticalScrollExtent();
                 final int scrollbarRange = scrollExtent + mTopOffset
                         - mScrollBarBitmapMarginTop - mScrollbarBitmapMarginBottom - mScrollBarBitmap.getHeight();
                 final float currentPercent = (float) (computeVerticalScrollOffset()) / (scrollRange - scrollExtent);
@@ -429,12 +492,32 @@ public class HeaderViewPager extends LinearLayout {
                         scrollBarTop,
                         getPaddingLeft() + getWidth() + getPaddingRight(),
                         scrollBarTop + mScrollBarBitmap.getHeight());
-                final int restoreCount = canvas.save();
-                canvas.translate(0, getScrollY());
-                canvas.drawBitmap(mScrollBarBitmap, null, mScrollBarBitmapRectF, null);
-                canvas.restoreToCount(restoreCount);
+                drawScrollBar(canvas);
+            } else {
+                //fade隐藏scroll bar
+                mScrollBarAlpha -= SCROLL_BAR_FADE_ALPHA_STEP;
+                if (mScrollBarAlpha >= 0) {
+                    mScrollBarFadingOut = true;
+                    mScrollBarAlphaPaint.setAlpha(mScrollBarAlpha);
+                    drawScrollBar(canvas);
+                    postInvalidateDelayed(
+                            SCROLL_BAR_FADE_STEP,
+                            Math.round(mScrollBarBitmapRectF.left),
+                            Math.round(mScrollBarBitmapRectF.top),
+                            Math.round(mScrollBarBitmapRectF.right),
+                            Math.round(mScrollBarBitmapRectF.bottom));
+                } else {
+                    mScrollBarFadingOut = false;
+                }
             }
         }
+    }
+
+    private void drawScrollBar(Canvas canvas) {
+        final int restoreCount = canvas.save();
+        canvas.translate(0, getScrollY());
+        canvas.drawBitmap(mScrollBarBitmap, null, mScrollBarBitmapRectF, mScrollBarAlphaPaint);
+        canvas.restoreToCount(restoreCount);
     }
 
     @Override
@@ -630,6 +713,10 @@ public class HeaderViewPager extends LinearLayout {
         if (dy == 0 || !canVerticalScroll()) {
             return;
         }
+        //scroll bar正在渐出，则再次显示
+        if (isScrollBarShow()) {
+            showScrollBar();
+        }
         boolean isScrollContainerTop = isScrollContainerTop();
         if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
             //当底部内容滑动到顶部或header未完全隐藏时，滑动header
@@ -639,6 +726,7 @@ public class HeaderViewPager extends LinearLayout {
             //当底部内容未滑动到顶部且header完全展开或header完全隐藏时，滑动底部内容
             scrollContent(dy);
         }
+        invalidate();
     }
 
     private void scrollContent(int dy) {
@@ -834,10 +922,6 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setOnScrollBarClickListener(@NonNull OnScrollBarClickListener listener) {
         mOnScrollBarClickListener = listener;
-    }
-
-    public void setShowScrollBar(boolean show) {
-        mShowScrollBar = show;
     }
 
     @Nullable

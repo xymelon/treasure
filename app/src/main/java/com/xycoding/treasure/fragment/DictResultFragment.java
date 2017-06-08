@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 import android.widget.Toast;
 
 import com.xycoding.treasure.R;
@@ -61,19 +60,6 @@ public class DictResultFragment extends BaseBindingFragment {
                 Toast.makeText(getContext(), mBinding.layoutHeader.tvAd.getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        mBinding.headerViewPager.setOnScrollHeaderListener(new HeaderViewPager.OnScrollHeaderListener() {
-            @Override
-            public void onScroll(int currentPosition, int maxPosition) {
-                int tabHeight = mBinding.tabLayoutLanguage.getHeight();
-                if (maxPosition - currentPosition <= tabHeight) {
-                    mBinding.layoutTabDict2.getRoot().setVisibility(View.VISIBLE);
-                    mBinding.layoutTabDict2.getRoot().setTranslationY((maxPosition - currentPosition) - tabHeight);
-                    mBinding.tabLayoutLanguage.setTranslationY((maxPosition - currentPosition) - tabHeight);
-                } else {
-                    mBinding.layoutTabDict2.getRoot().setVisibility(View.INVISIBLE);
-                }
-            }
-        });
         mBinding.headerViewPager.setOnScrollBarClickListener(new HeaderViewPager.OnScrollBarClickListener() {
             @Override
             public void onClick(float x, float y) {
@@ -114,7 +100,6 @@ public class DictResultFragment extends BaseBindingFragment {
         };
         mBinding.viewPager.setAdapter(mPagerAdapter);
         mBinding.layoutTabDict1.tabLayoutDict.setupWithViewPager(mBinding.viewPager);
-        mBinding.layoutTabDict2.tabLayoutDict.setupWithViewPager(mBinding.viewPager);
 
         mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(0));
         mBinding.viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {

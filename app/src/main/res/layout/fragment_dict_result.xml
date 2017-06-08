@@ -42,10 +42,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tab_layout_language"
-            app:hvp_scrollbar="@drawable/ic_left_arrow"
+            app:hvp_scrollbar="@drawable/pic_slide_right"
             app:hvp_scrollbar_marginBottom="100dp"
             app:hvp_scrollbar_marginTop="100dp"
-            app:hvp_topOffset="-40dp">
+            app:hvp_topOffset="0dp">
 
             <include
                 android:id="@+id/layout_header"
@@ -75,14 +75,6 @@
             android:layout_marginBottom="40dp"
             android:layout_marginRight="16dp"
             android:src="@drawable/ic_keyboard_arrow_up_white_24dp" />
-
-        <include
-            android:id="@+id/layout_tab_dict2"
-            layout="@layout/layout_tab_dict"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:visibility="invisible" />
 
     </RelativeLayout>
 
