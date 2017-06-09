@@ -365,8 +365,12 @@ public class HeaderViewPager extends LinearLayout {
             if (mFlingToTop) {
                 //快速滑到顶部
                 final int deltaY = mLastScrollerY - mScroller.getCurrY();
-                if (isScrollContainerTop()) {
+                final View view = getCurrentScrollableView();
+                if (isScrollContainerTop() || view instanceof WebView) {
                     scrollTo(0, getScrollY() + deltaY);
+                    if (view instanceof WebView) {
+                        view.scrollTo(0, 0);
+                    }
                 } else {
                     scrollContent(deltaY);
                 }
@@ -702,16 +706,15 @@ public class HeaderViewPager extends LinearLayout {
 
     public void scrollToTop() {
         hideScrollBar();
-        View view = getCurrentScrollableView();
-        if (view instanceof WebView) {
-            view.scrollTo(0, 0);
-        }
         int distance = getCurrentScrollY();
         int duration = FAST_RETURN_TOP_TIME;
-        if (distance <= getResources().getDisplayMetrics().heightPixels) {
+        final int screenHeight = getResources().getDisplayMetrics().heightPixels;
+        if (distance <= screenHeight) {
             //滑动距离小于屏幕，时间减少
             duration = FAST_RETURN_TOP_TIME / 3;
         }
+        //hacky: 极端情况计算的距离总要差点，手动增加半个屏幕高度
+        distance += screenHeight / 2;
         mLastScrollerY = 0;
         mFlingToTop = true;
         mScroller.startScroll(0, 0, 0, distance, duration);
