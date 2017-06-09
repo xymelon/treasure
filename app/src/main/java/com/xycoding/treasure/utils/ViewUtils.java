@@ -1,13 +1,16 @@
 package com.xycoding.treasure.utils;
 
+import android.animation.Animator;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 
 import com.xycoding.treasure.R;
 
@@ -65,6 +68,74 @@ public class ViewUtils {
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         dialog.getWindow().setAttributes(layoutParams);
         return dialog;
+    }
+
+    public static void zoomInView(@NonNull final View view) {
+        view.setVisibility(View.VISIBLE);
+        view.setAlpha(0f);
+        view.setScaleX(0f);
+        view.setScaleY(0f);
+        view.animate()
+                .alpha(1)
+                .scaleX(1)
+                .scaleY(1)
+                .setDuration(300)
+                .setInterpolator(new OvershootInterpolator())
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view.animate()
+                                .setInterpolator(new LinearOutSlowInInterpolator())
+                                .start();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                })
+                .start();
+    }
+
+    public static void zoomOutView(@NonNull final View view) {
+        view.animate()
+                .alpha(0)
+                .scaleX(0)
+                .scaleY(0)
+                .setDuration(300)
+                .setInterpolator(new LinearOutSlowInInterpolator())
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                })
+                .start();
     }
 
 }
