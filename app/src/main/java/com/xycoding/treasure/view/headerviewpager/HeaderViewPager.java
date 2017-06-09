@@ -716,6 +716,7 @@ public class HeaderViewPager extends LinearLayout {
         mFlingToTop = true;
         mScroller.startScroll(0, 0, 0, distance, duration);
         invalidate();
+        scrollToTopViewPagerChildren();
     }
 
     public void scrollToTopImmediately() {
@@ -729,6 +730,23 @@ public class HeaderViewPager extends LinearLayout {
                 ((RecyclerView) view).scrollToPosition(0);
             } else {
                 view.scrollTo(0, 0);
+            }
+        }
+        scrollToTopViewPagerChildren();
+    }
+
+    private void scrollToTopViewPagerChildren() {
+        if (mViewPager != null) {
+            final int count = mViewPager.getChildCount();
+            for (int i = 0; i < count; i++) {
+                if (i != mViewPager.getCurrentItem()) {
+                    final View child = mViewPager.getChildAt(i);
+                    if (child instanceof RecyclerView) {
+                        ((RecyclerView) child).scrollToPosition(0);
+                    } else {
+                        child.scrollTo(0, 0);
+                    }
+                }
             }
         }
     }
