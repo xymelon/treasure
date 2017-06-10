@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -20,7 +18,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.EdgeEffectCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -47,28 +44,7 @@ public class HeaderViewPager extends LinearLayout {
     private static final int INVALID_POINTER = -1;
     //快速回到顶部最大时长
     private static final int FAST_RETURN_TOP_TIME = 1000;
-    //fling时，剩余距离大于此指才能显示scroll bar
-    private static final int SCROLL_BAR_MAX_ALPHA = 255;
-    //停止滑动时，scroll bar显示时长
-    private static final int SCROLL_BAR_SHOW_DURATION = 2000;
-    private static final int SCROLL_BAR_MIN_DISTANCE = 10;
-    private static final int SCROLL_BAR_FADE_DURATION = 100;
-    private static final int SCROLL_BAR_FADE_STEP = 16;
-    private static final int SCROLL_BAR_FADE_ALPHA_STEP = SCROLL_BAR_MAX_ALPHA / (SCROLL_BAR_FADE_DURATION / SCROLL_BAR_FADE_STEP);
-    private final Paint mScrollBarAlphaPaint = new Paint();
-    private int mScrollBarAlpha = SCROLL_BAR_MAX_ALPHA;
-    private Runnable mScrollBarHideRunnable;
-    private Bitmap mScrollBarBitmap;
-    private RectF mScrollBarBitmapRectF = new RectF();
-    private RectF mScrollBarEventRectF = new RectF();
-    private final int mScrollBarMinHotArea;
-    private int mScrollBarBitmapMarginTop, mScrollbarBitmapMarginBottom;
-    private boolean mScrollBarFadingOut = false;
-    private boolean mScrollBarConsumeEvent = false;
-    private boolean mShowScrollBar = false;
-    //标志scroll bar是否向上滚动
-    private boolean mScrollBarUp = false;
-    private OnScrollBarClickListener mOnScrollBarClickListener;
+    private int mScrollBarMarginTop, mScrollbarMarginBottom;
     private OnFastBackVisibleListener mFastBackVisibleListener;
 
     private Rect mHeaderViewPagerRect = new Rect();
@@ -85,6 +61,8 @@ public class HeaderViewPager extends LinearLayout {
     private int mInitMotionY;
     private int mLastTouchY;
     private int mLastScrollerY;
+    //标志是否向上滑动
+    private boolean mScrollUp;
     //标志是否向上fling
     private boolean mFlingUp = false;
     //标志是否fling内容
@@ -115,13 +93,9 @@ public class HeaderViewPager extends LinearLayout {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HeaderViewPager);
         mTopOffset = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_topOffset, 0);
-        mScrollBarBitmap = drawableToBitmap(typedArray.getDrawable(R.styleable.HeaderViewPager_hvp_scrollbar));
-        mScrollBarBitmapMarginTop = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop, 0);
-        mScrollbarBitmapMarginBottom = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom, 0);
+        mScrollBarMarginTop = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop, 0);
+        mScrollbarMarginBottom = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom, 0);
         typedArray.recycle();
-
-        //scroll bar最小点击热区
-        mScrollBarMinHotArea = dp2px(context, 36);
 
         final ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
@@ -174,10 +148,6 @@ public class HeaderViewPager extends LinearLayout {
                 resetEdgeEffects();
                 mActivePointerId = ev.getPointerId(0);
                 mInitMotionY = mLastTouchY = Math.round(ev.getY());
-                if (isScrollBarConsumeEvent(ev)) {
-                    //scroll bar消费事件
-                    return true;
-                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
@@ -232,7 +202,6 @@ public class HeaderViewPager extends LinearLayout {
                 resetEdgeEffects();
                 mActivePointerId = ev.getPointerId(0);
                 mLastTouchY = Math.round(ev.getY());
-                isScrollBarConsumeEvent(ev);
                 break;
             case MotionEvent.ACTION_MOVE:
                 pointerIndex = ev.findPointerIndex(mActivePointerId);
@@ -241,10 +210,8 @@ public class HeaderViewPager extends LinearLayout {
                 }
                 final int y = Math.round(ev.getY(pointerIndex));
                 final int deltaY = mLastTouchY - y;
-                if (!mScrollBarConsumeEvent) {
-                    scroll(deltaY);
-                    edgeEffectPull(ev.getX(pointerIndex), deltaY);
-                }
+                scroll(deltaY);
+                edgeEffectPull(ev.getX(pointerIndex), deltaY);
                 mLastTouchY = y;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -260,15 +227,8 @@ public class HeaderViewPager extends LinearLayout {
                 if (pointerIndex < 0) {
                     return false;
                 }
-                if (mScrollBarConsumeEvent) {
-                    //双重验证，判定up事件是否在scroll bar热区
-                    if (isScrollBarConsumeEvent(ev)) {
-                        dispatchScrollBarClickEvent();
-                    }
-                } else {
-                    mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
-                    fling(mVelocityTracker.getYVelocity(pointerIndex));
-                }
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxFlingVelocity);
+                fling(mVelocityTracker.getYVelocity(pointerIndex));
                 clearParams();
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -289,45 +249,9 @@ public class HeaderViewPager extends LinearLayout {
         }
     }
 
-    private boolean isScrollBarConsumeEvent(MotionEvent ev) {
-        if (isScrollBarShow()) {
-            mScrollBarEventRectF.set(mScrollBarBitmapRectF);
-            //扩展scroll bar点击热区
-            if (mScrollBarEventRectF.width() < mScrollBarMinHotArea) {
-                float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.width()) / 2;
-                mScrollBarEventRectF.left -= expand;
-                mScrollBarEventRectF.right += expand;
-            }
-            if (mScrollBarEventRectF.height() < mScrollBarMinHotArea) {
-                float expand = (mScrollBarMinHotArea - mScrollBarEventRectF.height()) / 2;
-                mScrollBarEventRectF.top -= expand;
-                mScrollBarEventRectF.bottom += expand;
-            }
-            mScrollBarConsumeEvent = mScrollBarEventRectF.contains(ev.getX(), ev.getY());
-            if (mScrollBarConsumeEvent) {
-                showScrollBar();
-            }
-        } else {
-            mScrollBarConsumeEvent = false;
-        }
-        return mScrollBarConsumeEvent;
-    }
-
-    private void dispatchScrollBarClickEvent() {
-        if (mOnScrollBarClickListener != null) {
-            //计算当前scroll bar全局中心点
-            int[] location = new int[2];
-            getLocationOnScreen(location);
-            mOnScrollBarClickListener.onClick(
-                    Math.round(location[1] + mScrollBarBitmapRectF.centerY()),
-                    location[1] + mScrollBarBitmapMarginTop,
-                    location[1] + computeVerticalScrollExtent() + mTopOffset - mScrollbarBitmapMarginBottom);
-        }
-    }
-
     private void dispatchFastBackVisibleEvent() {
         if (mFastBackVisibleListener != null) {
-            mFastBackVisibleListener.onVisible(mScrollBarUp && isHeaderCollapseCompletely());
+            mFastBackVisibleListener.onVisible(!mScrollUp && isHeaderCollapseCompletely());
         }
     }
 
@@ -351,7 +275,6 @@ public class HeaderViewPager extends LinearLayout {
         if (mEdgeEffectBottom != null) {
             mEdgeEffectBottom.onRelease();
         }
-        fadeOutScrollBar();
     }
 
     private void resetEdgeEffects() {
@@ -376,12 +299,6 @@ public class HeaderViewPager extends LinearLayout {
                 }
             } else {
                 final int distance = mScroller.getFinalY() - mScroller.getCurrY();
-                if (!mShowScrollBar) {
-                    //fling时，剩余距离大于指定阈值时，显示scroll bar
-                    if (Math.abs(distance) >= SCROLL_BAR_MIN_DISTANCE) {
-                        showScrollBar();
-                    }
-                }
                 final int duration = mScroller.getDuration() - mScroller.timePassed();
                 final float currVelocity = mScroller.getCurrVelocity();
                 if (mFlingUp) {
@@ -432,50 +349,7 @@ public class HeaderViewPager extends LinearLayout {
                     }
                 }
             }
-        } else {
-            fadeOutScrollBar();
         }
-    }
-
-    private boolean isScrollBarShow() {
-        return mShowScrollBar || mScrollBarFadingOut;
-    }
-
-    private void showScrollBar() {
-        if (getCurrentScrollableView() instanceof RecyclerView) {
-            removeCallbacks(mScrollBarHideRunnable);
-            mShowScrollBar = true;
-            invalidate(
-                    Math.round(mScrollBarBitmapRectF.left),
-                    Math.round(mScrollBarBitmapRectF.top),
-                    Math.round(mScrollBarBitmapRectF.right),
-                    Math.round(mScrollBarBitmapRectF.bottom));
-        }
-    }
-
-    private void fadeOutScrollBar() {
-        if (!mShowScrollBar) {
-            return;
-        }
-        removeCallbacks(mScrollBarHideRunnable);
-        if (mScrollBarHideRunnable == null) {
-            mScrollBarHideRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    hideScrollBar();
-                }
-            };
-        }
-        postDelayed(mScrollBarHideRunnable, SCROLL_BAR_SHOW_DURATION);
-    }
-
-    private void hideScrollBar() {
-        mShowScrollBar = false;
-        invalidate(
-                Math.round(mScrollBarBitmapRectF.left),
-                Math.round(mScrollBarBitmapRectF.top),
-                Math.round(mScrollBarBitmapRectF.right),
-                Math.round(mScrollBarBitmapRectF.bottom));
     }
 
     @Override
@@ -510,61 +384,6 @@ public class HeaderViewPager extends LinearLayout {
                 canvas.restoreToCount(restoreCount);
             }
         }
-
-        if (mScrollBarBitmap != null) {
-            if (mShowScrollBar) {
-                mScrollBarFadingOut = false;
-                mScrollBarAlpha = SCROLL_BAR_MAX_ALPHA;
-                mScrollBarAlphaPaint.setAlpha(mScrollBarAlpha);
-                //绘制scroll bar
-                final int scrollRange = computeVerticalScrollRange();
-                final int scrollExtent = computeVerticalScrollExtent();
-                final int scrollbarRange = scrollExtent + mTopOffset
-                        - mScrollBarBitmapMarginTop - mScrollbarBitmapMarginBottom - mScrollBarBitmap.getHeight();
-                float currentPercent = computeVerticalScrollOffset() * 1.f / (scrollRange - scrollExtent);
-                currentPercent = currentPercent > 1.f ? 1.f : currentPercent;
-                float scrollBarTop = mScrollBarBitmapMarginTop + currentPercent * scrollbarRange;
-                if (!mScrollBarBitmapRectF.isEmpty()) {
-                    float dy = scrollBarTop - mScrollBarBitmapRectF.top;
-                    //若当前用户向上或向下滚动，但计算出的新位置相反，则保持scroll bar静止
-                    if (mScrollBarUp) {
-                        scrollBarTop = dy < 0 ? scrollBarTop : mScrollBarBitmapRectF.top;
-                    } else {
-                        scrollBarTop = dy > 0 ? scrollBarTop : mScrollBarBitmapRectF.top;
-                    }
-                }
-                mScrollBarBitmapRectF.set(
-                        getPaddingLeft() + getWidth() - mScrollBarBitmap.getWidth(),
-                        scrollBarTop,
-                        getPaddingLeft() + getWidth() + getPaddingRight(),
-                        scrollBarTop + mScrollBarBitmap.getHeight());
-                drawScrollBar(canvas);
-            } else {
-                //fade隐藏scroll bar
-                mScrollBarAlpha -= SCROLL_BAR_FADE_ALPHA_STEP;
-                if (mScrollBarAlpha >= 0 && !mScrollBarBitmapRectF.isEmpty()) {
-                    mScrollBarFadingOut = true;
-                    mScrollBarAlphaPaint.setAlpha(mScrollBarAlpha);
-                    drawScrollBar(canvas);
-                    postInvalidateDelayed(
-                            SCROLL_BAR_FADE_STEP,
-                            Math.round(mScrollBarBitmapRectF.left),
-                            Math.round(mScrollBarBitmapRectF.top),
-                            Math.round(mScrollBarBitmapRectF.right),
-                            Math.round(mScrollBarBitmapRectF.bottom));
-                } else {
-                    mScrollBarFadingOut = false;
-                    mScrollBarBitmapRectF.setEmpty();
-                }
-            }
-        }
-    }
-
-    private void drawScrollBar(Canvas canvas) {
-        final int restoreCount = canvas.save();
-        canvas.translate(0, getScrollY());
-        canvas.drawBitmap(mScrollBarBitmap, null, mScrollBarBitmapRectF, mScrollBarAlphaPaint);
-        canvas.restoreToCount(restoreCount);
     }
 
     @Override
@@ -705,7 +524,6 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     public void scrollToTop() {
-        hideScrollBar();
         int distance = getCurrentScrollY();
         int duration = FAST_RETURN_TOP_TIME;
         final int screenHeight = getResources().getDisplayMetrics().heightPixels;
@@ -723,7 +541,6 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     public void scrollToTopImmediately() {
-        hideScrollBar();
         mLastScrollerY = 0;
         scrollTo(0, 0);
 
@@ -830,11 +647,7 @@ public class HeaderViewPager extends LinearLayout {
         if (dy == 0 || !canVerticalScroll()) {
             return;
         }
-        mScrollBarUp = dy < 0;
-        //scroll bar正在渐出，则再次显示
-        if (isScrollBarShow()) {
-            showScrollBar();
-        }
+        mScrollUp = dy > 0;
         boolean isScrollContainerTop = isScrollContainerTop();
         if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
             //当底部内容滑动到顶部或header未完全隐藏时，滑动header
@@ -860,8 +673,7 @@ public class HeaderViewPager extends LinearLayout {
         }
         mScroller.abortAnimation();
         //上滑速度小于0，下滑速度大于0
-        mFlingUp = vy < 0;
-        mScrollBarUp = !mFlingUp;
+        mScrollUp = mFlingUp = vy < 0;
         mFlingContent = false;
         mFlingToTop = false;
         mLastScrollerY = getScrollY();
@@ -1037,10 +849,6 @@ public class HeaderViewPager extends LinearLayout {
         mOnScrollHeaderListener = listener;
     }
 
-    public void setOnScrollBarClickListener(@NonNull OnScrollBarClickListener listener) {
-        mOnScrollBarClickListener = listener;
-    }
-
     public void setOnFastBackVisibleListener(@NonNull OnFastBackVisibleListener listener) {
         mFastBackVisibleListener = listener;
     }
@@ -1069,20 +877,12 @@ public class HeaderViewPager extends LinearLayout {
         return bitmap;
     }
 
-    public static int dp2px(Context context, float dp) {
-        return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics()) + 0.5f);
-    }
-
     public interface ScrollableContainer {
         RecyclerView getScrollableView();
     }
 
     public interface OnScrollHeaderListener {
         void onScroll(int currentPosition, int maxPosition);
-    }
-
-    public interface OnScrollBarClickListener {
-        void onClick(int centerYInScreen, int startYInScreen, int endYInScreen);
     }
 
     public interface OnFastBackVisibleListener {

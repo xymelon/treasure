@@ -42,7 +42,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tab_layout_language"
-            app:hvp_scrollbar="@drawable/pic_slide_right"
             app:hvp_scrollbar_marginBottom="100dp"
             app:hvp_scrollbar_marginTop="100dp"
             app:hvp_topOffset="0dp">

@@ -63,22 +63,22 @@ public class DictResultFragment extends BaseBindingFragment {
                 Toast.makeText(getContext(), mBinding.layoutHeader.tvAd.getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        mBinding.headerViewPager.setOnScrollBarClickListener(new HeaderViewPager.OnScrollBarClickListener() {
-            @Override
-            public void onClick(int centerYInScreen, int startYInScreen, int endYInScreen) {
-                if (mDialog == null) {
-                    mDialog = new QuickPositioningDialog(getContext());
-                    mDialog.setOnQuickClickListener(new QuickPositioningDialog.OnQuickClickListener() {
-                        @Override
-                        public void onClick(int position) {
-                            mBinding.headerViewPager.scrollToPosition(position);
-                        }
-                    });
-                }
-                String[] data = {"词典1", "词典2", "词典3", "词典4"};
-                mDialog.show(Arrays.asList(data), centerYInScreen, startYInScreen, endYInScreen);
-            }
-        });
+//        mBinding.headerViewPager.setOnScrollBarClickListener(new HeaderViewPager.OnScrollBarClickListener() {
+//            @Override
+//            public void onClick(int centerYInScreen, int startYInScreen, int endYInScreen) {
+//                if (mDialog == null) {
+//                    mDialog = new QuickPositioningDialog(getContext());
+//                    mDialog.setOnQuickClickListener(new QuickPositioningDialog.OnQuickClickListener() {
+//                        @Override
+//                        public void onClick(int position) {
+//                            mBinding.headerViewPager.scrollToPosition(position);
+//                        }
+//                    });
+//                }
+//                String[] data = {"词典1", "词典2", "词典3", "词典4"};
+//                mDialog.show(Arrays.asList(data), centerYInScreen, startYInScreen, endYInScreen);
+//            }
+//        });
     }
 
     @Override
