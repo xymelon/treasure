@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 import android.widget.Toast;
 
 import com.xycoding.treasure.R;
@@ -63,22 +64,19 @@ public class DictResultFragment extends BaseBindingFragment {
                 Toast.makeText(getContext(), mBinding.layoutHeader.tvAd.getText(), Toast.LENGTH_SHORT).show();
             }
         });
-//        mBinding.headerViewPager.setOnScrollBarClickListener(new HeaderViewPager.OnScrollBarClickListener() {
-//            @Override
-//            public void onClick(int centerYInScreen, int startYInScreen, int endYInScreen) {
-//                if (mDialog == null) {
-//                    mDialog = new QuickPositioningDialog(getContext());
-//                    mDialog.setOnQuickClickListener(new QuickPositioningDialog.OnQuickClickListener() {
-//                        @Override
-//                        public void onClick(int position) {
-//                            mBinding.headerViewPager.scrollToPosition(position);
-//                        }
-//                    });
-//                }
-//                String[] data = {"词典1", "词典2", "词典3", "词典4"};
-//                mDialog.show(Arrays.asList(data), centerYInScreen, startYInScreen, endYInScreen);
-//            }
-//        });
+        RxViewWrapper.clicks(mBinding.ivScrollBar).subscribe(new Action1<Void>() {
+            @Override
+            public void call(Void aVoid) {
+                showQuickPositioningDialog();
+            }
+        });
+        mBinding.headerViewPager.setScrollBarListener(new HeaderViewPager.OnScrollBarListener() {
+            @Override
+            public void onScroll(float top, boolean scrollUp) {
+                mBinding.ivScrollBar.setVisibility(View.VISIBLE);
+                mBinding.ivScrollBar.setTranslationY(top);
+            }
+        });
     }
 
     @Override
@@ -121,6 +119,27 @@ public class DictResultFragment extends BaseBindingFragment {
                 mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(position));
             }
         });
+    }
+
+    private void showQuickPositioningDialog() {
+        if (mDialog == null) {
+            mDialog = new QuickPositioningDialog(getContext());
+            mDialog.setOnQuickClickListener(new QuickPositioningDialog.OnQuickClickListener() {
+                @Override
+                public void onClick(int position) {
+                    mBinding.headerViewPager.scrollToPosition(position);
+                }
+            });
+        }
+        String[] data = {"词典1", "词典2", "词典3", "词典4"};
+        //计算当前scroll bar全局中心点
+        int[] location = new int[2];
+        mBinding.headerViewPager.getLocationOnScreen(location);
+        mDialog.show(
+                Arrays.asList(data),
+                Math.round(location[1] + mBinding.ivScrollBar.getTranslationY() + mBinding.ivScrollBar.getHeight() / 2),
+                location[1] + mBinding.headerViewPager.getScrollBarStart(),
+                location[1] + mBinding.headerViewPager.getScrollBarEnd());
     }
 
 }

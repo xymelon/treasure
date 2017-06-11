@@ -3,11 +3,8 @@ package com.xycoding.treasure.view.headerviewpager;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,7 +41,10 @@ public class HeaderViewPager extends LinearLayout {
     private static final int INVALID_POINTER = -1;
     //快速回到顶部最大时长
     private static final int FAST_RETURN_TOP_TIME = 1000;
-    private int mScrollBarMarginTop, mScrollbarMarginBottom;
+    private int mScrollBarHeight;
+    private int mScrollBarMarginTop;
+    private int mScrollbarMarginBottom;
+    private OnScrollBarListener mScrollBarListener;
     private OnFastBackVisibleListener mFastBackVisibleListener;
 
     private Rect mHeaderViewPagerRect = new Rect();
@@ -93,6 +93,7 @@ public class HeaderViewPager extends LinearLayout {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HeaderViewPager);
         mTopOffset = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_topOffset, 0);
+        mScrollBarHeight = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_height, 0);
         mScrollBarMarginTop = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginTop, 0);
         mScrollbarMarginBottom = typedArray.getDimensionPixelSize(R.styleable.HeaderViewPager_hvp_scrollbar_marginBottom, 0);
         typedArray.recycle();
@@ -326,6 +327,7 @@ public class HeaderViewPager extends LinearLayout {
                         scrollTo(0, getScrollY() + deltaY);
                     }
                 }
+                dispatchScrollBarPosition();
             }
             mLastScrollerY = mScroller.getCurrY();
             invalidate();
@@ -647,7 +649,7 @@ public class HeaderViewPager extends LinearLayout {
         if (dy == 0 || !canVerticalScroll()) {
             return;
         }
-        mScrollUp = dy > 0;
+        mScrollUp = dy < 0;
         boolean isScrollContainerTop = isScrollContainerTop();
         if (isScrollContainerTop || !isHeaderCollapseCompletely()) {
             //当底部内容滑动到顶部或header未完全隐藏时，滑动header
@@ -657,6 +659,7 @@ public class HeaderViewPager extends LinearLayout {
             //当底部内容未滑动到顶部且header完全展开或header完全隐藏时，滑动底部内容
             scrollContent(dy);
         }
+        dispatchScrollBarPosition();
         invalidate();
     }
 
@@ -673,7 +676,8 @@ public class HeaderViewPager extends LinearLayout {
         }
         mScroller.abortAnimation();
         //上滑速度小于0，下滑速度大于0
-        mScrollUp = mFlingUp = vy < 0;
+        mFlingUp = vy < 0;
+        mScrollUp = !mFlingUp;
         mFlingContent = false;
         mFlingToTop = false;
         mLastScrollerY = getScrollY();
@@ -707,6 +711,27 @@ public class HeaderViewPager extends LinearLayout {
                 ((AbsListView) view).smoothScrollBy(distance, duration);
             }
         }
+    }
+
+    private void dispatchScrollBarPosition() {
+        if (mScrollBarListener != null) {
+            //绘制scroll bar
+            final int scrollRange = computeVerticalScrollRange();
+            final int scrollExtent = computeVerticalScrollExtent();
+            final int scrollbarRange = scrollExtent + mTopOffset - mScrollBarMarginTop - mScrollbarMarginBottom - mScrollBarHeight;
+            float currentPercent = computeVerticalScrollOffset() * 1.f / (scrollRange - scrollExtent);
+            currentPercent = currentPercent > 1.f ? 1.f : currentPercent;
+            float scrollBarTop = mScrollBarMarginTop + currentPercent * scrollbarRange;
+            mScrollBarListener.onScroll(scrollBarTop, mScrollUp);
+        }
+    }
+
+    public int getScrollBarStart() {
+        return mScrollBarMarginTop;
+    }
+
+    public int getScrollBarEnd() {
+        return computeVerticalScrollExtent() - mScrollbarMarginBottom;
     }
 
     private boolean canVerticalScroll() {
@@ -849,32 +874,12 @@ public class HeaderViewPager extends LinearLayout {
         mOnScrollHeaderListener = listener;
     }
 
-    public void setOnFastBackVisibleListener(@NonNull OnFastBackVisibleListener listener) {
-        mFastBackVisibleListener = listener;
+    public void setScrollBarListener(@NonNull OnScrollBarListener listener) {
+        mScrollBarListener = listener;
     }
 
-    @Nullable
-    public static Bitmap drawableToBitmap(Drawable drawable) {
-        if (drawable == null) {
-            return null;
-        }
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if (bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
-        Bitmap bitmap;
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            // Single color bitmap will be created of 1x1 pixel
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        } else {
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+    public void setOnFastBackVisibleListener(@NonNull OnFastBackVisibleListener listener) {
+        mFastBackVisibleListener = listener;
     }
 
     public interface ScrollableContainer {
@@ -883,6 +888,10 @@ public class HeaderViewPager extends LinearLayout {
 
     public interface OnScrollHeaderListener {
         void onScroll(int currentPosition, int maxPosition);
+    }
+
+    public interface OnScrollBarListener {
+        void onScroll(float top, boolean scrollUp);
     }
 
     public interface OnFastBackVisibleListener {
