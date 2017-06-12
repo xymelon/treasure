@@ -71,10 +71,16 @@ public class DictResultFragment extends BaseBindingFragment {
                 showQuickPositioningDialog();
             }
         });
+        mBinding.headerViewPager.setScrollBarVisibleListener(new HeaderViewPager.OnScrollBarVisibleListener() {
+            @Override
+            public void onVisible(boolean visible) {
+                mBinding.ivScrollBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+            }
+        });
         mBinding.headerViewPager.setScrollBarListener(new HeaderViewPager.OnScrollBarListener() {
             @Override
-            public void onScroll(float top, boolean fling, boolean scrollUp) {
-                if (fling || mBinding.ivScrollBar.isShown()) {
+            public void onScroll(float top, boolean scrollUp) {
+                if (mBinding.ivScrollBar.isShown()) {
                     mBinding.ivScrollBar.setVisibility(View.VISIBLE);
                     mBinding.ivScrollBar.setTranslationY(top);
                     mBinding.ivScrollBar.removeCallbacks(mScrollBarHideRunnable);
