@@ -529,6 +529,9 @@ public class HeaderViewPager extends LinearLayout {
         if (mOnScrollHeaderListener != null && getScrollY() != y) {
             mOnScrollHeaderListener.onScroll(y, mMaxScrollY);
         }
+        if (!isHeaderCollapseCompletely()) {
+            dispatchScrollBarVisibleEvent(false);
+        }
         super.scrollTo(x, y);
     }
 
