@@ -28,6 +28,7 @@ public class DictResultFragment extends BaseBindingFragment {
     private FragmentPagerAdapter mPagerAdapter;
     private List<DictContentFragment> mFragments;
     private QuickPositioningDialog mDialog;
+    private Runnable mScrollBarHideRunnable;
 
     public static DictResultFragment createInstance() {
         return new DictResultFragment();
@@ -72,9 +73,21 @@ public class DictResultFragment extends BaseBindingFragment {
         });
         mBinding.headerViewPager.setScrollBarListener(new HeaderViewPager.OnScrollBarListener() {
             @Override
-            public void onScroll(float top, boolean scrollUp) {
-                mBinding.ivScrollBar.setVisibility(View.VISIBLE);
-                mBinding.ivScrollBar.setTranslationY(top);
+            public void onScroll(float top, boolean fling, boolean scrollUp) {
+                if (fling || mBinding.ivScrollBar.isShown()) {
+                    mBinding.ivScrollBar.setVisibility(View.VISIBLE);
+                    mBinding.ivScrollBar.setTranslationY(top);
+                    mBinding.ivScrollBar.removeCallbacks(mScrollBarHideRunnable);
+                    if (mScrollBarHideRunnable == null) {
+                        mScrollBarHideRunnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                mBinding.ivScrollBar.setVisibility(View.INVISIBLE);
+                            }
+                        };
+                    }
+                    mBinding.ivScrollBar.postDelayed(mScrollBarHideRunnable, 2000);
+                }
             }
         });
     }

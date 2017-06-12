@@ -41,6 +41,7 @@ public class HeaderViewPager extends LinearLayout {
     private static final int INVALID_POINTER = -1;
     //快速回到顶部最大时长
     private static final int FAST_RETURN_TOP_TIME = 1000;
+    private static final int SCROLL_BAR_MIN_DISTANCE = 20;
     private int mScrollBarHeight;
     private int mScrollBarMarginTop;
     private int mScrollbarMarginBottom;
@@ -252,7 +253,7 @@ public class HeaderViewPager extends LinearLayout {
 
     private void dispatchFastBackVisibleEvent() {
         if (mFastBackVisibleListener != null) {
-            mFastBackVisibleListener.onVisible(!mScrollUp && isHeaderCollapseCompletely());
+            mFastBackVisibleListener.onVisible(mScrollUp && isHeaderCollapseCompletely());
         }
     }
 
@@ -327,7 +328,9 @@ public class HeaderViewPager extends LinearLayout {
                         scrollTo(0, getScrollY() + deltaY);
                     }
                 }
-                dispatchScrollBarPosition();
+                if (Math.abs(distance) >= SCROLL_BAR_MIN_DISTANCE) {
+                    dispatchScrollBarPosition(true);
+                }
             }
             mLastScrollerY = mScroller.getCurrY();
             invalidate();
@@ -659,7 +662,7 @@ public class HeaderViewPager extends LinearLayout {
             //当底部内容未滑动到顶部且header完全展开或header完全隐藏时，滑动底部内容
             scrollContent(dy);
         }
-        dispatchScrollBarPosition();
+        dispatchScrollBarPosition(false);
         invalidate();
     }
 
@@ -713,7 +716,7 @@ public class HeaderViewPager extends LinearLayout {
         }
     }
 
-    private void dispatchScrollBarPosition() {
+    private void dispatchScrollBarPosition(boolean fling) {
         if (mScrollBarListener != null) {
             //绘制scroll bar
             final int scrollRange = computeVerticalScrollRange();
@@ -722,7 +725,7 @@ public class HeaderViewPager extends LinearLayout {
             float currentPercent = computeVerticalScrollOffset() * 1.f / (scrollRange - scrollExtent);
             currentPercent = currentPercent > 1.f ? 1.f : currentPercent;
             float scrollBarTop = mScrollBarMarginTop + currentPercent * scrollbarRange;
-            mScrollBarListener.onScroll(scrollBarTop, mScrollUp);
+            mScrollBarListener.onScroll(scrollBarTop, fling, mScrollUp);
         }
     }
 
@@ -891,7 +894,7 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     public interface OnScrollBarListener {
-        void onScroll(float top, boolean scrollUp);
+        void onScroll(float top, boolean fling, boolean scrollUp);
     }
 
     public interface OnFastBackVisibleListener {
