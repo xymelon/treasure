@@ -41,6 +41,7 @@ public class HeaderViewPager extends LinearLayout {
     private static final int INVALID_POINTER = -1;
     //快速回到顶部最大时长
     private static final int FAST_RETURN_TOP_TIME = 1000;
+    private int mPreScrollBarTop;
     private int mScrollBarHeight;
     private int mScrollBarMarginTop;
     private int mScrollbarMarginBottom;
@@ -737,7 +738,11 @@ public class HeaderViewPager extends LinearLayout {
             final int scrollbarRange = scrollExtent + mTopOffset - mScrollBarMarginTop - mScrollbarMarginBottom - mScrollBarHeight;
             float currentPercent = computeVerticalScrollOffset() * 1.f / (scrollRange - scrollExtent);
             currentPercent = currentPercent > 1.f ? 1.f : currentPercent;
-            float scrollBarTop = mScrollBarMarginTop + currentPercent * scrollbarRange;
+            int scrollBarTop = (int) (mScrollBarMarginTop + currentPercent * scrollbarRange);
+            if (scrollBarTop == mPreScrollBarTop) {
+                return;
+            }
+            mPreScrollBarTop = scrollBarTop;
             mScrollBarListener.onScroll(scrollBarTop, mScrollUp);
         }
     }
