@@ -3,6 +3,7 @@ package com.xycoding.treasure.activity;
 import android.app.Dialog;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.xycoding.treasure.R;
+import com.xycoding.treasure.utils.ScreenshotObserver;
 import com.xycoding.treasure.utils.ViewUtils;
 
 import rx.subscriptions.CompositeSubscription;
@@ -22,6 +24,7 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
     private Dialog loadingDialog;
     protected ViewDataBinding binding;
     protected CompositeSubscription subscriptions = new CompositeSubscription();
+    private ScreenshotObserver mObserver;
 
     @CallSuper
     @Override
@@ -45,6 +48,13 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
         initControls(savedInstanceState);
         setListeners();
         initData(savedInstanceState);
+         mObserver = new ScreenshotObserver(new ScreenshotObserver.OnScreenshotListener() {
+            @Override
+            public void onScreenshotTaken(Uri uri) {
+                onScreenshot(uri);
+            }
+        });
+        mObserver.startWatching();
     }
 
     @CallSuper
@@ -63,6 +73,7 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         subscriptions.unsubscribe();
+        mObserver.stopWatching();
     }
 
     /**
@@ -114,5 +125,13 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
      * init data
      */
     protected abstract void initData(Bundle savedInstanceState);
+
+    /**
+     * screen shot
+     *
+     * @param uri
+     */
+    protected void onScreenshot(Uri uri) {
+    }
 
 }

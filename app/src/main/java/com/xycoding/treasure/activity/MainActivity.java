@@ -5,11 +5,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.NotificationCompat;
 import android.view.Menu;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -123,6 +125,18 @@ public class MainActivity extends BaseBindingActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Toast.makeText(this, "我没打开新页面哦", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onScreenshot(Uri uri) {
+        Snackbar.make(mBinding.getRoot(), "截屏：" + uri, Snackbar.LENGTH_INDEFINITE)
+                .setAction("好的", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                })
+                .show();
     }
 
     private void showNotify() {
