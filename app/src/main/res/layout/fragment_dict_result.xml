@@ -6,76 +6,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout_language"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="?attr/colorPrimary"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/W1"
-            app:tabTextColor="@color/G20">
-
-            <android.support.design.widget.TabItem
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="英汉" />
-
-            <android.support.design.widget.TabItem
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:text="日汉" />
-
-            <android.support.design.widget.TabItem
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:text="韩汉" />
-
-            <android.support.design.widget.TabItem
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:text="德汉" />
-
-        </android.support.design.widget.TabLayout>
-
-        <RelativeLayout
+        <com.xycoding.treasure.view.headerviewpager.HeaderViewPager
+            android:id="@+id/header_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tab_layout_language">
+            app:hvp_scrollbar_height="44dp">
 
-            <com.xycoding.treasure.view.headerviewpager.HeaderViewPager
-                android:id="@+id/header_view_pager"
+            <include
+                android:id="@+id/layout_header"
+                layout="@layout/layout_dict_header"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:hvp_scrollbar_height="44dp">
+                android:layout_height="wrap_content" />
 
-                <include
-                    android:id="@+id/layout_header"
-                    layout="@layout/layout_dict_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/layout_tab_dict1"
+                layout="@layout/layout_tab_dict"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
-                <include
-                    android:id="@+id/layout_tab_dict1"
-                    layout="@layout/layout_tab_dict"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp" />
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/view_pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+        </com.xycoding.treasure.view.headerviewpager.HeaderViewPager>
 
-            </com.xycoding.treasure.view.headerviewpager.HeaderViewPager>
-
-            <ImageView
-                android:id="@+id/iv_scroll_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/pic_slide_right"
-                android:visibility="invisible" />
-
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/iv_scroll_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/pic_slide_right"
+            android:visibility="invisible" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

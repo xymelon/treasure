@@ -10,6 +10,27 @@
         android:background="@color/W1"
         android:orientation="vertical">
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout_language"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="?attr/colorPrimary"
+            app:tabMode="scrollable"
+            app:tabSelectedTextColor="@color/W1"
+            app:tabTextColor="@color/G20">
+
+            <android.support.design.widget.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="英汉" />
+
+            <android.support.design.widget.TabItem
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:text="日汉" />
+
+        </android.support.design.widget.TabLayout>
+
         <com.xycoding.treasure.view.AutoFitSizeTextView
             android:id="@+id/fit_text_view"
             android:layout_width="match_parent"

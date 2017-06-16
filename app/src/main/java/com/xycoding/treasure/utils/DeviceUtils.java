@@ -107,6 +107,10 @@ public class DeviceUtils {
         return context.getResources().getDisplayMetrics().heightPixels;
     }
 
+    public static int getScreenWidth(@NonNull Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
     public static int getStatusBarHeight(@NonNull Context context) {
         try {
             Class<?> clazz = Class.forName("com.android.internal.R$dimen");

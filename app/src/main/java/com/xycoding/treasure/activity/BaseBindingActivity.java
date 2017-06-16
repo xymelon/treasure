@@ -48,7 +48,7 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
         initControls(savedInstanceState);
         setListeners();
         initData(savedInstanceState);
-         mObserver = new ScreenshotObserver(new ScreenshotObserver.OnScreenshotListener() {
+        mObserver = new ScreenshotObserver(new ScreenshotObserver.OnScreenshotListener() {
             @Override
             public void onScreenshotTaken(Uri uri) {
                 onScreenshot(uri);
