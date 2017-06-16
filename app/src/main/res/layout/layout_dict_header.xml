@@ -31,6 +31,12 @@
 
         </android.support.design.widget.TabLayout>
 
+        <com.xycoding.treasure.view.headerviewpager.RefreshView
+            android:id="@+id/refresh_view"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="-40dp" />
+
         <com.xycoding.treasure.view.AutoFitSizeTextView
             android:id="@+id/fit_text_view"
             android:layout_width="match_parent"

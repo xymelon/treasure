@@ -80,6 +80,9 @@ public class HeaderViewPager extends LinearLayout {
     private boolean mEdgeEffectTopActive;
     private boolean mEdgeEffectBottomActive;
 
+    //pull to refresh
+    private BaseRefreshView mBaseRefreshView;
+
     public HeaderViewPager(Context context) {
         this(context, null);
     }

@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +19,14 @@ import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.service.LocalIntentService;
 
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseBindingActivity {
 
@@ -167,6 +173,64 @@ public class MainActivity extends BaseBindingActivity {
                 startService(service);
             }
         }, 5000);
+    }
+
+    private void testRxJava() {
+        final Observable<String> networkDictObservable = Observable.defer(
+                new Func0<Observable<String>>() {
+                    @Override
+                    public Observable<String> call() {
+                        try {
+                            Thread.sleep(52);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return Observable.just("network");
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String str) {
+                        return Observable.just(str);
+                    }
+                })
+                //设置网络查词超时
+                .timeout(2000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .share();
+        final Observable<String> localDictObservable = Observable.defer(
+                new Func0<Observable<String>>() {
+                    @Override
+                    public Observable<String> call() {
+                        try {
+                            Thread.sleep(51);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return Observable.just("local");
+                    }
+                })
+                .map(new Func1<String, String>() {
+                    @Override
+                    public String call(String s) {
+                        return s;
+                    }
+                })
+                .takeUntil(networkDictObservable.onErrorResumeNext(new Func1<Throwable, Observable<? extends String>>() {
+                    @Override
+                    public Observable<? extends String> call(Throwable throwable) {
+                        return Observable.never();
+                    }
+                }))
+                .subscribeOn(Schedulers.io());
+        Observable.mergeDelayError(localDictObservable, networkDictObservable)
+                .observeOn(AndroidSchedulers.mainThread(), true)
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String str) {
+                        System.out.println("RxJava:" + str);
+                    }
+                });
     }
 
 }
