@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.animation.Interpolator;
 import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.GridView;
@@ -38,9 +39,9 @@ import java.lang.reflect.Method;
  */
 public class HeaderViewPager extends LinearLayout {
 
-    private static final int INVALID_POINTER = -1;
+    private final static int INVALID_POINTER = -1;
     //快速回到顶部最大时长
-    private static final int FAST_RETURN_TOP_TIME = 1000;
+    private final static int FAST_RETURN_TOP_TIME = 1000;
     private int mPreScrollBarTop;
     private int mScrollBarHeight;
     private int mScrollBarMarginTop;
@@ -82,6 +83,11 @@ public class HeaderViewPager extends LinearLayout {
 
     //pull to refresh
     private BaseRefreshView mBaseRefreshView;
+    private OnRefreshListener mRefreshListener;
+    private final static float DECELERATE_INTERPOLATION_FACTOR = 2f;
+    private final static int DRAG_MAX_DISTANCE = 65;
+    private final static float DRAG_RATE = .5f;
+    private Interpolator mDecelerateInterpolator;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -658,6 +664,33 @@ public class HeaderViewPager extends LinearLayout {
         return false;
     }
 
+    private boolean ensureRefreshView() {
+        final int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            mBaseRefreshView = findRefreshView(getChildAt(i));
+            if (mBaseRefreshView != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private BaseRefreshView findRefreshView(View view) {
+        if (view instanceof BaseRefreshView) {
+            return (BaseRefreshView) view;
+        }
+        if (view instanceof ViewGroup) {
+            final int count = ((ViewGroup) view).getChildCount();
+            for (int i = 0; i < count; i++) {
+                final BaseRefreshView refreshView = findRefreshView(view);
+                if (refreshView != null) {
+                    return refreshView;
+                }
+            }
+        }
+        return null;
+    }
+
     private void scroll(int dy) {
         //dy为0或首屏展示内容完毕，则禁止滚动
         if (dy == 0 || !canVerticalScroll()) {
@@ -910,6 +943,10 @@ public class HeaderViewPager extends LinearLayout {
         mFastBackVisibleListener = listener;
     }
 
+    public void setOnRefreshListener(@NonNull OnRefreshListener listener) {
+        mRefreshListener = listener;
+    }
+
     public interface ScrollableContainer {
         RecyclerView getScrollableView();
     }
@@ -928,6 +965,10 @@ public class HeaderViewPager extends LinearLayout {
 
     public interface OnFastBackVisibleListener {
         void onVisible(boolean visible);
+    }
+
+    public interface OnRefreshListener {
+        void onRefresh();
     }
 
 }
