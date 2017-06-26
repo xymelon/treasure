@@ -80,6 +80,14 @@ public class HeaderViewPager extends LinearLayout {
     private boolean mEdgeEffectTopActive;
     private boolean mEdgeEffectBottomActive;
 
+    //pull to refresh
+    private BaseRefreshView mBaseRefreshView;
+    private OnRefreshListener mRefreshListener;
+    private final static float DECELERATE_INTERPOLATION_FACTOR = 2f;
+    private final static int DRAG_MAX_DISTANCE = 65;
+    private final static float DRAG_RATE = .5f;
+    private Interpolator mDecelerateInterpolator;
+
     public HeaderViewPager(Context context) {
         this(context, null);
     }
@@ -661,6 +669,33 @@ public class HeaderViewPager extends LinearLayout {
         return false;
     }
 
+    private boolean ensureRefreshView() {
+        final int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            mBaseRefreshView = findRefreshView(getChildAt(i));
+            if (mBaseRefreshView != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private BaseRefreshView findRefreshView(View view) {
+        if (view instanceof BaseRefreshView) {
+            return (BaseRefreshView) view;
+        }
+        if (view instanceof ViewGroup) {
+            final int count = ((ViewGroup) view).getChildCount();
+            for (int i = 0; i < count; i++) {
+                final BaseRefreshView refreshView = findRefreshView(view);
+                if (refreshView != null) {
+                    return refreshView;
+                }
+            }
+        }
+        return null;
+    }
+
     private void scroll(int dy) {
         //dy为0或首屏展示内容完毕，则禁止滚动
         if (dy == 0 || !canVerticalScroll()) {
@@ -886,6 +921,10 @@ public class HeaderViewPager extends LinearLayout {
         return null;
     }
 
+    public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
+        mScrollableContainer = scrollableContainer;
+    }
+
     public void setupViewPager(@NonNull ViewPager viewPager) {
         mViewPager = viewPager;
     }
@@ -908,6 +947,10 @@ public class HeaderViewPager extends LinearLayout {
         mFastBackVisibleListener = listener;
     }
 
+    public void setOnRefreshListener(@NonNull OnRefreshListener listener) {
+        mRefreshListener = listener;
+    }
+
     public interface OnScrollHeaderListener {
         void onScroll(int currentPosition, int maxPosition);
     }
@@ -922,6 +965,10 @@ public class HeaderViewPager extends LinearLayout {
 
     public interface OnFastBackVisibleListener {
         void onVisible(boolean visible);
+    }
+
+    public interface OnRefreshListener {
+        void onRefresh();
     }
 
 }
