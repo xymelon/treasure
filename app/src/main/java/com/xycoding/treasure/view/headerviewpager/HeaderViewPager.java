@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.animation.DecelerateInterpolator;
 import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.GridView;
@@ -86,7 +87,7 @@ public class HeaderViewPager extends LinearLayout {
     private final static float DECELERATE_INTERPOLATION_FACTOR = 2f;
     private final static int DRAG_MAX_DISTANCE = 65;
     private final static float DRAG_RATE = .5f;
-    private Interpolator mDecelerateInterpolator;
+    private DecelerateInterpolator mDecelerateInterpolator;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -536,7 +537,7 @@ public class HeaderViewPager extends LinearLayout {
             y = 0;
         }
         if (mOnScrollHeaderListeners.size() != 0 && getScrollY() != y) {
-            for(OnScrollHeaderListener listener : mOnScrollHeaderListeners){
+            for (OnScrollHeaderListener listener : mOnScrollHeaderListeners) {
                 listener.onScroll(y, mMaxScrollY);
             }
         }
@@ -921,16 +922,12 @@ public class HeaderViewPager extends LinearLayout {
         return null;
     }
 
-    public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
-        mScrollableContainer = scrollableContainer;
-    }
-
     public void setupViewPager(@NonNull ViewPager viewPager) {
         mViewPager = viewPager;
     }
 
     public void addOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
-        if(!mOnScrollHeaderListeners.contains(listener)) {
+        if (!mOnScrollHeaderListeners.contains(listener)) {
             mOnScrollHeaderListeners.add(listener);
         }
     }
