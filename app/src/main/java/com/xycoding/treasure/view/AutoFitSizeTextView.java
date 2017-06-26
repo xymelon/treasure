@@ -1,5 +1,6 @@
 package com.xycoding.treasure.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -11,8 +12,11 @@ import android.text.method.SingleLineTransformationMethod;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.widget.TextView;
 
 import com.xycoding.treasure.R;
+
+import java.lang.reflect.Field;
 
 /**
  * Text view that auto adjusts text size to fit within the view.
@@ -44,10 +48,10 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     private float mMinTextSize;
 
     // Text view line spacing multiplier
-    private float mSpacingMult = 1.0f;
+    private float mSpacingMult;
 
     // Text view additional line spacing
-    private float mSpacingAdd = 0.0f;
+    private float mSpacingAdd;
 
     // Add ellipsis to text that overflows at the smallest text size
     private boolean mAddEllipsis = true;
@@ -75,6 +79,8 @@ public class AutoFitSizeTextView extends AppCompatTextView {
             mAddEllipsis = typedArray.getBoolean(R.styleable.AutoFitSizeTextView_addEllipsis, true);
             typedArray.recycle();
         }
+        mSpacingAdd = getLineExtra();
+        mSpacingMult = getLineMultiplier();
     }
 
     /**
@@ -174,6 +180,40 @@ public class AutoFitSizeTextView extends AppCompatTextView {
      */
     public boolean getAddEllipsis() {
         return mAddEllipsis;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private float getLineExtra() {
+        float extra = 0.0f;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            extra = getLineSpacingExtra();
+        } else {
+            try {
+                Field spacingAddField = TextView.class.getDeclaredField("mSpacingAdd");
+                spacingAddField.setAccessible(true);
+                extra = spacingAddField.getFloat(this);
+            } catch (Exception e) {
+                //do nothing.
+            }
+        }
+        return extra;
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private float getLineMultiplier() {
+        float multiplier = 1.0f;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            multiplier = getLineSpacingMultiplier();
+        } else {
+            try {
+                Field spacingMultField = TextView.class.getDeclaredField("mSpacingMult");
+                spacingMultField.setAccessible(true);
+                multiplier = spacingMultField.getFloat(this);
+            } catch (Exception e) {
+                //do nothing.
+            }
+        }
+        return multiplier;
     }
 
     /**

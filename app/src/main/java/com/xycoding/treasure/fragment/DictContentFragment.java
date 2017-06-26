@@ -1,19 +1,17 @@
 package com.xycoding.treasure.fragment;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.adapter.RecyclerViewDictAdapter;
 import com.xycoding.treasure.databinding.FragmentDictContentBinding;
-import com.xycoding.treasure.view.headerviewpager.HeaderViewPager;
 import com.xycoding.treasure.view.recyclerview.LinearDividerItemDecoration;
 import com.xycoding.treasure.view.recyclerview.SmoothToStartLinearLayoutManager;
 
 /**
  * Created by xuyang on 2017/3/24.
  */
-public class DictContentFragment extends BaseBindingFragment implements HeaderViewPager.ScrollableContainer {
+public class DictContentFragment extends BaseBindingFragment {
 
     private final static String BUNDLE_KEY_ITEMS = "bundle_key_items";
     private final static String BUNDLE_KEY_HAS_CLASS = "bundle_key_has_class";
@@ -54,11 +52,6 @@ public class DictContentFragment extends BaseBindingFragment implements HeaderVi
                 getArguments().getInt(BUNDLE_KEY_ITEMS), getArguments().getBoolean(BUNDLE_KEY_HAS_CLASS)));
         mBinding.recyclerView.addItemDecoration(new LinearDividerItemDecoration(getContext()));
         mBinding.recyclerView.setLayoutManager(new SmoothToStartLinearLayoutManager(getContext()));
-    }
-
-    @Override
-    public RecyclerView getScrollableView() {
-        return mBinding.recyclerView;
     }
 
 }

@@ -32,6 +32,7 @@ import android.widget.Scroller;
 import com.xycoding.treasure.R;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * Created by xuyang on 2017/3/31.
@@ -71,17 +72,13 @@ public class HeaderViewPager extends LinearLayout {
     private boolean mFlingContent = false;
     //标志是否fling到顶部
     private boolean mFlingToTop = false;
-    private ScrollableContainer mScrollableContainer;
     private ViewPager mViewPager;
-    private OnScrollHeaderListener mOnScrollHeaderListener;
+    private ArrayList<OnScrollHeaderListener> mOnScrollHeaderListeners = new ArrayList<>();
 
     private EdgeEffectCompat mEdgeEffectTop;
     private EdgeEffectCompat mEdgeEffectBottom;
     private boolean mEdgeEffectTopActive;
     private boolean mEdgeEffectBottomActive;
-
-    //pull to refresh
-    private BaseRefreshView mBaseRefreshView;
 
     public HeaderViewPager(Context context) {
         this(context, null);
@@ -530,8 +527,10 @@ public class HeaderViewPager extends LinearLayout {
         } else if (y < 0) {
             y = 0;
         }
-        if (mOnScrollHeaderListener != null && getScrollY() != y) {
-            mOnScrollHeaderListener.onScroll(y, mMaxScrollY);
+        if (mOnScrollHeaderListeners.size() != 0 && getScrollY() != y) {
+            for(OnScrollHeaderListener listener : mOnScrollHeaderListeners){
+                listener.onScroll(y, mMaxScrollY);
+            }
         }
         if (!isHeaderCollapseCompletely()) {
             dispatchScrollBarVisibleEvent(false);
@@ -547,8 +546,8 @@ public class HeaderViewPager extends LinearLayout {
             //滑动距离小于屏幕，时间减少
             duration = FAST_RETURN_TOP_TIME / 3;
         }
-        //hacky: 极端情况计算的距离总要差点，手动增加半个屏幕高度
-        distance += screenHeight / 2;
+        //hacky: 极端情况计算的距离总要差点，手动增加屏幕高度
+        distance += screenHeight;
         mLastScrollerY = 0;
         mFlingToTop = true;
         mScroller.startScroll(0, 0, 0, distance, duration);
@@ -577,11 +576,15 @@ public class HeaderViewPager extends LinearLayout {
             for (int i = 0; i < count; i++) {
                 if (i != mViewPager.getCurrentItem()) {
                     final View child = mViewPager.getChildAt(i);
-                    if (child instanceof RecyclerView) {
-                        ((RecyclerView) child).scrollToPosition(0);
-                    } else {
-                        child.scrollTo(0, 0);
+                    final View scrollableView = findScrollableView(child);
+                    if (scrollableView != null) {
+                        if (scrollableView instanceof RecyclerView) {
+                            ((RecyclerView) scrollableView).scrollToPosition(0);
+                        } else {
+                            scrollableView.scrollTo(0, 0);
+                        }
                     }
+                    child.scrollTo(0, 0);
                 }
             }
         }
@@ -858,16 +861,13 @@ public class HeaderViewPager extends LinearLayout {
 
     @Nullable
     private View getCurrentScrollableView() {
-        if (mScrollableContainer != null) {
-            return mScrollableContainer.getScrollableView();
-        }
         if (mViewPager != null) {
-            return findChildScrollableView(mViewPager.getChildAt(mViewPager.getCurrentItem()));
+            return findScrollableView(mViewPager.getChildAt(mViewPager.getCurrentItem()));
         }
         return null;
     }
 
-    private View findChildScrollableView(View view) {
+    private View findScrollableView(View view) {
         if (view instanceof RecyclerView
                 || view instanceof WebView
                 || view instanceof ListView
@@ -877,7 +877,7 @@ public class HeaderViewPager extends LinearLayout {
         if (view instanceof ViewGroup) {
             int count = ((ViewGroup) view).getChildCount();
             for (int i = 0; i < count; i++) {
-                View childView = findChildScrollableView(((ViewGroup) view).getChildAt(i));
+                View childView = findScrollableView(((ViewGroup) view).getChildAt(i));
                 if (childView != null) {
                     return childView;
                 }
@@ -886,16 +886,14 @@ public class HeaderViewPager extends LinearLayout {
         return null;
     }
 
-    public void setCurrentScrollableContainer(@NonNull ScrollableContainer scrollableContainer) {
-        mScrollableContainer = scrollableContainer;
-    }
-
     public void setupViewPager(@NonNull ViewPager viewPager) {
         mViewPager = viewPager;
     }
 
-    public void setOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
-        mOnScrollHeaderListener = listener;
+    public void addOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {
+        if(!mOnScrollHeaderListeners.contains(listener)) {
+            mOnScrollHeaderListeners.add(listener);
+        }
     }
 
     public void setScrollBarListener(@NonNull OnScrollBarListener listener) {
@@ -908,10 +906,6 @@ public class HeaderViewPager extends LinearLayout {
 
     public void setOnFastBackVisibleListener(@NonNull OnFastBackVisibleListener listener) {
         mFastBackVisibleListener = listener;
-    }
-
-    public interface ScrollableContainer {
-        RecyclerView getScrollableView();
     }
 
     public interface OnScrollHeaderListener {

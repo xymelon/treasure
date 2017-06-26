@@ -3,7 +3,6 @@ package com.xycoding.treasure.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Toast;
 
@@ -130,14 +129,8 @@ public class DictResultFragment extends BaseBindingFragment {
         };
         mBinding.viewPager.setAdapter(mPagerAdapter);
         mBinding.layoutTabDict1.tabLayoutDict.setupWithViewPager(mBinding.viewPager);
-
-        mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(0));
-        mBinding.viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mBinding.headerViewPager.setCurrentScrollableContainer(mFragments.get(position));
-            }
-        });
+        mBinding.headerViewPager.setupViewPager(mBinding.viewPager);
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     private void showQuickPositioningDialog() {
