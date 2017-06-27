@@ -74,6 +74,7 @@ public class HeaderViewPager extends LinearLayout {
     //标志是否fling到顶部
     private boolean mFlingToTop = false;
     private ViewPager mViewPager;
+    private FragmentTagPagerAdapter mViewPagerAdapter;
     private ArrayList<OnScrollHeaderListener> mOnScrollHeaderListeners = new ArrayList<>();
 
     private EdgeEffectCompat mEdgeEffectTop;
@@ -584,16 +585,18 @@ public class HeaderViewPager extends LinearLayout {
             final int count = mViewPager.getChildCount();
             for (int i = 0; i < count; i++) {
                 if (i != mViewPager.getCurrentItem()) {
-                    final View child = mViewPager.getChildAt(i);
-                    final View scrollableView = findScrollableView(child);
-                    if (scrollableView != null) {
-                        if (scrollableView instanceof RecyclerView) {
-                            ((RecyclerView) scrollableView).scrollToPosition(0);
-                        } else {
-                            scrollableView.scrollTo(0, 0);
+                    final View child = findCurrentFragmentView(i);
+                    if (child != null) {
+                        final View scrollableView = findScrollableView(child);
+                        if (scrollableView != null) {
+                            if (scrollableView instanceof RecyclerView) {
+                                ((RecyclerView) scrollableView).scrollToPosition(0);
+                            } else {
+                                scrollableView.scrollTo(0, 0);
+                            }
                         }
+                        child.scrollTo(0, 0);
                     }
-                    child.scrollTo(0, 0);
                 }
             }
         }
@@ -898,7 +901,7 @@ public class HeaderViewPager extends LinearLayout {
     @Nullable
     private View getCurrentScrollableView() {
         if (mViewPager != null) {
-            return findScrollableView(mViewPager.getChildAt(mViewPager.getCurrentItem()));
+            return findScrollableView(findCurrentFragmentView(mViewPager.getCurrentItem()));
         }
         return null;
     }
@@ -922,8 +925,20 @@ public class HeaderViewPager extends LinearLayout {
         return null;
     }
 
-    public void setupViewPager(@NonNull ViewPager viewPager) {
+    @Nullable
+    private View findCurrentFragmentView(int position) {
+        try {
+            final String tag = mViewPagerAdapter.makeFragmentName(position);
+            return mViewPagerAdapter.getFragmentManager().findFragmentByTag(tag).getView();
+        } catch (Exception e) {
+            //do nothing.
+        }
+        return null;
+    }
+
+    public void setupViewPager(@NonNull ViewPager viewPager, @NonNull FragmentTagPagerAdapter pagerAdapter) {
         mViewPager = viewPager;
+        mViewPagerAdapter = pagerAdapter;
     }
 
     public void addOnScrollHeaderListener(@NonNull OnScrollHeaderListener listener) {

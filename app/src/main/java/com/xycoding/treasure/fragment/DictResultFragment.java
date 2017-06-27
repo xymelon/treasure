@@ -2,7 +2,6 @@ package com.xycoding.treasure.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.view.View;
 import android.widget.Toast;
 
@@ -10,6 +9,7 @@ import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.FragmentDictResultBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.view.QuickPositioningDialog;
+import com.xycoding.treasure.view.headerviewpager.FragmentTagPagerAdapter;
 import com.xycoding.treasure.view.headerviewpager.HeaderViewPager;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import rx.functions.Action1;
 public class DictResultFragment extends BaseBindingFragment {
 
     private FragmentDictResultBinding mBinding;
-    private FragmentPagerAdapter mPagerAdapter;
+    private FragmentTagPagerAdapter mPagerAdapter;
     private List<DictContentFragment> mFragments;
     private QuickPositioningDialog mDialog;
     private Runnable mScrollBarHideRunnable;
@@ -108,13 +108,18 @@ public class DictResultFragment extends BaseBindingFragment {
         mFragments.add(DictContentFragment.createInstance(2, false));
         mFragments.add(DictContentFragment.createInstance(10, false));
 
-        mPagerAdapter = new FragmentPagerAdapter(getChildFragmentManager()) {
+        mPagerAdapter = new FragmentTagPagerAdapter(getChildFragmentManager()) {
 
             public String[] titles = new String[]{"详解", "朗文", "柯林斯"};
 
             @Override
             public Fragment getItem(int position) {
                 return mFragments.get(position);
+            }
+
+            @Override
+            public String makeFragmentName(int position) {
+                return "tag:" + position;
             }
 
             @Override
@@ -129,7 +134,7 @@ public class DictResultFragment extends BaseBindingFragment {
         };
         mBinding.viewPager.setAdapter(mPagerAdapter);
         mBinding.layoutTabDict1.tabLayoutDict.setupWithViewPager(mBinding.viewPager);
-        mBinding.headerViewPager.setupViewPager(mBinding.viewPager);
+        mBinding.headerViewPager.setupViewPager(mBinding.viewPager, mPagerAdapter);
         mPagerAdapter.notifyDataSetChanged();
     }
 
