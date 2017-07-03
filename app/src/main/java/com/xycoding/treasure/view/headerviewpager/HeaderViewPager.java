@@ -413,7 +413,7 @@ public class HeaderViewPager extends LinearLayout {
         }
 
         int range = 0;
-        View view = getCurrentScrollableView();
+        final View view = getCurrentScrollableView();
         if (view != null) {
             int scrollExtent = compute(view, "computeVerticalScrollExtent");
             int scrollRange = compute(view, "computeVerticalScrollRange");
@@ -434,7 +434,7 @@ public class HeaderViewPager extends LinearLayout {
         }
 
         int offset = getScrollY();
-        View view = getCurrentScrollableView();
+        final View view = getCurrentScrollableView();
         if (view != null) {
             offset += compute(view, "computeVerticalScrollOffset");
         }
@@ -479,9 +479,10 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     private void ensureGlows() {
-        if (getCurrentScrollableView() != null) {
+        final View view = getCurrentScrollableView();
+        if (view != null) {
             //隐藏recycler view滑到顶部和底部时的效果
-            getCurrentScrollableView().setOverScrollMode(OVER_SCROLL_NEVER);
+            view.setOverScrollMode(OVER_SCROLL_NEVER);
         }
         if (getOverScrollMode() != View.OVER_SCROLL_NEVER) {
             if (mEdgeEffectTop == null) {
@@ -569,7 +570,7 @@ public class HeaderViewPager extends LinearLayout {
         mLastScrollerY = 0;
         scrollTo(0, 0);
 
-        View view = getCurrentScrollableView();
+        final View view = getCurrentScrollableView();
         if (view != null) {
             if (view instanceof RecyclerView) {
                 ((RecyclerView) view).scrollToPosition(0);
@@ -612,7 +613,7 @@ public class HeaderViewPager extends LinearLayout {
             mScroller.startScroll(0, 0, 0, mMaxScrollY - getScrollY(), 100);
             invalidate();
         }
-        View view = getCurrentScrollableView();
+        final View view = getCurrentScrollableView();
         if (view instanceof RecyclerView) {
             ((RecyclerView) view).smoothScrollToPosition(position);
         }
@@ -620,7 +621,7 @@ public class HeaderViewPager extends LinearLayout {
 
     private int getCurrentScrollY() {
         int distance = 0;
-        View view = getCurrentScrollableView();
+        final View view = getCurrentScrollableView();
         if (view != null) {
             distance = compute(view, "computeVerticalScrollOffset");
             //大于0说明底部内容已滚动
@@ -723,8 +724,9 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     private void scrollContent(int dy) {
-        if (getCurrentScrollableView() != null) {
-            getCurrentScrollableView().scrollBy(0, dy);
+        final View view = getCurrentScrollableView();
+        if (view != null) {
+            view.scrollBy(0, dy);
         }
     }
 
@@ -759,7 +761,7 @@ public class HeaderViewPager extends LinearLayout {
      */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void flingContent(int vy, int distance, int duration) {
-        View view = getCurrentScrollableView();
+        final View view = getCurrentScrollableView();
         if (view instanceof RecyclerView) {
             ((RecyclerView) view).fling(0, vy);
         } else if (view instanceof WebView) {
@@ -866,8 +868,8 @@ public class HeaderViewPager extends LinearLayout {
      * @return
      */
     private boolean isScrollContainerTop() {
-        return getCurrentScrollableView() == null
-                || !canViewScrollUp(getCurrentScrollableView());
+        final View view = getCurrentScrollableView();
+        return view == null || !canViewScrollUp(view);
     }
 
     /**
@@ -885,9 +887,10 @@ public class HeaderViewPager extends LinearLayout {
      * @return
      */
     private boolean isScrollBottom() {
+        final View view = getCurrentScrollableView();
         return isHeaderCollapseCompletely()
-                && !(getCurrentScrollableView() == null)
-                && !canViewScrollDown(getCurrentScrollableView());
+                && view != null
+                && !canViewScrollDown(view);
     }
 
     private boolean canViewScrollUp(View view) {
