@@ -455,13 +455,31 @@ public class HeaderViewPager extends LinearLayout {
 
     private int compute(View view, String methodName) {
         try {
-            Method method = view.getClass().getDeclaredMethod(methodName);
-            method.setAccessible(true);
-            return (int) method.invoke(view);
+            Method method = findMethod(view.getClass(), methodName);
+            if (method != null) {
+                method.setAccessible(true);
+                return (int) method.invoke(view);
+            }
         } catch (Exception e) {
             //do nothing.
         }
         return 0;
+    }
+
+    @Nullable
+    private Method findMethod(Class<?> klass, String methodName) {
+        if (klass == null) {
+            return null;
+        }
+        try {
+            return klass.getDeclaredMethod(methodName);
+        } catch (Exception e) {
+            Method method = findMethod(klass.getSuperclass(), methodName);
+            if (method != null) {
+                return method;
+            }
+        }
+        return null;
     }
 
     private boolean onlyOneDirectChildVisible() {
@@ -586,7 +604,7 @@ public class HeaderViewPager extends LinearLayout {
             final int count = mViewPager.getChildCount();
             for (int i = 0; i < count; i++) {
                 if (i != mViewPager.getCurrentItem()) {
-                    final View child = findCurrentFragmentView(i);
+                    final View child = findFragmentView(mViewPagerAdapter, i);
                     if (child != null) {
                         final View scrollableView = findScrollableView(child);
                         if (scrollableView != null) {
@@ -814,7 +832,10 @@ public class HeaderViewPager extends LinearLayout {
             if (pager != null) {
                 int maxHeight = 0;
                 for (int j = 0; j < pager.getChildCount(); j++) {
-                    maxHeight = Math.max(maxHeight, compute(pager.getChildAt(j), "computeVerticalScrollExtent"));
+                    if (pager.getAdapter() instanceof FragmentTagPagerAdapter) {
+                        maxHeight = Math.max(maxHeight, compute(
+                                findFragmentView((FragmentTagPagerAdapter) pager.getAdapter(), j), "computeVerticalScrollExtent"));
+                    }
                 }
                 realHeight += maxHeight;
             } else {
@@ -904,7 +925,7 @@ public class HeaderViewPager extends LinearLayout {
     @Nullable
     private View getCurrentScrollableView() {
         if (mViewPager != null) {
-            return findScrollableView(findCurrentFragmentView(mViewPager.getCurrentItem()));
+            return findScrollableView(findFragmentView(mViewPagerAdapter, mViewPager.getCurrentItem()));
         }
         return null;
     }
@@ -929,10 +950,10 @@ public class HeaderViewPager extends LinearLayout {
     }
 
     @Nullable
-    private View findCurrentFragmentView(int position) {
+    private View findFragmentView(FragmentTagPagerAdapter adapter, int position) {
         try {
-            final String tag = mViewPagerAdapter.makeFragmentName(position);
-            return mViewPagerAdapter.getFragmentManager().findFragmentByTag(tag).getView();
+            final String tag = adapter.makeFragmentName(position);
+            return adapter.getFragmentManager().findFragmentByTag(tag).getView();
         } catch (Exception e) {
             //do nothing.
         }
