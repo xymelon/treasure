@@ -103,6 +103,31 @@ public class DeviceUtils {
         window.getDecorView().setSystemUiVisibility(newUiOptions);
     }
 
+    public static void hideSystemUI(Window window) {
+        int newUiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            newUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            newUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            newUiOptions |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE;
+        }
+        window.getDecorView().setSystemUiVisibility(newUiOptions);
+    }
+
+    // This snippet shows the system bars. It does this by removing all the flags
+    // except for the ones that make the content appear under the system bars.
+    public static void showSystemUI(Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            window.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+    }
+
     public static int getScreenHeight(@NonNull Context context) {
         return context.getResources().getDisplayMetrics().heightPixels;
     }
