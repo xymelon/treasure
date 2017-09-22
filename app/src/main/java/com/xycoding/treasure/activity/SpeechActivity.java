@@ -52,7 +52,7 @@ public class SpeechActivity extends BaseBindingActivity {
             @Override
             public void onVolumeChanged(float volume) {
                 //volume百分比
-                mBinding.rippleBackground.setRippleScale(volume);
+                mBinding.waveView.updateWavePercent(volume);
             }
 
             @Override
@@ -63,19 +63,16 @@ public class SpeechActivity extends BaseBindingActivity {
             @Override
             public void onFinishedRecording() {
                 mBinding.tvHint.setText("识别中...");
-                mBinding.rippleBackground.stopVolumeAnimation();
             }
 
             @Override
             public void onSuccess(String result) {
                 mBinding.tvHint.setText(result);
-                mBinding.rippleBackground.stopBreathingAnimation();
             }
 
             @Override
             public void onError(String error) {
                 mBinding.tvHint.setText(error);
-                mBinding.rippleBackground.stopBreathingAnimation();
             }
 
         });

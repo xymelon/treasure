@@ -56,32 +56,35 @@
 
             </RadioGroup>
 
-            <com.xycoding.treasure.view.RippleBackground
-                android:id="@+id/ripple_background"
+            <FrameLayout
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                app:rb_color="#144990E2"
-                app:rb_radius="56dp">
+                android:layout_gravity="center_horizontal">
+
+                <com.xycoding.treasure.view.WaveView
+                    android:id="@+id/wave_view"
+                    android:layout_width="88dp"
+                    android:layout_height="88dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/shape_circle_light_blue"
+                    app:wave_max_scale="1.5" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/btn_speech"
                     android:layout_width="88dp"
                     android:layout_height="88dp"
-                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
                     android:background="@drawable/layer_background_blue"
                     android:scaleType="center"
                     android:src="@drawable/ic_record_white" />
 
-            </com.xycoding.treasure.view.RippleBackground>
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/tv_hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
                 android:text="点击话筒"
                 android:textColor="#FFB8B8B8"
                 android:textSize="14sp" />

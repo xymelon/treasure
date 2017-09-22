@@ -67,4 +67,9 @@
         <attr name="gridColor" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="WaveView">
+        <attr name="wave_max_scale" format="float" />
+        <attr name="wave_duration" format="integer" />
+    </declare-styleable>
+
 </resources>
