@@ -67,7 +67,7 @@
                     android:layout_height="88dp"
                     android:layout_gravity="center"
                     android:background="@drawable/shape_circle_light_blue"
-                    app:wave_max_scale="1.5" />
+                    app:wave_max_scale="2" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/btn_speech"

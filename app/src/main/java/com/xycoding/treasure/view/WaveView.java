@@ -21,8 +21,8 @@ import com.xycoding.treasure.R;
  */
 public class WaveView extends View implements Animator.AnimatorListener {
 
+    private final static float INVALID = Float.MAX_VALUE;
     private final static float DEFAULT_MIN_SCALE = 1.f;
-    private final static float DEFAULT_MAX_SCALE = 2.f;
     private final static int DEFAULT_DURATION = 800;
 
     private AnimatorSet mAnimatorSet;
@@ -71,11 +71,11 @@ public class WaveView extends View implements Animator.AnimatorListener {
     private void init(final Context context, final AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WaveView);
-            mMaxScale = typedArray.getFloat(R.styleable.WaveView_wave_max_scale, DEFAULT_MAX_SCALE);
+            mMaxScale = typedArray.getFloat(R.styleable.WaveView_wave_max_scale, INVALID);
             mDuration = typedArray.getInt(R.styleable.WaveView_wave_duration, DEFAULT_DURATION);
             typedArray.recycle();
         } else {
-            mMaxScale = DEFAULT_MAX_SCALE;
+            mMaxScale = INVALID;
             mDuration = DEFAULT_DURATION;
         }
         initStartBreathing();
@@ -157,16 +157,17 @@ public class WaveView extends View implements Animator.AnimatorListener {
     }
 
     private float maxPercent() {
-        //width and height maybe 0.
+        float scaleLimit = DEFAULT_MIN_SCALE;
         if (getWidth() != 0 && getHeight() != 0) {
             final float widthPercent = ((ViewGroup) getParent()).getWidth() * 1.f / getWidth();
             final float heightPercent = ((ViewGroup) getParent()).getHeight() * 1.f / getHeight();
-            return Math.min(mMaxScale, Math.min(widthPercent, heightPercent));
+            scaleLimit = Math.min(widthPercent, heightPercent);
         }
-        if (mMaxScale != DEFAULT_MAX_SCALE) {
-            return mMaxScale;
+        if (mMaxScale != INVALID) {
+            return Math.min(mMaxScale, scaleLimit);
+        } else {
+            return scaleLimit;
         }
-        return DEFAULT_MAX_SCALE;
     }
 
     @Override
