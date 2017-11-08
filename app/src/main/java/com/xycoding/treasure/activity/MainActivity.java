@@ -74,12 +74,6 @@ public class MainActivity extends BaseBindingActivity {
                 startActivity(new Intent(MainActivity.this, HandwritingActivity.class));
             }
         }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewSpeech).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, SpeechActivity.class));
-            }
-        }));
         mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewDict).subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {

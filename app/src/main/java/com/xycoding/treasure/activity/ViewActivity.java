@@ -7,9 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.text.style.CharacterStyle;
-import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,21 +16,14 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
-import com.xycoding.richtext.RichText;
-import com.xycoding.richtext.typeface.ClickSpan;
-import com.xycoding.richtext.typeface.IStyleSpan;
-import com.xycoding.richtext.typeface.LinkClickSpan;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityViewBinding;
 import com.xycoding.treasure.databinding.DialogQuickActionBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.utils.DeviceUtils;
-import com.xycoding.treasure.utils.StringUtils;
 
 import io.reactivex.functions.Consumer;
 
@@ -91,53 +81,6 @@ public class ViewActivity extends BaseBindingActivity {
 
     private void initViews() {
         mBinding.autoEditText.shouldBlinkOnMeiZu(true);
-        initRichTextView();
-    }
-
-    private void initRichTextView() {
-        final int foregroundTextColor = ContextCompat.getColor(this, R.color.T1);
-        int normalTextColor = ContextCompat.getColor(this, R.color.G20);
-        int pressedTextColor = ContextCompat.getColor(this, R.color.W1);
-        int pressedBackgroundColor = ContextCompat.getColor(this, R.color.B2);
-        RichText richText = new RichText.Builder()
-                .addBlockTypeSpan(new ClickSpan(
-                        normalTextColor,
-                        pressedTextColor,
-                        pressedBackgroundColor,
-                        new ClickSpan.OnClickListener() {
-                            @Override
-                            public void onClick(TextView textView, CharSequence text, float rawX, float rawY) {
-                                showQuickActionDialog((int) rawX, (int) rawY);
-                            }
-                        }), "c")
-                .addBlockTypeSpan(new IStyleSpan() {
-                    @Override
-                    public CharacterStyle getStyleSpan() {
-                        return new ForegroundColorSpan(foregroundTextColor);
-                    }
-                }, "b")
-                .addLinkTypeSpan(new LinkClickSpan(
-                        foregroundTextColor,
-                        pressedTextColor,
-                        pressedBackgroundColor,
-                        new LinkClickSpan.OnLinkClickListener() {
-                            @Override
-                            public void onClick(TextView textView, String url) {
-                                Toast.makeText(ViewActivity.this, url, Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                )
-                .build();
-        richText.with(mBinding.tvRichText1);
-        richText.with(mBinding.tvRichText2);
-
-        String tagString1 = "英语单词<a href='http://www.etymonline.com'>china</a>小写时表示“中国瓷”，大写时表示“中国”，那么它最初究竟是对中国的称呼还是对中国瓷的称呼呢？\n词源学研究显示，它最初是对中国的称呼。明代中期葡萄牙人贩瓷器到欧洲，将其称为chinaware，ware是器具的意思，可见china是地名，并无瓷器之意。";
-        tagString1 = StringUtils.replaceWordsWithTag(tagString1, "<c>", "</c>");
-        mBinding.tvRichText1.setText(richText.parse(tagString1));
-
-        String tagString2 = "He did his award-winning work at the Chinese University of Hong Kong,<b>China</b> and at the Standard Telecommunication Laboratories in Britain.";
-        tagString2 = StringUtils.replaceWordsWithTag(tagString2, "<c>", "</c>");
-        mBinding.tvRichText2.setText(richText.parse(tagString2));
     }
 
     private void showQuickActionDialog(final int screenX, final int screenY) {

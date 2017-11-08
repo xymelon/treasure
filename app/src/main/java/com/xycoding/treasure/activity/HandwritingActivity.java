@@ -11,16 +11,11 @@ import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.view.handwriting.HandwritingView;
 import com.xycoding.treasure.view.handwriting.HandwritingViewBezier;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by xuyang on 2016/12/15.
@@ -153,16 +148,6 @@ public class HandwritingActivity extends BaseBindingActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            try {
-                final Request request = new Request.Builder()
-                        .url(String.format("http://dict.youdao.com/handwrite?c=1&n=%d&cs=utf8", curPointSize))
-                        .post(new FormBody.Builder().add("d", curHandwriting).build())
-                        .build();
-                Response response = new OkHttpClient.Builder().build().newCall(request).execute();
-                return response.body().string();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             return "";
         }
 

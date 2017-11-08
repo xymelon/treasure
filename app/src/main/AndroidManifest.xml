@@ -67,11 +67,6 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".activity.SpeechActivity"
-            android:label="@string/activity_speech"
-            android:screenOrientation="portrait" />
-
-        <activity
             android:name=".activity.DictActivity"
             android:label="@string/activity_speech"
             android:screenOrientation="portrait" />

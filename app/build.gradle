@@ -64,9 +64,4 @@ dependencies {
     compile "com.facebook.stetho:stetho-okhttp3:$rootProject.ext.stethoVersion"
     //调试 end
 
-    //小语种发音
-    compile 'com.nuance:speechkit:2.2+@aar'
-
-    compile 'com.github.xymelon:richtext:1.0.7'
-    //compile 'commons-io:commons-io:2.4'
 }
