@@ -14,7 +14,7 @@ import com.xycoding.treasure.R;
 import com.xycoding.treasure.utils.ScreenshotObserver;
 import com.xycoding.treasure.utils.ViewUtils;
 
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by xuyang on 2016/7/21.
@@ -23,7 +23,7 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
 
     private Dialog loadingDialog;
     protected ViewDataBinding binding;
-    protected CompositeSubscription subscriptions = new CompositeSubscription();
+    protected CompositeDisposable mDisposables = new CompositeDisposable();
     private ScreenshotObserver mObserver;
 
     @CallSuper
@@ -72,7 +72,7 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        subscriptions.unsubscribe();
+        mDisposables.dispose();
         mObserver.stopWatching();
     }
 

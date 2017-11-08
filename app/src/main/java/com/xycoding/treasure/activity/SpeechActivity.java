@@ -10,7 +10,7 @@ import com.xycoding.treasure.speech.DictSpeechRecognizer;
 import com.xycoding.treasure.speech.SpeechConfiguration;
 import com.xycoding.treasure.speech.SpeechRecognizerListener;
 
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by xuyang on 2017/3/9.
@@ -31,9 +31,9 @@ public class SpeechActivity extends BaseBindingActivity {
 
     @Override
     protected void setListeners() {
-        subscriptions.add(RxViewWrapper.clicks(mBinding.btnSpeech).subscribe(new Action1<Void>() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.btnSpeech).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 startSpeech();
             }
         }));

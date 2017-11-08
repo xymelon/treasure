@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by xuyang on 2016/7/21
@@ -19,7 +19,7 @@ public abstract class BaseBindingFragment extends Fragment {
 
     protected ViewDataBinding binding;
     protected boolean isViewCreated;
-    protected CompositeSubscription subscriptions = new CompositeSubscription();
+    protected CompositeDisposable mDisposables = new CompositeDisposable();
 
     @CallSuper
     @Override
@@ -44,7 +44,7 @@ public abstract class BaseBindingFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         isViewCreated = false;
-        subscriptions.unsubscribe();
+        mDisposables.dispose();
     }
 
     /**

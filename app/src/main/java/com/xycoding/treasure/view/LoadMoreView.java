@@ -12,8 +12,8 @@ import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.LayoutLoadMoreBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 
-import rx.Subscription;
-import rx.functions.Action1;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * 布局：加载更多
@@ -23,7 +23,7 @@ import rx.functions.Action1;
 public class LoadMoreView extends FrameLayout {
 
     private LayoutLoadMoreBinding mBinding;
-    private Subscription mSubscription;
+    private Disposable mDisposable;
 
     public LoadMoreView(Context context) {
         this(context, null);
@@ -45,8 +45,8 @@ public class LoadMoreView extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mSubscription != null && mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
         }
     }
 
@@ -81,10 +81,10 @@ public class LoadMoreView extends FrameLayout {
     }
 
     public void setReloadClickListener(final OnClickListener listener) {
-        mSubscription = RxViewWrapper.clicks(mBinding.tvReload)
-                .subscribe(new Action1<Void>() {
+        mDisposable = RxViewWrapper.clicks(mBinding.tvReload)
+                .subscribe(new Consumer<Object>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void accept(Object o) throws Exception {
                         listener.onClick(mBinding.tvReload);
                     }
                 });

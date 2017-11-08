@@ -16,11 +16,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.functions.Consumer;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import rx.functions.Action1;
 
 /**
  * Created by xuyang on 2016/12/15.
@@ -44,9 +44,9 @@ public class HandwritingActivity extends BaseBindingActivity {
 
     @Override
     protected void setListeners() {
-        subscriptions.add(RxViewWrapper.clicks(mBinding.btnClear).subscribe(new Action1<Void>() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.btnClear).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 mBinding.viewHandwriting.clear();
                 mBinding.viewHandwriting1.clear();
                 mBinding.tvContent.setText("");

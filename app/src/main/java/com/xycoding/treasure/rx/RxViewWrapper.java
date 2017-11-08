@@ -4,12 +4,12 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 
-import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.AdapterViewItemClickEvent;
-import com.jakewharton.rxbinding.widget.RxAutoCompleteTextView;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.AdapterViewItemClickEvent;
+import com.jakewharton.rxbinding2.widget.RxAutoCompleteTextView;
 import com.xycoding.treasure.rx.transformer.ClickTransformer;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * Created by xuyang on 2016/8/22.
@@ -27,8 +27,8 @@ public class RxViewWrapper {
      * clicks. Only one observable can be used for a view at a time.
      */
     @NonNull
-    public static Observable<Void> clicks(@NonNull View view) {
-        return RxView.clicks(view).compose(new ClickTransformer<Void>());
+    public static Observable<Object> clicks(@NonNull View view) {
+        return RxView.clicks(view).compose(new ClickTransformer<>());
     }
 
     /**

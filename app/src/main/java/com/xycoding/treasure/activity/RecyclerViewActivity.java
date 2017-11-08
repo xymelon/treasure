@@ -26,13 +26,14 @@ import com.xycoding.treasure.view.recyclerview.LoadMoreRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func0;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
 
 /**
  * Created by xuyang on 2016/10/31.
@@ -71,21 +72,21 @@ public class RecyclerViewActivity extends BaseBindingActivity {
                 loadMoreItems();
             }
         });
-        subscriptions.add(RxViewWrapper.clicks(mBinding.btnBorder).subscribe(new Action1<Void>() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.btnBorder).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 recyclerViewVisible(0);
             }
         }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.btnMore).subscribe(new Action1<Void>() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.btnMore).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 recyclerViewVisible(1);
             }
         }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.btnGroup).subscribe(new Action1<Void>() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.btnGroup).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 recyclerViewVisible(2);
             }
         }));
@@ -224,31 +225,19 @@ public class RecyclerViewActivity extends BaseBindingActivity {
     }
 
     private void loadMoreItems() {
-        subscriptions.add(Observable
-                .defer(new Func0<Observable<List<String>>>() {
+        mDisposables.add(Observable
+                .defer(new Callable<ObservableSource<List<String>>>() {
                     @Override
-                    public Observable<List<String>> call() {
+                    public ObservableSource<List<String>> call() throws Exception {
                         return Observable.just(loadMoreDummyItems(20));
                     }
                 })
                 .delay(3000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<String>>() {
-
+                .subscribeWith(new DisposableObserver<List<String>>() {
                     @Override
-                    public void onStart() {
+                    protected void onStart() {
                         mLoadMoreView.showLoadingView();
-                    }
-
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        mLoadMoreView.showReLoadView();
                     }
 
                     @Override
@@ -261,6 +250,16 @@ public class RecyclerViewActivity extends BaseBindingActivity {
                             mData.addAll(strings);
                             mBinding.recyclerView.getAdapter().notifyItemRangeInserted(startPos, strings.size());
                         }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mLoadMoreView.showReLoadView();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 }));
     }

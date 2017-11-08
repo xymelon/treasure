@@ -22,8 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jakewharton.rxbinding.widget.RxTextView;
-import com.jakewharton.rxbinding.widget.TextViewAfterTextChangeEvent;
+import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 import com.xycoding.richtext.RichText;
 import com.xycoding.richtext.typeface.ClickSpan;
 import com.xycoding.richtext.typeface.IStyleSpan;
@@ -35,7 +35,7 @@ import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.utils.DeviceUtils;
 import com.xycoding.treasure.utils.StringUtils;
 
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by xuyang on 2016/10/28.
@@ -57,15 +57,15 @@ public class ViewActivity extends BaseBindingActivity {
 
     @Override
     protected void setListeners() {
-        subscriptions.add(RxTextView.afterTextChangeEvents(mBinding.clearEditText).subscribe(new Action1<TextViewAfterTextChangeEvent>() {
+        mDisposables.add(RxTextView.afterTextChangeEvents(mBinding.clearEditText).subscribe(new Consumer<TextViewAfterTextChangeEvent>() {
             @Override
-            public void call(TextViewAfterTextChangeEvent event) {
+            public void accept(TextViewAfterTextChangeEvent event) throws Exception {
                 mBinding.fitTextView.setText(event.editable());
             }
         }));
-        subscriptions.add(RxViewWrapper.clicks(mBinding.btnRecyclerView).subscribe(new Action1<Void>() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.btnRecyclerView).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 startActivity(new Intent(ViewActivity.this, RecyclerViewActivity.class));
             }
         }));

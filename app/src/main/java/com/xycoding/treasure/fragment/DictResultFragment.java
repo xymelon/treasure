@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by xuyang on 2017/3/22.
@@ -46,27 +46,27 @@ public class DictResultFragment extends BaseBindingFragment {
 
     @Override
     protected void setListeners() {
-        RxViewWrapper.clicks(mBinding.layoutHeader.fitTextView).subscribe(new Action1<Void>() {
+        RxViewWrapper.clicks(mBinding.layoutHeader.fitTextView).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 Toast.makeText(getContext(), mBinding.layoutHeader.fitTextView.getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        RxViewWrapper.clicks(mBinding.fab).subscribe(new Action1<Void>() {
+        RxViewWrapper.clicks(mBinding.fab).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 mBinding.headerViewPager.scrollToTop();
             }
         });
-        RxViewWrapper.clicks(mBinding.layoutHeader.tvAd).subscribe(new Action1<Void>() {
+        RxViewWrapper.clicks(mBinding.layoutHeader.tvAd).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 Toast.makeText(getContext(), mBinding.layoutHeader.tvAd.getText(), Toast.LENGTH_SHORT).show();
             }
         });
-        RxViewWrapper.clicks(mBinding.ivScrollBar).subscribe(new Action1<Void>() {
+        RxViewWrapper.clicks(mBinding.ivScrollBar).subscribe(new Consumer<Object>() {
             @Override
-            public void call(Void aVoid) {
+            public void accept(Object o) throws Exception {
                 showQuickPositioningDialog();
             }
         });
