@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.xycoding.treasure.BuildConfig;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
@@ -33,6 +34,7 @@ public class MainActivity extends BaseBindingActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+        mBinding.tvFlavor.setText("flavor_" + BuildConfig.FLAVOR);
     }
 
     @Override
