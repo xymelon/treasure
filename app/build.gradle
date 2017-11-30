@@ -46,20 +46,61 @@ android {
         }
     }
 
-    flavorDimensions "channel"
+    flavorDimensions "vendor"
 
     productFlavors {
-        free {
-            dimension "channel"
-        }
-        paid {
-            dimension "channel"
-        }
+        index { dimension "vendor" }
+        tencent { dimension "vendor" }
+        union1 { dimension "vendor" }
     }
 
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "Treasure_${variant.versionName}_${variant.flavorName}.apk"
+//    android.applicationVariants.all { variant ->
+//        variant.outputs.all {
+//            if (variant.flavorName.contains("union")) {
+//                outputFileName = "treasure_${variant.flavorName}_release.apk"
+//            } else {
+//                outputFileName = "Treasure_${variant.versionName}_${variant.flavorName}.apk"
+//            }
+//        }
+//    }
+
+    project.afterEvaluate {
+        task encrypt(type: Exec) {
+            workingDir '../pack'
+            commandLine 'python', 'encrypt.py'
+        }
+        android.applicationVariants.all { variant ->
+            //市场包文件夹
+            def marketDir = rootProject.file("pack/market")
+            //union包文件夹
+            def unionDir = rootProject.file("pack/union")
+
+            //是否union包
+            def isUnion = variant.flavorName.contains("union")
+            def apkFile
+            if (isUnion) {
+                apkFile = new File(unionDir, String.format("treasure-%s-release.apk", variant.flavorName))
+            } else {
+                apkFile = new File(marketDir, String.format("Treasure_Android_%s_%s.apk", variant.versionName, variant.flavorName))
+            }
+
+            variant.outputs.all { output ->
+                Task copyAndRenameAPKTask = project.task("copyAndRename${variant.name.capitalize()}APK", type: Copy) {
+                    from output.outputFile.getParent()
+                    if (isUnion) {
+                        into unionDir
+                    } else {
+                        into marketDir
+                    }
+                    include output.outputFileName
+                    rename(output.outputFileName, apkFile.getName())
+                }
+                copyAndRenameAPKTask.mustRunAfter(variant.assemble)
+                variant.assemble.finalizedBy(copyAndRenameAPKTask)
+
+                encrypt.mustRunAfter(copyAndRenameAPKTask)
+                copyAndRenameAPKTask.finalizedBy(encrypt)
+            }
         }
     }
 
