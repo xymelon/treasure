@@ -39,6 +39,12 @@ public class MainActivity extends BaseBindingActivity {
 
     @Override
     protected void setListeners() {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewRxjava).subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(Object o) throws Exception {
+                startActivity(new Intent(MainActivity.this, RxJavaTestActivity.class));
+            }
+        }));
         mDisposables.add(RxViewWrapper.clicks(mBinding.fab).subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {

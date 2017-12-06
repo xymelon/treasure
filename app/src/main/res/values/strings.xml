@@ -11,6 +11,7 @@
     <string name="activity_handwriting">Handwriting</string>
     <string name="activity_speech">Speech</string>
     <string name="activity_chart">Chart</string>
+    <string name="activity_rxjava">RxJava搜索联想</string>
 
     <string name="speech_language_others"><![CDATA[<font color=\"#999999\">%1$s</font> <font color=\"#ebebeb\">/</font> <font color=\"#333333\">%2$s</font>]]></string>
     <string name="label_holder">We challenged ourselves to create a visual language for our users that synthesizes the classic principles of good design with the innovation and possibility of technology and science. This is material design. This spec is a living document that will be updated as we continue to develop the tenets and specifics of material design.</string>
