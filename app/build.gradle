@@ -54,17 +54,13 @@ android {
         union1 { dimension "vendor" }
     }
 
-//    android.applicationVariants.all { variant ->
-//        variant.outputs.all {
-//            if (variant.flavorName.contains("union")) {
-//                outputFileName = "treasure_${variant.flavorName}_release.apk"
-//            } else {
-//                outputFileName = "Treasure_${variant.versionName}_${variant.flavorName}.apk"
-//            }
-//        }
-//    }
-
     project.afterEvaluate {
+        //清空文件夹
+        task delPackDir(type: Delete) {
+            delete '../pack/release', '../pack/market', '../pack/union'
+            followSymlinks = true
+        }
+
         task encrypt(type: Exec) {
             workingDir '../pack'
             commandLine 'python', 'encrypt.py'
@@ -95,6 +91,9 @@ android {
                     include output.outputFileName
                     rename(output.outputFileName, apkFile.getName())
                 }
+                //生成release包前清空文件夹
+                variant.assemble.dependsOn(delPackDir)
+
                 copyAndRenameAPKTask.mustRunAfter(variant.assemble)
                 variant.assemble.finalizedBy(copyAndRenameAPKTask)
 
