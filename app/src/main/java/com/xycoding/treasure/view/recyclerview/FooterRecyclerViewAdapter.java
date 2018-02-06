@@ -6,6 +6,8 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 /**
  * Created by xuyang on 2016/7/28.
  */
@@ -83,6 +85,13 @@ public class FooterRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) != VIEW_TYPE_FOOTER) {
             mRealAdapter.onBindViewHolder(holder, position);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+        if (getItemViewType(position) != VIEW_TYPE_FOOTER) {
+            mRealAdapter.onBindViewHolder(holder, position, payloads);
         }
     }
 
