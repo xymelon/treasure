@@ -19,10 +19,10 @@ import io.reactivex.disposables.CompositeDisposable;
 /**
  * Created by xuyang on 2016/7/21.
  */
-public abstract class BaseBindingActivity extends AppCompatActivity {
+public abstract class BaseBindingActivity<T extends ViewDataBinding> extends AppCompatActivity {
 
     private Dialog loadingDialog;
-    protected ViewDataBinding binding;
+    protected T mBinding;
     protected CompositeDisposable mDisposables = new CompositeDisposable();
     private ScreenshotObserver mObserver;
 
@@ -33,10 +33,10 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
         int layoutId = getLayoutId();
 
         if (layoutId != -1) {
-            binding = DataBindingUtil.setContentView(this, layoutId);
+            mBinding = DataBindingUtil.setContentView(this, layoutId);
         }
         if (findViewById(R.id.toolbar) != null) {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -48,12 +48,7 @@ public abstract class BaseBindingActivity extends AppCompatActivity {
         initControls(savedInstanceState);
         setListeners();
         initData(savedInstanceState);
-        mObserver = new ScreenshotObserver(new ScreenshotObserver.OnScreenshotListener() {
-            @Override
-            public void onScreenshotTaken(Uri uri) {
-                onScreenshot(uri);
-            }
-        });
+        mObserver = new ScreenshotObserver(this::onScreenshot);
         mObserver.startWatching();
     }
 

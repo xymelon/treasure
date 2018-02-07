@@ -38,9 +38,8 @@ import io.reactivex.observers.DisposableObserver;
 /**
  * Created by xuyang on 2016/10/31.
  */
-public class RecyclerViewActivity extends BaseBindingActivity {
+public class RecyclerViewActivity extends BaseBindingActivity<ActivityRecyclerViewBinding> {
 
-    private ActivityRecyclerViewBinding mBinding;
     private List<String> mData = new ArrayList<>();
     private LoadMoreView mLoadMoreView;
 
@@ -51,7 +50,6 @@ public class RecyclerViewActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityRecyclerViewBinding) binding;
         initLinearRecyclerView();
         initGridRecyclerView();
         initGroupRecyclerView();

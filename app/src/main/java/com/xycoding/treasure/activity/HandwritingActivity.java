@@ -20,9 +20,8 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by xuyang on 2016/12/15.
  */
-public class HandwritingActivity extends BaseBindingActivity {
+public class HandwritingActivity extends BaseBindingActivity<ActivityHandwritingBinding> {
 
-    private ActivityHandwritingBinding mBinding;
     private AsyncTask<Void, Void, String> mAsyncTask;
     private String mCurHandwriting = "";
     private int mCurPointSize = 0;
@@ -34,7 +33,6 @@ public class HandwritingActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityHandwritingBinding) binding;
     }
 
     @Override

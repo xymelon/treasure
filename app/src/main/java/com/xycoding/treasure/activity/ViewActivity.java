@@ -30,9 +30,7 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by xuyang on 2016/10/28.
  */
-public class ViewActivity extends BaseBindingActivity {
-
-    private ActivityViewBinding mBinding;
+public class ViewActivity extends BaseBindingActivity<ActivityViewBinding> {
 
     @Override
     protected int getLayoutId() {
@@ -41,7 +39,6 @@ public class ViewActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityViewBinding) binding;
         initViews();
     }
 

@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.jakewharton.rxbinding2.widget.TextViewAfterTextChangeEvent;
 import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityRxjavaTestBinding;
 import com.xycoding.treasure.utils.Logcat;
@@ -26,11 +24,9 @@ import io.reactivex.schedulers.Schedulers;
  * @author xymelon
  * @date 2017/12/6
  */
-public class RxJavaTestActivity extends BaseBindingActivity {
+public class RxJavaTestActivity extends BaseBindingActivity<ActivityRxjavaTestBinding> {
 
     private static final String TAG = RxJavaTestActivity.class.getSimpleName();
-
-    private ActivityRxjavaTestBinding mBinding;
 
     @Override
     protected int getLayoutId() {
@@ -39,7 +35,6 @@ public class RxJavaTestActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityRxjavaTestBinding) binding;
     }
 
     @Override

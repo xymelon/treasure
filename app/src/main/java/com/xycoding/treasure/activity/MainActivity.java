@@ -11,17 +11,16 @@ import android.widget.Toast;
 
 import com.xycoding.treasure.BuildConfig;
 import com.xycoding.treasure.R;
+import com.xycoding.treasure.activity.transition.TransitionActivity;
 import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.service.LocalIntentService;
 
 import io.reactivex.functions.Consumer;
 
-public class MainActivity extends BaseBindingActivity {
+public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
 
     private final static String TAG = MainActivity.class.getSimpleName();
-
-    private ActivityMainBinding mBinding;
 
     @Override
     protected int getLayoutId() {
@@ -30,7 +29,6 @@ public class MainActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityMainBinding) binding;
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
@@ -98,6 +96,12 @@ public class MainActivity extends BaseBindingActivity {
             @Override
             public void accept(Object o) throws Exception {
                 startActivity(new Intent(MainActivity.this, ImmersiveModeActivity.class));
+            }
+        }));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewTransition).subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(Object o) throws Exception {
+                startActivity(new Intent(MainActivity.this, TransitionActivity.class));
             }
         }));
     }

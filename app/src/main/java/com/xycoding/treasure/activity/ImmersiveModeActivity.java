@@ -16,11 +16,10 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 /**
  * Created by xymelon on 2017/6/2.
  */
-public class ImmersiveModeActivity extends BaseBindingActivity {
+public class ImmersiveModeActivity extends BaseBindingActivity<ActivityImmersiveModeBinding> {
 
     private Animation mFadeInAnimation;
     private Animation mFadeOutAnimation;
-    private ActivityImmersiveModeBinding mBinding;
 
     @Override
     public int getLayoutId() {
@@ -33,7 +32,6 @@ public class ImmersiveModeActivity extends BaseBindingActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-        mBinding = (ActivityImmersiveModeBinding) binding;
         initViews();
     }
 

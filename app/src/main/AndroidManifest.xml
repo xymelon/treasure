@@ -82,6 +82,16 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".activity.transition.TransitionActivity"
+            android:label="@string/activity_transition"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.transition.TransitionSecondActivity"
+            android:label="@string/activity_transition"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".activity.ImmersiveModeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"

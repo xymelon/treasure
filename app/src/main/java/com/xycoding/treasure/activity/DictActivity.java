@@ -4,12 +4,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
 import com.xycoding.treasure.R;
+import com.xycoding.treasure.databinding.ActivityDictBinding;
 import com.xycoding.treasure.fragment.DictResultFragment;
 
 /**
  * Created by xuyang on 2017/3/22.
  */
-public class DictActivity extends BaseBindingActivity {
+public class DictActivity extends BaseBindingActivity<ActivityDictBinding> {
 
     @Override
     protected int getLayoutId() {

@@ -14,9 +14,7 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by xuyang on 2016/11/3.
  */
-public class ActionModeActivity extends BaseBindingActivity {
-
-    private ActivityActionModeBinding mBinding;
+public class ActionModeActivity extends BaseBindingActivity<ActivityActionModeBinding> {
 
     @Override
     protected int getLayoutId() {
@@ -25,7 +23,6 @@ public class ActionModeActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityActionModeBinding) binding;
     }
 
     @Override

@@ -32,9 +32,8 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by xuyang on 2016/10/28.
  */
-public class DialogActivity extends BaseBindingActivity {
+public class DialogActivity extends BaseBindingActivity<ActivityDialogBinding> {
 
-    private ActivityDialogBinding mBinding;
     private Dialog mEventDialog;
 
     @Override
@@ -44,7 +43,6 @@ public class DialogActivity extends BaseBindingActivity {
 
     @Override
     protected void initControls(Bundle savedInstanceState) {
-        mBinding = (ActivityDialogBinding) binding;
     }
 
     @Override
