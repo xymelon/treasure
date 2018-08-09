@@ -26,21 +26,21 @@
     <!-- 实时语音翻译：common_language子集，每种语言必须和common_language中书写一致，否则无法匹配 -->
     <string-array name="language_voice_real_time_section_content">
         <item>Detect language,Chinese,English,Japanese,Korean,French</item>
-        <item>Arabic,Arabic(Egypt),Arabic(Saudi Arabia)</item>
+        <item>Arabic,Arabic (Egypt),Arabic (Saudi Arabia)</item>
         <item>Cantonese,Catalan,Chinese,Chinese (Traditional),Croatian,Czech</item>
         <item>Danish,Dutch</item>
-        <item>English,English(Australia),English(GB),English(India)</item>
-        <item>Finnish,French,French(Canada)</item>
+        <item>English,English (Australia),English (GB),English (India)</item>
+        <item>Finnish,French,French (Canada)</item>
         <item>German,Greek</item>
         <item>Hebrew,Hindi,Hungarian</item>
         <item>Indonesian,Italian</item>
         <item>Japanese</item>
         <item>Korean</item>
-        <item>Malay,Mandarin(Taiwan/Traditional)</item>
+        <item>Malay,Mandarin (Taiwan/Traditional)</item>
         <item>Norwegian</item>
-        <item>Polish,Portuguese,Portuguese(Brazil)</item>
+        <item>Polish,Portuguese,Portuguese (Brazil)</item>
         <item>Romanian,Russian</item>
-        <item>Slovak,Spanish,Spanish(LatAm),Swedish</item>
+        <item>Slovak,Spanish,Spanish (LatAm),Swedish</item>
         <item>Thai,Turkish</item>
         <item>Ukrainian</item>
         <item>Vietnamese</item>
