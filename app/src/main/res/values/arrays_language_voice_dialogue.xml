@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="language_voice_dialogue_section">
+        <item>Recently Used</item>
+        <item>A</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>M</item>
+        <item>N</item>
+        <item>P</item>
+        <item>R</item>
+        <item>S</item>
+        <item>T</item>
+        <item>U</item>
+        <item>V</item>
+    </string-array>
+
+    <!-- 对话语音翻译：common_language子集，每种语言必须和common_language中书写一致，否则无法匹配 -->
+    <string-array name="language_voice_dialogue_section_content">
+        <item>Chinese,English,Japanese,Korean,French</item>
+        <item>Arabic,Arabic(Egypt),Arabic(Saudi Arabia)</item>
+        <item>Cantonese,Catalan,Chinese,Chinese (Traditional),Croatian,Czech</item>
+        <item>Danish,Dutch</item>
+        <item>English,English(Australia),English(GB),English(India)</item>
+        <item>Finnish,French,French(Canada)</item>
+        <item>German,Greek</item>
+        <item>Hebrew,Hindi,Hungarian</item>
+        <item>Indonesian,Italian</item>
+        <item>Japanese</item>
+        <item>Korean</item>
+        <item>Malay,Mandarin(Taiwan/Traditional)</item>
+        <item>Norwegian</item>
+        <item>Polish,Portuguese,Portuguese(Brazil)</item>
+        <item>Romanian,Russian</item>
+        <item>Slovak,Spanish,Spanish(LatAm),Swedish</item>
+        <item>Thai,Turkish</item>
+        <item>Ukrainian</item>
+        <item>Vietnamese</item>
+    </string-array>
+
+</resources>
