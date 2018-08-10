@@ -23,7 +23,7 @@
         <item>V</item>
     </string-array>
 
-    <!-- 实时语音翻译：common_language子集，每种语言必须和common_language中书写一致，否则无法匹配 -->
+    <!-- 实时语音翻译：language_common子集，每种语言必须和language_common中书写一致，否则无法匹配 -->
     <string-array name="language_voice_real_time_section_content">
         <item>Detect language,Chinese,English,Japanese,Korean,French</item>
         <item>Arabic,Arabic (Egypt),Arabic (Saudi Arabia)</item>

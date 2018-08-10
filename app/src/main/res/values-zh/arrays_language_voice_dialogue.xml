@@ -24,7 +24,7 @@
         <item>Z</item>
     </string-array>
 
-    <!-- 对话语音翻译：common_language子集，每种语言必须和common_language中书写一致，否则无法匹配 -->
+    <!-- 对话语音翻译：language_common子集，每种语言必须和language_common中书写一致，否则无法匹配 -->
     <string-array name="language_voice_dialogue_section_content">
         <item>中文,英语,日语,韩语,法语</item>
         <item>阿拉伯语,阿拉伯语(埃及),阿拉伯语(沙特阿拉伯)</item>

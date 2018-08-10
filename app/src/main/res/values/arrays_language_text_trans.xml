@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="language_text_trans_section">
+        <item>Recently Used</item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>L</item>
+        <item>M</item>
+        <item>N</item>
+        <item>P</item>
+        <item>Q</item>
+        <item>R</item>
+        <item>S</item>
+        <item>T</item>
+        <item>U</item>
+        <item>V</item>
+        <item>W</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Z</item>
+    </string-array>
+
+    <!-- 文本翻译：language_common子集，每种语言必须和language_common中书写一致，否则无法匹配 -->
+    <string-array name="language_text_trans_section_content">
+        <item>Detect language,Chinese,English,Japanese,Korean,French</item>
+        <item>Afrikaans,Albanian,Amharic,Arabic,Arabic (Levantine),Armenian,Azerbaijani</item>
+        <item>Bangla,Basque,Belarusian,Bosnian (Latin),Bulgarian</item>
+        <item>Cantonese,Catalan,Cebuano,Chinese,Chinese (Traditional),Corsican,Croatian,Czech</item>
+        <item>Danish,Dutch</item>
+        <item>English,Esperanto,Estonian</item>
+        <item>Fijian,Filipino,Finnish,French,Frisian</item>
+        <item>Galician,Georgian,German,Greek,Gujarati</item>
+        <item>Haitian Creole,Hausa,Hawaiian,Hebrew,Hindi,Hmong Daw,Hungarian</item>
+        <item>Icelandic,Igbo,Indonesian,Irish,Italian</item>
+        <item>Japanese,Javanese</item>
+        <item>Kannada,Kazakh,Khmer,Kiswahili,Klingon,Klingon (plqaD),Korean,Kurdish,Kyrgyz</item>
+        <item>Lao,Latin,Latvian,Lithuanian,Luxembourgish</item>
+        <item>Macedonian,Malagasy,Malay,Malayalam,Maltese,Maori,Marathi,Mongolian,Myanmar (Burmese)</item>
+        <item>Nepali,Norwegian,Nyanja (Chichewa)</item>
+        <item>Pashto,Persian,Polish,Portuguese,Punjabi</item>
+        <item>Querétaro Otomi</item>
+        <item>Romanian,Russian</item>
+        <item>Samoan,Scots Gaelic,Serbian (Cyrillic),Serbian (Latin),Sesotho,Shona,Sindhi,Sinhala (Sinhalese),Slovak,Slovenian,Somali,Spanish,Sundanese,Swedish</item>
+        <item>Tahitian,Tajik,Tamil,Telugu,Thai,Tongan,Turkish</item>
+        <item>Ukrainian,Urdu,Uzbek</item>
+        <item>Vietnamese</item>
+        <item>Welsh</item>
+        <item>Xhosa</item>
+        <item>Yiddish,Yoruba,Yucatec Maya</item>
+        <item>Zulu</item>
+    </string-array>
+
+</resources>
