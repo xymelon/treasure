@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="language_common_chinese">
+        <item>自动检测语言</item>
+        <item>阿尔巴尼亚语</item>
+        <item>阿拉伯文</item>
+        <item>阿拉伯文（埃及）</item>
+        <item>阿拉伯文（沙特阿拉伯）</item>
+        <item>阿姆哈拉语</item>
+        <item>阿塞拜疆语</item>
+        <item>爱尔兰语</item>
+        <item>爱沙尼亚文</item>
+        <item>巴斯克语</item>
+        <item>白俄罗斯语</item>
+        <item>白苗语</item>
+        <item>保加利亚文</item>
+        <item>冰岛语</item>
+        <item>波兰文</item>
+        <item>波斯尼亚文（拉丁文）</item>
+        <item>波斯文</item>
+        <item>丹麦文</item>
+        <item>德文</item>
+        <item>俄文</item>
+        <item>法文</item>
+        <item>法文（加拿大）</item>
+        <item>菲律宾语</item>
+        <item>斐济语</item>
+        <item>芬兰文</item>
+        <item>弗里西语</item>
+        <item>高棉语</item>
+        <item>格鲁吉亚语</item>
+        <item>古吉拉特语</item>
+        <item>哈萨克语</item>
+        <item>海地文</item>
+        <item>韩文</item>
+        <item>豪萨语</item>
+        <item>荷兰文</item>
+        <item>加利西亚语</item>
+        <item>加泰罗尼亚文</item>
+        <item>捷克文</item>
+        <item>卡纳达语</item>
+        <item>柯尔克孜语</item>
+        <item>科西嘉语</item>
+        <item>克雷塔罗奥托米语</item>
+        <item>克林贡文</item>
+        <item>克林贡文（pIqaD）</item>
+        <item>克罗地亚文</item>
+        <item>库尔德语</item>
+        <item>拉丁语</item>
+        <item>拉脱维亚文</item>
+        <item>老挝语</item>
+        <item>黎凡特阿拉伯语</item>
+        <item>立陶宛文</item>
+        <item>卢森堡语</item>
+        <item>罗马尼亚文</item>
+        <item>马尔加什语</item>
+        <item>马耳他文</item>
+        <item>马拉地语</item>
+        <item>马拉雅拉姆语</item>
+        <item>马来文</item>
+        <item>马其顿语</item>
+        <item>毛利语</item>
+        <item>蒙古语</item>
+        <item>孟加拉语</item>
+        <item>缅甸语</item>
+        <item>南非荷兰语</item>
+        <item>南非科萨语</item>
+        <item>南非祖鲁语</item>
+        <item>尼泊尔语</item>
+        <item>挪威文</item>
+        <item>旁遮普语</item>
+        <item>葡萄牙文</item>
+        <item>葡萄牙文（巴西）</item>
+        <item>普什图语</item>
+        <item>齐切瓦语</item>
+        <item>日文</item>
+        <item>瑞典文</item>
+        <item>萨摩亚语</item>
+        <item>塞尔维亚文（拉丁文）</item>
+        <item>塞尔维亚文（西里尔文）</item>
+        <item>塞索托语</item>
+        <item>僧伽罗语</item>
+        <item>世界语</item>
+        <item>斯洛伐克文</item>
+        <item>斯洛文尼亚文</item>
+        <item>斯瓦希里文</item>
+        <item>苏格兰盖尔语</item>
+        <item>宿务语</item>
+        <item>索马里语</item>
+        <item>台普（繁体）</item>
+        <item>塔吉克语</item>
+        <item>塔希提语</item>
+        <item>泰卢固语</item>
+        <item>泰米尔语</item>
+        <item>泰文</item>
+        <item>汤加语</item>
+        <item>土耳其文</item>
+        <item>威尔士文</item>
+        <item>乌尔都文</item>
+        <item>乌克兰文</item>
+        <item>乌兹别克语</item>
+        <item>希伯来文</item>
+        <item>希腊文</item>
+        <item>西班牙文</item>
+        <item>西班牙文（拉丁美洲）</item>
+        <item>夏威夷语</item>
+        <item>信德语</item>
+        <item>匈牙利文</item>
+        <item>修纳语</item>
+        <item>巽他语</item>
+        <item>亚美尼亚语</item>
+        <item>伊博语</item>
+        <item>意大利文</item>
+        <item>意第绪语</item>
+        <item>印地文</item>
+        <item>印度尼西亚文</item>
+        <item>英文</item>
+        <item>英文（澳大利亚）</item>
+        <item>英文（印度）</item>
+        <item>英文（英国）</item>
+        <item>尤卡坦玛雅语</item>
+        <item>约鲁巴语</item>
+        <item>粤语</item>
+        <item>越南文</item>
+        <item>爪哇语</item>
+        <item>中文</item>
+        <item>中文（繁体）</item>
+    </string-array>
+
+    <string-array name="language_common_english">
+        <item>Detect language</item>
+        <item>Albanian</item>
+        <item>Arabic</item>
+        <item>Arabic (Egypt)</item>
+        <item>Arabic (Saudi Arabia)</item>
+        <item>Amharic</item>
+        <item>Azerbaijani</item>
+        <item>Irish</item>
+        <item>Estonian</item>
+        <item>Basque</item>
+        <item>Belarusian</item>
+        <item>Hmong Daw</item>
+        <item>Bulgarian</item>
+        <item>Icelandic</item>
+        <item>Polish</item>
+        <item>Bosnian (Latin)</item>
+        <item>Persian</item>
+        <item>Danish</item>
+        <item>German</item>
+        <item>Russian</item>
+        <item>French</item>
+        <item>French (Canada)</item>
+        <item>Filipino</item>
+        <item>Fijian</item>
+        <item>Finnish</item>
+        <item>Frisian</item>
+        <item>Khmer</item>
+        <item>Georgian</item>
+        <item>Gujarati</item>
+        <item>Kazakh</item>
+        <item>Haitian Creole</item>
+        <item>Korean</item>
+        <item>Hausa</item>
+        <item>Dutch</item>
+        <item>Galician</item>
+        <item>Catalan</item>
+        <item>Czech</item>
+        <item>Kannada</item>
+        <item>Kyrgyz</item>
+        <item>Corsican</item>
+        <item>Querétaro Otomi</item>
+        <item>Klingon</item>
+        <item>Klingon (plqaD)</item>
+        <item>Croatian</item>
+        <item>Kurdish</item>
+        <item>Latin</item>
+        <item>Latvian</item>
+        <item>Lao</item>
+        <item>Arabic (Levantine)</item>
+        <item>Lithuanian</item>
+        <item>Luxembourgish</item>
+        <item>Romanian</item>
+        <item>Malagasy</item>
+        <item>Maltese</item>
+        <item>Marathi</item>
+        <item>Malayalam</item>
+        <item>Malay</item>
+        <item>Macedonian</item>
+        <item>Maori</item>
+        <item>Mongolian</item>
+        <item>Bangla</item>
+        <item>Myanmar (Burmese)</item>
+        <item>Afrikaans</item>
+        <item>Xhosa</item>
+        <item>Zulu</item>
+        <item>Nepali</item>
+        <item>Norwegian</item>
+        <item>Punjabi</item>
+        <item>Portuguese</item>
+        <item>Portuguese (Brazil)</item>
+        <item>Pashto</item>
+        <item>Nyanja (Chichewa)</item>
+        <item>Japanese</item>
+        <item>Swedish</item>
+        <item>Samoan</item>
+        <item>Serbian (Latin)</item>
+        <item>Serbian (Cyrillic)</item>
+        <item>Sesotho</item>
+        <item>Sinhala (Sinhalese)</item>
+        <item>Esperanto</item>
+        <item>Slovak</item>
+        <item>Slovenian</item>
+        <item>Kiswahili</item>
+        <item>Scots Gaelic</item>
+        <item>Cebuano</item>
+        <item>Somali</item>
+        <item>Mandarin (Taiwan/Traditional)</item>
+        <item>Tajik</item>
+        <item>Tahitian</item>
+        <item>Telugu</item>
+        <item>Tamil</item>
+        <item>Thai</item>
+        <item>Tongan</item>
+        <item>Turkish</item>
+        <item>Welsh</item>
+        <item>Urdu</item>
+        <item>Ukrainian</item>
+        <item>Uzbek</item>
+        <item>Hebrew</item>
+        <item>Greek</item>
+        <item>Spanish</item>
+        <item>Spanish (LatAm)</item>
+        <item>Hawaiian</item>
+        <item>Sindhi</item>
+        <item>Hungarian</item>
+        <item>Shona</item>
+        <item>Sundanese</item>
+        <item>Armenian</item>
+        <item>Igbo</item>
+        <item>Italian</item>
+        <item>Yiddish</item>
+        <item>Hindi</item>
+        <item>Indonesian</item>
+        <item>English</item>
+        <item>English (Australia)</item>
+        <item>English (India)</item>
+        <item>English (GB)</item>
+        <item>Yucatec Maya</item>
+        <item>Yoruba</item>
+        <item>Cantonese</item>
+        <item>Vietnamese</item>
+        <item>Javanese</item>
+        <item>Chinese</item>
+        <item>Chinese (Traditional)</item>
+    </string-array>
+
+</resources>
