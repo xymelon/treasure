@@ -1,0 +1,114 @@
+Afrikaans | 南非荷兰语 | af | Microsoft | 23 | 
+Albanian | 阿尔巴尼亚语 | sq | Google | 114 | 
+Amharic | 阿姆哈拉语 | am | Google | 115 | 
+Arabic | 阿拉伯语 | ar | Microsoft | 10 | 
+Arabic, Levantine | 黎凡特阿拉伯语 | apc | Microsoft | 54 | 微软新增语言 
+Armenian | 亚美尼亚语 | hy | Google | 116 | 
+Azeerbaijani | 阿塞拜疆语 | az | Google | 117 | 
+Bangla | 孟加拉语 | bn | Google | 120 | 微软也已支持可迁移
+Basque | 巴斯克语 | eu | Google | 118 | 
+Belarusian | 白俄罗斯语 | be | Google | 119 | 
+Bosnian (Latin) | 波斯尼亚语 | bs | Microsoft | 25 | 微软语言代码变化，需要将bs-Latn改为bs，目前hotfix状态
+Bulgarian | 保加利亚语 | bg | Microsoft | 24 | 
+Cantonese (Traditional) | 粤语 | yue | Microsoft | 55 | 微软新增语言 
+Catalan | 加泰隆语 | ca | Microsoft | 26 | 
+Cebuano | 宿务语 | ceb | Google | 121 | 
+Chinese Simplified | 中文简体 | zh-CHS | Youdao | 1 |
+Chinese Traditional | 中文繁体 | zh-CHT | Youdao | 22 |
+Corsican | 科西嘉语 | co | Google | 123 | 
+Croatian | 克罗地亚语 | hr | Microsoft | 32 | 
+Czech | 捷克语 | cs | Microsoft | 27 | 
+Danish | 丹麦语 | da | Microsoft | 11 | 
+Dutch | 荷兰语 | nl | Microsoft | 17 | 
+English | 英语 | en | Youdao | 2 | 
+Esperanto | 世界语 | eo | Google | 124 | 
+Estonian | 爱沙尼亚语 | et | Microsoft | 29 | 
+Fijian | 斐济语 | fj | Microsoft | 56 | 微软新增语言 
+Filipino | 菲律宾语 | tl | Google | 125 | 微软也已支持可迁移，微软的语言代码为fil，客户端不需要修改
+Finnish | 芬兰语 | fi | Microsoft | 14 | 
+French | 法语 | fr | Youdao | 5 | 
+Frisian | 弗里西语 | fy | Google | 126 | 
+Galician | 加利西亚语 | gl | Google | 127 | 
+Georgian | 格鲁吉亚语 | ka | Google | 128 | 
+German | 德语 | de | Microsoft | 12 | 
+Greek | 希腊语 | el | Microsoft | 13 | 
+Gujarati | 古吉拉特语 | gu | Google | 129 | 
+Haitian Creole | 海地克里奥尔语 | ht | Microsoft | 33 | 
+Hausa | 豪萨语 | ha | Google | 130 | 
+Hawaiian | 夏威夷语 | haw | Google | 131 | 
+Hebrew | 希伯来语 | he | Microsoft | 31 | 谷歌也支持，但语言代码为iw，客户端不需要修改
+Hindi | 印地语 | hi | Microsoft | 9 | 
+Hmong Daw | 白苗语 | mww | Microsoft | 39 |谷歌也支持，但语言代码为hmn，客户端不需要修改
+Hungarian | 匈牙利语 | hu | Microsoft | 34 | 
+Icelandic | 冰岛语 | is | Google | 133 | 微软也已支持可迁移
+Igbo | 伊博语 | ig | Google | 134 | 
+Indonesian | 印度尼西亚语 | id | Microsoft | 35 | 
+Irish | 爱尔兰语 | ga | Google | 135 | 
+Italian | 意大利语 | it | Microsoft | 15 | 
+Japanese | 日语 | ja | Youdao | 4 | 
+Javanese | 爪哇语 | jw | Google | 136 | 
+Kannada | 卡纳达语 | kn | Google | 137 | 
+Kazakh | 哈萨克语 | kk | Google | 138 | 
+Khmer | 高棉语 | km | Google | 139 | 
+Kiswahili | 斯瓦希里语 | sw | Microsoft | 48 | 谷歌的英文名为：Swahili，客户端不用改
+Klingon | 克林贡语 | tlh | Microsoft | 49 | 
+Klingon (plqaD) | 克林贡语(pIqaD) | tlh-Qaak | Microsoft | 50 | 
+Korean | 韩语 | ko | Youdao | 3 | 
+Kurdish | 库尔德语 | ku | Google | 140 | 
+Kyrgyz | 柯尔克孜语 | ky | Google | 141 | 
+Lao | 老挝语 | lo | Google | 142 | 
+Latin | 拉丁语 | la | Google | 143 | 
+Latvian | 拉脱维亚语 | lv | Microsoft | 37 | 
+Lithuanian | 立陶宛语 | lt | Microsoft | 36 | 
+Luxembourgish | 卢森堡语 | lb | Google | 144 | 
+Macedonian | 马其顿语 | mk | Google | 145 | 
+Malagasy | 马尔加什语 | mg | Google | 146 | 微软也已支持可迁移
+Malay | 马来语 | ms | Microsoft | 16 | 
+Malayalam | 马拉雅拉姆语 | ml | Google | 147 | 
+Maltese | 马耳他语 | mt | Microsoft | 38 | 
+Maori | 毛利语 | mi | Google | 148 | 
+Marathi | 马拉地语 | mr | Google | 149 | 
+Mongolian | 蒙古语 | mn | Google | 150 | 
+Myanmar (Burmese) | 缅甸语 | my | Google | 151 | 
+Nepali | 尼泊尔语 | ne | Google | 152 | 
+Norwegian | 挪威语 | no | Microsoft | 40 |
+Nyanja (Chichewa) | 齐切瓦语 | ny | Google | 122 | 
+Pashto | 普什图语 | ps | Google | 153 | 
+Persian | 波斯语 | fa | Microsoft | 30 | 
+Polish | 波兰语 | pl | Microsoft | 42 | 
+Portuguese | 葡萄牙语 | pt | Youdao | 8 | 
+Punjabi | 旁遮普语 | pa | Google | 154 | 原来文档有误，写成ma了，目前hotfix状态
+Querétaro Otomi | 克雷塔罗奥托米语 | otq | Microsoft | 41 | 
+Romanian | 罗马尼亚语 | ro | Microsoft | 43 | 
+Russian | 俄语 | ru | Youdao | 6 | 
+Samoan | 萨摩亚语 | sm | Google | 155 | 微软也已支持可迁移
+Scots Gaelic | 苏格兰盖尔语 | gd | Google | 156 | 
+Serbian (Cyrillic) | 塞尔维亚语(西里尔文) | sr-Cyrl | Microsoft | 46 | 
+Serbian (Latin) | 塞尔维亚语(拉丁文) | sr-Latn | Microsoft | 47 | 
+Sesotho | 塞索托语 | st | Google | 157 | 
+Shona | 修纳语 | sn | Google | 158 | 
+Sindhi | 信德语 | sd | Google | 159 | 
+Sinhala (Sinhalese) | 僧伽罗语 | si | Google | 160 | 
+Slovak | 斯洛伐克语 | sk | Microsoft | 44 | 
+Slovenian | 斯洛文尼亚语 | sl | Microsoft | 45 | 
+Somali | 索马里语 | so | Google | 161 | 
+Spanish | 西班牙语 | es | Youdao | 7 | 
+Sundanese | 巽他语 | su | Google | 162 | 
+Swedish | 瑞典语 | sv | Microsoft | 18 | 
+Tahitian | 塔希提语 | ty | Microsoft | 57 | 微软新增语言
+Tajik | 塔吉克语 | tg | Google | 163 | 
+Tamil | 泰米尔语 | ta | Google | 164 | 微软也已支持可迁移
+Telugu | 泰卢固语 | te | Google | 165 | 
+Thai | 泰语 | th | Microsoft | 19 | 
+Tongan | 汤加语 | to | Microsoft | 58 | 微软新增语言
+Turkish | 土耳其语 | tr | Microsoft | 51 | 
+Ukrainian | 乌克兰语 | uk | Microsoft | 20 | 
+Urdu | 乌尔都语 | ur | Microsoft | 52 | 
+Uzbek | 乌兹别克语 | uz | Google | 166 | 
+Vietnamese | 越南语 | vi | Youdao | 21 | 
+Welsh | 威尔士语 | cy | Microsoft | 28 | 
+Xhosa | 南非科萨语 | xh | Google | 167 | 
+Yiddish | 意第绪语 | yi | Google | 168 | 
+Yoruba | 约鲁巴语 | yo | Google | 169 | 
+Yucatec Maya | 尤卡坦玛雅语 | yua | Microsoft | 53 | 
+Zulu | 南非祖鲁语 | zu | Google | 170 | 

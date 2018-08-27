@@ -15,6 +15,7 @@ import com.xycoding.treasure.activity.transition.TransitionActivity;
 import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.service.LocalIntentService;
+import com.xycoding.treasure.utils.YoudaoLanguageUtil;
 
 import io.reactivex.functions.Consumer;
 
@@ -33,6 +34,10 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         mBinding.tvFlavor.setText("flavor_" + BuildConfig.FLAVOR);
+        YoudaoLanguageUtil.languageChineseUtil(this);
+//        YoudaoLanguageUtil.languageEnglishUtil(this);
+//        YoudaoLanguageUtil.convertTransLanguage(this);
+//        YoudaoLanguageUtil.languageCreateEnum(this);
     }
 
     @Override

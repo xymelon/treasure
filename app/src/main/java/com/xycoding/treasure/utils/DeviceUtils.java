@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -16,6 +18,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.lang.reflect.Field;
 
 /**
@@ -198,6 +202,47 @@ public class DeviceUtils {
         } else {
             return 0;
         }
+    }
+
+    public static String getCpuInfoHardware() {
+        BufferedReader bufferedReader = null;
+        try {
+            final FileReader fileReader = new FileReader("/proc/cpuinfo");
+            bufferedReader = new BufferedReader(fileReader);
+            String str;
+            while ((str = bufferedReader.readLine()) != null) {
+                if (str.startsWith("Hardware")) {
+                    return str;
+                }
+            }
+            return "";
+        } catch (Exception e) {
+            return "";
+        } finally {
+            try {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            } catch (Exception e) {
+                //do nothing.
+            }
+        }
+    }
+
+    public static boolean autoRotateSetting(Context context) {
+        try {
+            return Settings.System.getInt(context.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION) == 1;
+        } catch (Settings.SettingNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static int screenWidthPixels() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    public static int screenHeightPixels() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
 }
