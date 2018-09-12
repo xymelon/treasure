@@ -261,12 +261,11 @@ public class AutoFitSizeTextView extends AppCompatTextView {
                 lineCount = getTextLines(text, textPaint, width, targetTextSize);
             }
             textHeight = getTextHeight(text, textPaint, width, targetTextSize);
-        } else {
-            // Until we either fit within our text view or we had reached our min text size, incrementally try smaller sizes
-            while (textHeight > height && targetTextSize > mMinTextSize) {
-                targetTextSize = Math.max(targetTextSize - 2, mMinTextSize);
-                textHeight = getTextHeight(text, textPaint, width, targetTextSize);
-            }
+        }
+        // Until we either fit within our text view or we had reached our min text size, incrementally try smaller sizes
+        while (textHeight > height && targetTextSize > mMinTextSize) {
+            targetTextSize = Math.max(targetTextSize - 2, mMinTextSize);
+            textHeight = getTextHeight(text, textPaint, width, targetTextSize);
         }
 
         // If we had reached our minimum text size and still don't fit, append an ellipsis
