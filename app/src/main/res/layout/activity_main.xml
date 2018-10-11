@@ -32,6 +32,16 @@
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/ripple_corner"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="自定义圆角波纹测试" />
+
                 <android.support.v7.widget.CardView
                     android:id="@+id/card_view_rxjava"
                     android:layout_width="match_parent"
