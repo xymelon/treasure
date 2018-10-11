@@ -34,10 +34,12 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         mBinding.tvFlavor.setText("flavor_" + BuildConfig.FLAVOR);
-        YoudaoLanguageUtil.languageChineseUtil(this);
+//        YoudaoLanguageUtil.languageChineseUtil(this);
 //        YoudaoLanguageUtil.languageEnglishUtil(this);
 //        YoudaoLanguageUtil.convertTransLanguage(this);
 //        YoudaoLanguageUtil.languageCreateEnum(this);
+//        YoudaoLanguageUtil.convertLanguages(this);
+        YoudaoLanguageUtil.createEnum(this);
     }
 
     @Override

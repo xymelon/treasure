@@ -27,4 +27,109 @@
         <item>越南文</item>
     </string-array>
 
+    <string-array name="language_ocr_section_content">
+        <item>自动检测语言,中文,英文,日文,韩文,法文</item>
+        <item>波兰文</item>
+        <item>丹麦文,德文</item>
+        <item>俄文</item>
+        <item>法文,芬兰文</item>
+        <item>韩文,荷兰文</item>
+        <item>捷克文</item>
+        <item>挪威文</item>
+        <item>葡萄牙文</item>
+        <item>日文,瑞典文</item>
+        <item>泰文,土耳其文</item>
+        <item>希腊文,西班牙文,匈牙利文</item>
+        <item>意大利文,英文,越南文</item>
+        <item>中文,中文（繁体）</item>
+    </string-array>
+
+    <string-array name="language_ocr_words_section_content">
+        <item>中文,英文,日文,韩文,法文</item>
+        <item>波兰文</item>
+        <item>丹麦文,德文</item>
+        <item>俄文</item>
+        <item>法文,芬兰文</item>
+        <item>韩文,荷兰文</item>
+        <item>捷克文</item>
+        <item>挪威文</item>
+        <item>葡萄牙文</item>
+        <item>日文,瑞典文</item>
+        <item>泰文,土耳其文</item>
+        <item>希腊文,西班牙文,匈牙利文</item>
+        <item>意大利文,英文,越南文</item>
+        <item>中文,中文（繁体）</item>
+    </string-array>
+
+    <string-array name="language_text_trans_section_content">
+        <item>自动检测语言,中文,英文,日文,韩文,法文</item>
+        <item>阿尔巴尼亚语,阿拉伯文,阿姆哈拉语,阿塞拜疆语,爱尔兰语,爱沙尼亚文</item>
+        <item>巴斯克语,白俄罗斯语,白苗语,保加利亚文,冰岛语,波兰文,波斯尼亚文（拉丁文）,波斯文</item>
+        <item>丹麦文,德文</item>
+        <item>俄文</item>
+        <item>法文,菲律宾语,斐济语,芬兰文,弗里西语</item>
+        <item>高棉语,格鲁吉亚语,古吉拉特语</item>
+        <item>哈萨克语,海地文,韩文,豪萨语,荷兰文</item>
+        <item>加利西亚语,加泰罗尼亚文,捷克文</item>
+        <item>卡纳达语,柯尔克孜语,科西嘉语,克雷塔罗奥托米语,克林贡文,克林贡文（pIqaD）,克罗地亚文,库尔德语</item>
+        <item>拉丁语,拉脱维亚文,老挝语,黎凡特阿拉伯语,立陶宛文,卢森堡语,罗马尼亚文</item>
+        <item>马尔加什语,马耳他文,马拉地语,马拉雅拉姆语,马来文,马其顿语,毛利语,蒙古语,孟加拉语,缅甸语</item>
+        <item>南非荷兰语,南非科萨语,南非祖鲁语,尼泊尔语,挪威文</item>
+        <item>旁遮普语,葡萄牙文,普什图语</item>
+        <item>齐切瓦语</item>
+        <item>日文,瑞典文</item>
+        <item>萨摩亚语,塞尔维亚文（拉丁文）,塞尔维亚文（西里尔文）,塞索托语,僧伽罗语,世界语,斯洛伐克文,斯洛文尼亚文,斯瓦希里文,苏格兰盖尔语,宿务语,索马里语</item>
+        <item>塔吉克语,塔希提语,泰卢固语,泰米尔语,泰文,汤加语,土耳其文</item>
+        <item>威尔士文,乌尔都文,乌克兰文,乌兹别克语</item>
+        <item>希伯来文,希腊文,西班牙文,夏威夷语,信德语,匈牙利文,修纳语,巽他语</item>
+        <item>亚美尼亚语,伊博语,意大利文,意第绪语,印地文,印度尼西亚文,英文,尤卡坦玛雅语,约鲁巴语,粤语,越南文</item>
+        <item>爪哇语,中文,中文（繁体）</item>
+    </string-array>
+
+    <string-array name="language_voice_dialogue_section_content">
+        <item>中文,英文,日文,韩文,法文</item>
+        <item>阿拉伯文,阿拉伯文（埃及）,阿拉伯文（沙特阿拉伯）</item>
+        <item>波兰文</item>
+        <item>丹麦文,德文</item>
+        <item>俄文</item>
+        <item>法文,法文（加拿大）,芬兰文</item>
+        <item>韩文,荷兰文</item>
+        <item>加泰罗尼亚文,捷克文</item>
+        <item>克罗地亚文</item>
+        <item>罗马尼亚文</item>
+        <item>马来文</item>
+        <item>挪威文</item>
+        <item>葡萄牙文,葡萄牙文（巴西）</item>
+        <item>日文,瑞典文</item>
+        <item>斯洛伐克文</item>
+        <item>台普（繁体）,泰文,土耳其文</item>
+        <item>乌克兰文</item>
+        <item>希伯来文,希腊文,西班牙文,西班牙文（拉丁美洲）,匈牙利文</item>
+        <item>意大利文,印地文,印度尼西亚文,英文,英文（澳大利亚）,英文（印度）,英文（英国）,粤语,越南文</item>
+        <item>中文,中文（繁体）</item>
+    </string-array>
+
+    <string-array name="language_voice_real_time_section_content">
+        <item>自动检测语言,中文,英文,日文,韩文,法文</item>
+        <item>阿拉伯文,阿拉伯文（埃及）,阿拉伯文（沙特阿拉伯）</item>
+        <item>波兰文</item>
+        <item>丹麦文,德文</item>
+        <item>俄文</item>
+        <item>法文,法文（加拿大）,芬兰文</item>
+        <item>韩文,荷兰文</item>
+        <item>加泰罗尼亚文,捷克文</item>
+        <item>克罗地亚文</item>
+        <item>罗马尼亚文</item>
+        <item>马来文</item>
+        <item>挪威文</item>
+        <item>葡萄牙文,葡萄牙文（巴西）</item>
+        <item>日文,瑞典文</item>
+        <item>斯洛伐克文</item>
+        <item>台普（繁体）,泰文,土耳其文</item>
+        <item>乌克兰文</item>
+        <item>希伯来文,希腊文,西班牙文,西班牙文（拉丁美洲）,匈牙利文</item>
+        <item>意大利文,印地文,印度尼西亚文,英文,英文（澳大利亚）,英文（印度）,英文（英国）,粤语,越南文</item>
+        <item>中文,中文（繁体）</item>
+    </string-array>
+
 </resources>

@@ -32,14 +32,23 @@ public class AutoFitSizeTextView extends AppCompatTextView {
     // No limit (Integer.MAX_VALUE means no limit)
     private static final int NO_LIMIT_LINES = Integer.MAX_VALUE;
 
+    private static final int STEP = 2;
+
+    private static final int ELLIPSIS_START = 0;
+
+    private static final int ELLIPSIS_END = 1;
+
     // Our ellipse string
-    private static final String mEllipsis = "...";
+    private static final String ELLIPSIS = "...";
+
+    // The show pos of ellipsis
+    private int mEllipsisPos = ELLIPSIS_END;
 
     // Flag for text and/or size changes to force a resize
     private boolean mNeedsResize = false;
 
     // Text Line indicates that start fit size.
-    private int mFitSizeLine;
+    private int mFitSizeLine = NO_LIMIT_LINES;
 
     // Temporary upper bounds on the starting text size
     private float mMaxTextSize = 0;
@@ -77,6 +86,7 @@ public class AutoFitSizeTextView extends AppCompatTextView {
             mMinTextSize = typedArray.getDimension(R.styleable.AutoFitSizeTextView_minTextSize, textSize);
             mFitSizeLine = typedArray.getInteger(R.styleable.AutoFitSizeTextView_fitLine, NO_LIMIT_LINES);
             mAddEllipsis = typedArray.getBoolean(R.styleable.AutoFitSizeTextView_addEllipsis, true);
+            mEllipsisPos = typedArray.getInteger(R.styleable.AutoFitSizeTextView_ellipsisPos, ELLIPSIS_END);
             typedArray.recycle();
         }
         mSpacingAdd = getLineExtra();
@@ -237,7 +247,6 @@ public class AutoFitSizeTextView extends AppCompatTextView {
         if (text == null || text.length() == 0 || height <= 0 || width <= 0 || getTextSize() == 0 || mMaxTextSize == mMinTextSize) {
             return;
         }
-
         if (getTransformationMethod() != null) {
             text = getTransformationMethod().getTransformation(text, this);
         }
@@ -250,31 +259,38 @@ public class AutoFitSizeTextView extends AppCompatTextView {
 
         // Get the required text height
         int textHeight = getTextHeight(text, textPaint, width, targetTextSize);
-        // fit with line, or fit with TextView's height
+        if (mSpacingAdd > 0) {
+            // First, try smaller line space
+            while (textHeight > height && mSpacingAdd > 0) {
+                mSpacingAdd = Math.max(mSpacingAdd - STEP, 0);
+                textHeight = getTextHeight(text, textPaint, width, targetTextSize);
+            }
+        }
+        // Fit with line, or fit with TextView's height
         int maxLines = getMaxLines(this);
         mFitSizeLine = mFitSizeLine < maxLines ? mFitSizeLine : maxLines;
         if (mFitSizeLine != NO_LIMIT_LINES) {
             int lineCount = getTextLines(text, textPaint, width, targetTextSize);
             // Until we either fit our lines or we had reached our min text size, incrementally try smaller sizes
             while (lineCount > mFitSizeLine && targetTextSize > mMinTextSize) {
-                targetTextSize = Math.max(targetTextSize - 2, mMinTextSize);
+                targetTextSize = Math.max(targetTextSize - STEP, mMinTextSize);
                 lineCount = getTextLines(text, textPaint, width, targetTextSize);
             }
             textHeight = getTextHeight(text, textPaint, width, targetTextSize);
         }
         // Until we either fit within our text view or we had reached our min text size, incrementally try smaller sizes
         while (textHeight > height && targetTextSize > mMinTextSize) {
-            targetTextSize = Math.max(targetTextSize - 2, mMinTextSize);
+            targetTextSize = Math.max(targetTextSize - STEP, mMinTextSize);
             textHeight = getTextHeight(text, textPaint, width, targetTextSize);
         }
-
         // If we had reached our minimum text size and still don't fit, append an ellipsis
-        if (mAddEllipsis && targetTextSize == mMinTextSize && textHeight > height) {
+        if (mAddEllipsis && targetTextSize == mMinTextSize && textHeight >= height) {
             // Draw using a static layout
             // modified: use a copy of TextPaint for measuring
             TextPaint paint = new TextPaint(textPaint);
+            paint.setTextSize(targetTextSize);
             // Draw using a static layout
-            StaticLayout layout = new StaticLayout(text, paint, width, Alignment.ALIGN_NORMAL, mSpacingMult, mSpacingAdd, false);
+            StaticLayout layout = new StaticLayout(text, paint, width, Alignment.ALIGN_NORMAL, mSpacingMult, mSpacingAdd, true);
             // Check that we have a least one line of rendered text
             if (layout.getLineCount() > 0) {
                 // Since the line at the specific vertical position would be cut off,
@@ -288,14 +304,31 @@ public class AutoFitSizeTextView extends AppCompatTextView {
                 else {
                     int start = layout.getLineStart(lastLine);
                     int end = layout.getLineEnd(lastLine);
-                    float lineWidth = layout.getLineWidth(lastLine);
-                    float ellipseWidth = textPaint.measureText(mEllipsis);
-
-                    // Trim characters off until we have enough room to draw the ellipsis
-                    while (width < lineWidth + ellipseWidth) {
-                        lineWidth = textPaint.measureText(text.subSequence(start, --end + 1).toString());
+                    if (mEllipsisPos == ELLIPSIS_START) {
+                        // Add ellipsis at start
+                        // Subtract 'end - start' ensure enough space
+                        start = text.length() - end - (end - start);
+                        start = start < 0 ? 0 : start;
+                        // Final Text
+                        String finalText = ELLIPSIS + text;
+                        textHeight = getTextHeight(finalText, paint, width, targetTextSize);
+                        while (height <= textHeight) {
+                            finalText = ELLIPSIS + text.subSequence(++start, text.length());
+                            textHeight = getTextHeight(finalText, paint, width, targetTextSize);
+                        }
+                        setText(finalText);
+                    } else if (mEllipsisPos == ELLIPSIS_END) {
+                        // Add ellipsis at end
+                        // Final Text
+                        String finalText = text + ELLIPSIS;
+                        textHeight = getTextHeight(finalText, paint, width, targetTextSize);
+                        // Trim characters off until we have enough room to draw the ellipsis
+                        while (height <= textHeight) {
+                            finalText = text.subSequence(0, --end) + ELLIPSIS;
+                            textHeight = getTextHeight(finalText, paint, width, targetTextSize);
+                        }
+                        setText(finalText);
                     }
-                    setText(text.subSequence(0, end) + mEllipsis);
                 }
             }
         }

@@ -23,11 +23,120 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by xymelon on 2018/8/9.
  */
 public class YoudaoLanguageUtil {
+
+    public static void createEnum(@NonNull Context context) {
+        try {
+            final String[] englishArray = context.getResources().getStringArray(R.array.language_common_english);
+            final FileWriter fileWriter = new FileWriter(new File(Environment.getExternalStorageDirectory(), "language_enum.txt"));
+
+            final InputStream inputStream = context.getAssets().open("language/enum.txt");
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line = reader.readLine();
+            int pos = 0;
+            while (line != null) {
+                if (line.contains("),")) {
+                    line = line.replace("),", ", \"" + englishArray[pos] + "\"),\n");
+                    fileWriter.write(line);
+                }
+                if (line.contains(");")) {
+                    line = line.replace(");", ", \"" + englishArray[pos] + "\");\n");
+                    fileWriter.write(line);
+                }
+                line = reader.readLine();
+                pos++;
+            }
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void convertLanguages(@NonNull Context context) {
+        convertLanguages(context, context.getResources().getStringArray(R.array.language_ocr_section_content),
+                "language_ocr_recent", "language_ocr");
+        convertLanguages(context, context.getResources().getStringArray(R.array.language_ocr_words_section_content),
+                "language_ocr_words_recent", "language_ocr_words");
+        convertLanguages(context, context.getResources().getStringArray(R.array.language_text_trans_section_content),
+                "language_text_trans_recent", "language_text_trans");
+        convertLanguages(context, context.getResources().getStringArray(R.array.language_voice_dialogue_section_content),
+                "language_voice_dialogue_recent", "language_voice_dialogue");
+        convertLanguages(context, context.getResources().getStringArray(R.array.language_voice_real_time_section_content),
+                "language_voice_real_time_recent", "language_voice_real_time");
+    }
+
+    private static void convertLanguages(@NonNull Context context, String[] languages, String titleRecent, String titleContent) {
+        try {
+            final FileWriter fileWriter = new FileWriter(new File(Environment.getExternalStorageDirectory(), titleContent + ".txt"));
+            //近期常用语言-中文
+            fileWriter.write("<string-array name=\"" + titleRecent + "\">\n");
+            final String[] recent = languages[0].split(",");
+            for (String str : recent) {
+                fileWriter.write("<item>" + str + "</item>\n");
+            }
+            fileWriter.write("</string-array>\n\n");
+
+            //普通语言
+            final List<Pair<String, String>> languagesList = new ArrayList<>();
+            for (int i = 1; i < languages.length; i++) {
+                final String[] strings = languages[i].split(",");
+                for (String str : strings) {
+                    languagesList.add(new Pair<>(str, chineseToEnglish(context, str)));
+                }
+            }
+            final Comparator<Pair<String, String>> comparator = (o1, o2) -> {
+                Collator collator = Collator.getInstance(Locale.CHINA);
+                return collator.getCollationKey(o1.first).compareTo(
+                        collator.getCollationKey(o2.first));
+            };
+            Collections.sort(languagesList, comparator);
+
+            //普通语言-中文
+            fileWriter.write("<string-array name=\"" + titleContent + "\">\n");
+            for (Pair<String, String> pair : languagesList) {
+                fileWriter.write("<item>" + pair.first + "</item>\n");
+            }
+            fileWriter.write("</string-array>\n\n");
+
+            //近期常用语言-英文
+            fileWriter.write("<string-array name=\"" + titleRecent + "\">\n");
+            for (String str : recent) {
+                fileWriter.write("<item>" + chineseToEnglish(context, str) + "</item>\n");
+            }
+            fileWriter.write("</string-array>\n\n");
+
+            //普通语言-英文
+            fileWriter.write("<string-array name=\"" + titleContent + "\">\n");
+            for (Pair<String, String> pair : languagesList) {
+                fileWriter.write("<item>" + pair.second + "</item>\n");
+            }
+            fileWriter.write("</string-array>\n\n");
+
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String chineseToEnglish(@NonNull Context context, String chinese) {
+        final String[] commonChineseArray = context.getResources().getStringArray(R.array.language_common_chinese);
+        final String[] commonEnglishArray = context.getResources().getStringArray(R.array.language_common_english);
+        for (int i = 0; i < commonChineseArray.length; i++) {
+            if (commonChineseArray[i].equals(chinese)) {
+                return commonEnglishArray[i];
+            }
+        }
+        return "";
+    }
+
 
     public static void languageChineseUtil(@NonNull Context context) {
         final String[] languageXmlArray = context.getResources().getStringArray(R.array.lang_name);

@@ -12,6 +12,10 @@
     <declare-styleable name="AutoFitSizeTextView">
         <attr name="fitLine" />
         <attr name="addEllipsis" format="boolean" />
+        <attr name="ellipsisPos" format="enum">
+            <enum name="start" value="0" />
+            <enum name="end" value="1" />
+        </attr>
         <attr name="minTextSize" />
     </declare-styleable>
 
