@@ -11,8 +11,6 @@ import com.xycoding.treasure.R;
 import com.xycoding.treasure.databinding.ActivityImmersiveModeBinding;
 import com.xycoding.treasure.utils.DeviceUtils;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 /**
  * Created by xymelon on 2017/6/2.
  */
@@ -53,12 +51,7 @@ public class ImmersiveModeActivity extends BaseBindingActivity<ActivityImmersive
                 .fitCenter()
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(mBinding.photoView);
-        mBinding.photoView.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
-            @Override
-            public void onViewTap(View view, float x, float y) {
-                toggleView();
-            }
-        });
+        mBinding.photoView.setOnViewTapListener((view, x, y) -> toggleView());
     }
 
     private void toggleView() {
