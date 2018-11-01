@@ -11,13 +11,12 @@ import android.widget.Toast;
 
 import com.xycoding.treasure.BuildConfig;
 import com.xycoding.treasure.R;
+import com.xycoding.treasure.activity.layout.LayoutTextViewActivity;
 import com.xycoding.treasure.activity.transition.TransitionActivity;
 import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.service.LocalIntentService;
 import com.xycoding.treasure.utils.YoudaoLanguageUtil;
-
-import io.reactivex.functions.Consumer;
 
 public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
 
@@ -44,73 +43,31 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
 
     @Override
     protected void setListeners() {
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewRxjava).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, RxJavaTestActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.fab).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewRxjava).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, RxJavaTestActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.fab).subscribe(o ->
                 Snackbar.make(mBinding.fab, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewCollapsingToolbar).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, CollapsingToolbarActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewDialog).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, DialogActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewCustom).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, ViewActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewMode).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, ActionModeActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewHandwriting).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, HandwritingActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewDict).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, DictActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewChart).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, ChartActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewImmersiveMode).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, ImmersiveModeActivity.class));
-            }
-        }));
-        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewTransition).subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                startActivity(new Intent(MainActivity.this, TransitionActivity.class));
-            }
-        }));
+                        .setAction("Action", null).show()));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewCollapsingToolbar).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, CollapsingToolbarActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewDialog).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, DialogActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewCustom).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, ViewActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewMode).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, ActionModeActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewHandwriting).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, HandwritingActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewDict).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, DictActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewChart).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, ChartActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewImmersiveMode).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, ImmersiveModeActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewTransition).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, TransitionActivity.class))));
+        mDisposables.add(RxViewWrapper.clicks(mBinding.cardViewLayout).subscribe(o ->
+                startActivity(new Intent(MainActivity.this, LayoutTextViewActivity.class))));
     }
 
     @Override

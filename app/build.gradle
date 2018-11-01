@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -140,4 +142,8 @@ dependencies {
     implementation "com.facebook.stetho:stetho:$rootProject.ext.stethoVersion"
     implementation "com.facebook.stetho:stetho-okhttp3:$rootProject.ext.stethoVersion"
     //调试 end
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.4.0'
 }

@@ -1,0 +1,25 @@
+package com.xycoding.treasure.view
+
+import android.content.Context
+import android.graphics.Canvas
+import android.text.Layout
+import android.util.AttributeSet
+import android.view.View
+
+/**
+ * Created by xymelon on 2018/10/31.
+ */
+class LayoutTextView : View {
+
+    var layout: Layout? = null
+
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        layout?.draw(canvas)
+    }
+
+}

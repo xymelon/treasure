@@ -101,6 +101,16 @@
 
         <service android:name=".service.LocalIntentService" />
 
+        <activity
+            android:name=".activity.layout.LayoutTextViewActivity"
+            android:label="@string/activity_pre_layout"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.layout.LayoutRecyclerViewActivity"
+            android:label="@string/activity_pre_layout_recycler_view"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
