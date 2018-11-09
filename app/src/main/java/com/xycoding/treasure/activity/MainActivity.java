@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import com.xycoding.treasure.databinding.ActivityMainBinding;
 import com.xycoding.treasure.rx.RxViewWrapper;
 import com.xycoding.treasure.service.LocalIntentService;
 import com.xycoding.treasure.utils.YoudaoLanguageUtil;
+
+import java.lang.reflect.Field;
 
 public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
 
@@ -39,6 +42,45 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
 //        YoudaoLanguageUtil.languageCreateEnum(this);
 //        YoudaoLanguageUtil.convertLanguages(this);
         YoudaoLanguageUtil.createEnum(this);
+
+        try {
+            Field mLayout = mBinding.tvFlavor.getClass().getSuperclass().getDeclaredField("mLayout");
+            mLayout.setAccessible(true);
+            mBinding.tvFlavor.setText("如果一定要说江山云著「均好度」的短板，那只能怪翁梅这个板块缺少光环了。");
+            mBinding.tvFlavor.post(() -> {
+                try {
+                    Log.i("hehe1: ", String.valueOf(mBinding.tvFlavor.toString() + " " + mLayout.get(mBinding.tvFlavor)));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBinding.tvFlavor.setText("如果一定要说江山云著「均好度」的短板，那只能怪翁梅这个板块缺少光环了。");
+                            mBinding.tvFlavor.post(() -> {
+                                try {
+                                    Log.i("hehe2: ", String.valueOf(mBinding.tvFlavor.toString() + " " + mLayout.get(mBinding.tvFlavor)));
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    });
+                }
+            }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

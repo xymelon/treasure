@@ -21,6 +21,13 @@
             android:text="TextView" />
 
         <RadioButton
+            android:id="@+id/rbLayoutTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Layout" />
+
+        <RadioButton
             android:id="@+id/rbPrecomputedText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
