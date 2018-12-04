@@ -23,7 +23,7 @@ public class ScreenshotObserver extends FileObserver {
             //Don't care.
             return;
         }
-        if (mLastTakenPath != null && path.equalsIgnoreCase(mLastTakenPath)) {
+        if (path.equalsIgnoreCase(mLastTakenPath)) {
             //This event has been observed before.
             return;
         }

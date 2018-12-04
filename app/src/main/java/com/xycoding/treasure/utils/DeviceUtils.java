@@ -17,6 +17,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -188,20 +189,24 @@ public class DeviceUtils {
      *
      * @return
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public static int getSoftButtonsBarHeight(@NonNull Activity activity) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        //这个方法获取的可能不是真实屏幕的高度
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int usableHeight = metrics.heightPixels;
-        //获取当前屏幕的真实高度
-        activity.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-        int realHeight = metrics.heightPixels;
-        if (realHeight > usableHeight) {
-            return realHeight - usableHeight;
-        } else {
-            return 0;
+    public static int getSoftButtonsBarHeight(@NonNull Context context) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                final DisplayMetrics metrics = new DisplayMetrics();
+                //获取的可能不是屏幕的真实高度
+                windowManager.getDefaultDisplay().getMetrics(metrics);
+                final int usableHeight = metrics.heightPixels;
+                //获取当前屏幕的真实高度
+                windowManager.getDefaultDisplay().getRealMetrics(metrics);
+                int realHeight = metrics.heightPixels;
+                if (realHeight > usableHeight) {
+                    return realHeight - usableHeight;
+                }
+            }
+        } catch (Exception ignored) {
         }
+        return 0;
     }
 
     public static String getCpuInfoHardware() {
