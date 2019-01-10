@@ -76,4 +76,11 @@
         <attr name="wave_duration" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="SquareCircleProgressView">
+        <attr name="barColor" format="color|reference" />
+        <attr name="bgBarColor" format="color|reference" />
+        <attr name="barWidth" format="dimension|reference" />
+        <attr name="barProgress" format="integer" />
+    </declare-styleable>
+
 </resources>
